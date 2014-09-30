@@ -1,7 +1,9 @@
 package net.olemartin.resources;
 
+import net.olemartin.business.Match;
 import net.olemartin.business.Player;
 import net.olemartin.business.Tournament;
+import net.olemartin.service.MatchService;
 import net.olemartin.service.TournamentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,10 +22,12 @@ public class TournamentResource {
 
 
     private final TournamentService tournamentService;
+    private MatchService matchService;
 
     @Autowired
-    public TournamentResource(TournamentService tournamentService ) {
+    public TournamentResource(TournamentService tournamentService, MatchService matchService) {
         this.tournamentService = tournamentService;
+        this.matchService = matchService;
     }
 
     @POST
@@ -42,5 +46,11 @@ public class TournamentResource {
     @Path("{tournamentId}")
     public Tournament retrieve(@PathParam("tournamentId")Long tournamentId) {
         return tournamentService.retrieve(tournamentId);
+    }
+
+    @POST
+    @Path("{tournamentId}/next-round")
+    public List<Match> nextRound(@PathParam("tournamentId")Long tournamentId) {
+        return matchService.nextRound(tournamentId);
     }
 }

@@ -1,8 +1,17 @@
 package net.olemartin.business;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import org.neo4j.graphdb.Direction;
-import org.springframework.data.neo4j.annotation.*;
+import org.springframework.data.neo4j.annotation.GraphId;
+import org.springframework.data.neo4j.annotation.GraphProperty;
+import org.springframework.data.neo4j.annotation.NodeEntity;
+import org.springframework.data.neo4j.annotation.RelatedTo;
 
+import java.lang.reflect.Type;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -11,7 +20,6 @@ import static net.olemartin.business.Color.BLACK;
 import static net.olemartin.business.Color.WHITE;
 
 @NodeEntity
-@Labels(value = "Player")
 public class Player {
 
     @GraphId
@@ -19,13 +27,14 @@ public class Player {
 
     @GraphProperty
     private String name;
+
     @GraphProperty
     private double score;
 
     private LinkedList<Color> matches = new LinkedList<>();
 
     @RelatedTo(type = "MET", direction = Direction.BOTH)
-    private Set<Player> playersMet;
+    private Set<Player> playersMet = new HashSet<>();
 
     private Player() {}
     public Player(String name) {
@@ -99,5 +108,16 @@ public class Player {
 
     public List<Color> getColors() {
         return matches;
+    }
+
+    public static class PlayerSerializer implements JsonSerializer<Player> {
+        @Override
+        public JsonElement serialize(Player player, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject root = new JsonObject();
+            root.addProperty("id", player.id);
+            root.addProperty("name", player.name);
+            root.addProperty("score", player.score);
+            return root;
+        }
     }
 }

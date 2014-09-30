@@ -3,6 +3,7 @@ package net.olemartin.business;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -22,11 +23,11 @@ public class MonradTest {
     @Before
     public void setup() {
         Randomizer random = new MyRandom();
-        monrad = new Monrad(random);
-        monrad.addPlayer("Ole");
-        monrad.addPlayer("Per");
-        monrad.addPlayer("Jan");
-        monrad.addPlayer("Ola");
+        monrad = new Monrad(random, Arrays.asList(
+                new Player("Ole"),
+                new Player("Per"),
+                new Player("Jan"),
+                new Player("Ola")));
 
         monrad.init();
     }
@@ -97,7 +98,7 @@ public class MonradTest {
     }
 
     public void drawSeveralRounds(int numPlayers) {
-        Monrad monrad = new Monrad(new MyRandom());
+        Monrad monrad = new Monrad(new MyRandom(), Arrays.asList());
 
         double rounds = 1 + Math.log(numPlayers) / Math.log(2);
         for (int i = 0; i < numPlayers; i++) {

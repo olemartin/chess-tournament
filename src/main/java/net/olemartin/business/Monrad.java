@@ -14,8 +14,9 @@ public class Monrad {
 
     private Set<String> triedCombinations = new HashSet<>();
 
-    public Monrad(Randomizer random) {
+    public Monrad(Randomizer random, Collection<Player> players) {
         this.random = random;
+        this.players.addAll(players);
     }
 
     public void addPlayer(String name) {
