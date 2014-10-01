@@ -29,16 +29,19 @@ public class Player {
 
     private StringBuffer colors;
 
-    private volatile LinkedList<Color> matches;
+    private volatile LinkedList<Color> matches = new LinkedList<>();
+    private volatile Player newOpponent;
 
     @RelatedTo(type = "MET", direction = Direction.BOTH)
     @Fetch
     private Set<Player> playersMet = new HashSet<>();
 
     private Player() {
-        matches = new LinkedList<>(Arrays.asList(colors.toString().split(":"))
-                .stream().map(s -> Color.valueOf(s))
-                .collect(Collectors.toList()));
+        if (colors != null) {
+            matches = new LinkedList<>(Arrays.asList(colors.toString().split(":"))
+                    .stream().map(s -> Color.valueOf(s))
+                    .collect(Collectors.toList()));
+        }
     }
 
     public Player(String name) {
@@ -54,8 +57,12 @@ public class Player {
     }
 
     public void countRound(Color color, Player otherPlayer) {
+        this.newOpponent = otherPlayer;
         playersMet.add(otherPlayer);
         matches.add(color);
+        if (colors == null) {
+            colors = new StringBuffer();
+        }
         colors.append(color.name()).append(":");
     }
 
@@ -103,8 +110,9 @@ public class Player {
     }
 
     public void removeLastOpponent() {
-        //playersMet.removeLast();
-        //matches.removeLast();
+        playersMet.remove(newOpponent);
+        matches.removeLast();
+        colors = new StringBuffer(matches.stream().map(Enum::name).collect(Collectors.joining(":")));
     }
 
     public Set<Player> hasMet() {
