@@ -57,6 +57,10 @@ public class Round implements Comparable<Round> {
         return o.number - number;
     }
 
+    public Set<Match> getMatches() {
+        return matches;
+    }
+
     public static class RoundSerializer implements JsonSerializer<Round> {
 
         @Override

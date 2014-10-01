@@ -61,6 +61,10 @@ public class Tournament {
         return round == null || round.isFinished();
     }
 
+    public Set<Round> getRounds() {
+        return rounds;
+    }
+
     public static class TournamentSerializer implements JsonSerializer<Tournament> {
 
         @Override

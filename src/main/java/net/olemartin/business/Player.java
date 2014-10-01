@@ -5,20 +5,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import org.neo4j.graphdb.Direction;
-import org.springframework.data.neo4j.annotation.Fetch;
-import org.springframework.data.neo4j.annotation.GraphId;
-import org.springframework.data.neo4j.annotation.NodeEntity;
-import org.springframework.data.neo4j.annotation.RelatedTo;
+import org.springframework.data.neo4j.annotation.*;
 
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static net.olemartin.business.Color.BLACK;
 import static net.olemartin.business.Color.WHITE;
 
 @NodeEntity
-public class Player implements Comparable<Player>{
+public class Player implements Comparable<Player> {
 
     @GraphId
     private Long id;
@@ -36,6 +34,8 @@ public class Player implements Comparable<Player>{
     @Fetch
     private Set<Player> playersMet = new HashSet<>();
 
+    private volatile String roundResults;
+
     private Player() {
         if (colors != null) {
             matches = new LinkedList<>(Arrays.asList(colors.toString().split(":"))
@@ -46,6 +46,40 @@ public class Player implements Comparable<Player>{
 
     public Player(String name) {
         this.name = name;
+    }
+
+    public void updateRoundScore(Set<Player> players, Set<Round> rounds) {
+        List<Player> allPlayers = new ArrayList<>();
+        allPlayers.addAll(players.stream().collect(Collectors.toList()));
+        Collections.sort(allPlayers);
+        roundResults = rounds.stream()
+                .sorted()
+                .map(round -> round.getMatches().stream().filter(new Predicate<Match>() {
+                    @Override
+                    public boolean test(Match match) {
+                        return match.getBlack().id.equals(id) || match.getWhite().id.equals(id);
+                    }
+                }).findFirst().get())
+                .map(match -> {
+                    Player opponent = match.getPlayers().stream().filter(new Predicate<Player>() {
+                        @Override
+                        public boolean test(Player player) {
+                            return !player.id.equals(id);
+                        }
+                    }).findFirst().get();
+                    int position = allPlayers.indexOf(opponent) + 1;
+                    if (match.getResult() == Result.REMIS) {
+                        return "=" + position;
+                    } else if (match.getWinner().id.equals(id)) {
+                        return "+" + position;
+                    } else {
+                        return "-" + position;
+                    }
+                }).collect(Collectors.joining(", "));
+
+
+
+
     }
 
     public void increaseScore(double score) {
@@ -136,6 +170,23 @@ public class Player implements Comparable<Player>{
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Player player = (Player) o;
+
+        if (id != null ? !id.equals(player.id) : player.id != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
     public static class PlayerSerializer implements JsonSerializer<Player> {
         @Override
         public JsonElement serialize(Player player, Type typeOfSrc, JsonSerializationContext context) {
@@ -143,6 +194,8 @@ public class Player implements Comparable<Player>{
             root.addProperty("id", player.id);
             root.addProperty("name", player.name);
             root.addProperty("score", player.score);
+            root.addProperty("roundResults", player.roundResults);
+
             return root;
         }
     }

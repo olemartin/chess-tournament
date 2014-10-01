@@ -11,6 +11,8 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import java.lang.reflect.Type;
+import java.util.HashSet;
+import java.util.Set;
 
 @NodeEntity
 public class Match implements Comparable<Match>{
@@ -26,6 +28,18 @@ public class Match implements Comparable<Match>{
     @Fetch
     private Player black;
 
+    @RelatedTo(type = "WINNER", direction = Direction.OUTGOING)
+    @Fetch
+    private Player winner;
+
+    @RelatedTo(type = "LOOSER", direction = Direction.OUTGOING)
+    @Fetch
+    private Player looser;
+
+    @RelatedTo(type = "PLAYER", direction = Direction.OUTGOING)
+    @Fetch
+    private Set<Player> players = new HashSet<>();
+
     private Result result;
 
 
@@ -35,6 +49,8 @@ public class Match implements Comparable<Match>{
     public Match(Player white, Player black) {
         this.white = white;
         this.black = black;
+        players.add(white);
+        players.add(black);
 
         white.countRound(Color.WHITE, black);
         black.countRound(Color.BLACK, white);
@@ -53,8 +69,12 @@ public class Match implements Comparable<Match>{
         switch (result) {
             case WHITE:
                 white.increaseScore(1);
+                winner = white;
+                looser = black;
                 break;
             case BLACK:
+                winner = black;
+                looser = white;
                 black.increaseScore(1);
                 break;
             case REMIS:
@@ -64,6 +84,10 @@ public class Match implements Comparable<Match>{
         }
     }
 
+    public Result getResult() {
+        return result;
+    }
+
     public boolean hasResult() {
         return result != null;
     }
@@ -71,6 +95,14 @@ public class Match implements Comparable<Match>{
     @Override
     public int compareTo(Match o) {
         return white.getName().compareTo(o.white.getName());
+    }
+
+    public Set<Player> getPlayers() {
+        return players;
+    }
+
+    public Player getWinner() {
+        return winner;
     }
 
     public static class MatchSerializer implements JsonSerializer<Match> {
