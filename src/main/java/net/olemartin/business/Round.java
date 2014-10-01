@@ -42,6 +42,16 @@ public class Round {
         matches.add(match);
     }
 
+
+    public boolean isFinished() {
+        for (Match match : matches) {
+            if (!match.hasResult()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static class RoundSerializer implements JsonSerializer<Round> {
 
         @Override

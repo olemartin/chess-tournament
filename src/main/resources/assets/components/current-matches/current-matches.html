@@ -1,0 +1,88 @@
+<link rel="import" href="../../bower_components/core-list/core-list.html">
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html"/>
+
+
+<polymer-element name="current-matches" vertical layout>
+    <template>
+        <!--url="/rest/tournament/385877"-->
+
+        <h1>Turnering</h1>
+
+        <h2>Kamper</h2>
+
+        <table>
+            <tr>
+                <th>Hvit</th>
+                <th></th>
+                <th>Sort</th>
+            </tr>
+            <template repeat="{{data}}">
+                <tr>
+                    <td>
+                        <paper-button
+                                raisedButton
+                                label="{{white.name}}"
+                                on-tap="{{reportResult}}"
+                                data-matchId="{{id}}"
+                                data-result="{{'WHITE'}}"/>
+                    </td>
+                    <td>
+                        <paper-button
+                                raisedButton
+                                label="vs"
+                                on-tap="{{reportResult}}"
+                                data-matchId="{{id}}"
+                                data-result="{{'REMIS'}}"/>
+                    </td>
+                    <td>
+                        <paper-button
+                                raisedButton
+                                label="{{black.name}}"
+                                on-tap="{{reportResult}}"
+                                data-matchId="{{id}}"
+                                data-result="{{'BLACK'}}"/>
+                    </td>
+                <tr>
+            </template>
+        </table>
+
+
+        <core-ajax
+                auto="true"
+                url="/rest/tournament/2"
+                handleAs="json"
+                contentType="application/json"
+                on-core-response="{{handleResponse}}">
+        </core-ajax>
+
+
+
+        <core-ajax
+                auto="false"
+                method="POST"
+                url="/rest/match/{{id}}/report/{{result}}"
+                handleAs="json"
+                id="report_result"
+                contentType="application/json"></core-ajax>
+    </template>
+    <script>
+        Polymer('current-matches', {
+            handleResponse: function (e) {
+                console.log(e);
+                this.data = e.detail.response.currentRound.matches;
+            },
+            reportResult : function (e, detail, sender) {
+                console.log(sender);
+                console.log(sender.getAttribute("data-matchId"));
+                console.log(sender.getAttribute("data-result"));
+                this.id = sender.getAttribute("data-matchId");
+                this.result = sender.getAttribute("data-result");
+
+                this.$.report_result.go()
+            }
+
+        });
+    </script>
+
+</polymer-element>

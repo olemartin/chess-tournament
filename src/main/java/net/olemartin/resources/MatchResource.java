@@ -1,5 +1,6 @@
 package net.olemartin.resources;
 
+import net.olemartin.business.Match;
 import net.olemartin.business.Result;
 import net.olemartin.service.MatchService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class MatchResource {
 
     @Path("{matchId}/report/{result}")
     @POST
-    public void reportResult(@PathParam("matchId") long matchId, @PathParam("result") String result) {
-        matchService.reportResult(matchId, Result.valueOf(result));
+    public Match reportResult(@PathParam("matchId") long matchId, @PathParam("result") String result) {
+        return matchService.reportResult(matchId, Result.valueOf(result));
     }
 }

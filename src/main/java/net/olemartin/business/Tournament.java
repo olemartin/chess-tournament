@@ -3,10 +3,7 @@ package net.olemartin.business;
 import com.google.gson.*;
 import com.google.gson.annotations.Expose;
 import org.neo4j.graphdb.Direction;
-import org.springframework.data.neo4j.annotation.Fetch;
-import org.springframework.data.neo4j.annotation.GraphId;
-import org.springframework.data.neo4j.annotation.NodeEntity;
-import org.springframework.data.neo4j.annotation.RelatedTo;
+import org.springframework.data.neo4j.annotation.*;
 
 import java.lang.reflect.Type;
 import java.util.Set;
@@ -33,6 +30,9 @@ public class Tournament {
     @Fetch
     private Set<Round> rounds;
 
+    @Query(value = "start n=node({self}) match n-[:ROUND_OF]->round where round.number = n.currentRound return round", elementClass=Round.class)
+    private Round round;
+
     private Tournament() {
 
     }
@@ -43,10 +43,6 @@ public class Tournament {
 
     public void addPlayer(Player player) {
         players.add(player);
-    }
-
-    public int getCurrentRound() {
-        return currentRound;
     }
 
     public Set<Player> getPlayers() {
@@ -61,6 +57,10 @@ public class Tournament {
         rounds.add(round);
     }
 
+    public boolean isCurrentRoundFinished() {
+        return round == null || round.isFinished();
+    }
+
     public static class TournamentSerializer implements JsonSerializer<Tournament> {
 
         @Override
@@ -70,7 +70,7 @@ public class Tournament {
             JsonObject root = new JsonObject();
             root.addProperty("id", tournament.id);
             root.addProperty("name", tournament.name);
-            root.addProperty("currentRound", tournament.currentRound);
+            //root.addProperty("", tournament.currentRound);
             JsonArray playerArray = new JsonArray();
             tournament.players.forEach(player -> playerArray.add(playerSerializer.serialize(player, Player.class, context)));
             root.add("players", playerArray);
@@ -78,6 +78,7 @@ public class Tournament {
             JsonObject roundsObject = new JsonObject();
             tournament.rounds.forEach(round -> roundsObject.add(String.valueOf(round.getNumber()), roundSerializer.serialize(round, Round.class, context)));
             root.add("rounds", roundsObject);
+            root.add("currentRound", roundSerializer.serialize(tournament.round, Round.class, context));
             return root;
         }
     }

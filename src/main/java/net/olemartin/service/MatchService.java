@@ -2,6 +2,7 @@ package net.olemartin.service;
 
 import net.olemartin.business.*;
 import net.olemartin.database.MatchRepository;
+import net.olemartin.database.PlayerRepository;
 import net.olemartin.database.RoundRepository;
 import net.olemartin.database.TournamentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +18,22 @@ public class MatchService {
     private MatchRepository matchRepository;
     private TournamentRepository tournamentRepository;
     private final RoundRepository roundRepository;
+    private final PlayerRepository playerRepository;
 
 
     @Autowired
-    public MatchService(MatchRepository matchRepository, TournamentRepository tournamentRepository, RoundRepository roundRepository) {
+    public MatchService(MatchRepository matchRepository, TournamentRepository tournamentRepository, RoundRepository roundRepository, PlayerRepository playerRepository) {
         this.matchRepository = matchRepository;
         this.tournamentRepository = tournamentRepository;
         this.roundRepository = roundRepository;
+        this.playerRepository = playerRepository;
     }
 
     public List<Match> nextRound(long tournamentId) {
         Tournament tournament = tournamentRepository.findOne(tournamentId);
+        if (!tournament.isCurrentRoundFinished()) {
+            throw new IllegalArgumentException("Current round is not finished");
+        }
         int roundNumber = tournament.increaseRound();
         Round round = new Round(tournament, roundNumber);
         Monrad monrad = new Monrad(new Randomizer(), tournament.getPlayers());
@@ -42,9 +48,12 @@ public class MatchService {
         return matches;
     }
 
-    public void reportResult(long matchId, Result result) {
+    public Match reportResult(long matchId, Result result) {
         Match match = matchRepository.findOne(matchId);
         match.reportResult(result);
         matchRepository.save(match);
+        playerRepository.save(match.getBlack());
+        playerRepository.save(match.getWhite());
+        return match;
     }
 }

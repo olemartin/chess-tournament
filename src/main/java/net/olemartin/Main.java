@@ -1,6 +1,8 @@
 package net.olemartin;
 
+import com.google.common.cache.CacheBuilderSpec;
 import io.dropwizard.Application;
+import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import net.olemartin.dropwizard.MonradConfiguration;
@@ -13,12 +15,13 @@ import java.util.Map;
 
 public class Main extends Application<MonradConfiguration> {
     public static void main(String[] args) throws Exception {
-        new Main().run(args);
+        new Main().run(new String[] {"server", "monrad.yaml"});
     }
 
     @Override
-    public void initialize(Bootstrap<MonradConfiguration> monradConfigurationBootstrap) {
-
+    public void initialize(Bootstrap<MonradConfiguration> bootstrap) {
+        CacheBuilderSpec.disableCaching();
+        bootstrap.addBundle(new AssetsBundle("/assets/", "/"));
     }
 
     @Override
@@ -29,5 +32,7 @@ public class Main extends Application<MonradConfiguration> {
             environment.jersey().register(o);
         }
         environment.jersey().register(GsonJSONProvider.class);
+        environment.jersey().setUrlPattern("/rest/*");
+
     }
 }

@@ -1,14 +1,8 @@
 package net.olemartin.business;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.google.gson.*;
 import org.neo4j.graphdb.Direction;
-import org.springframework.data.neo4j.annotation.GraphId;
-import org.springframework.data.neo4j.annotation.GraphProperty;
-import org.springframework.data.neo4j.annotation.NodeEntity;
-import org.springframework.data.neo4j.annotation.RelatedTo;
+import org.springframework.data.neo4j.annotation.*;
 
 import java.lang.reflect.Type;
 import java.util.HashSet;
@@ -25,15 +19,14 @@ public class Player {
     @GraphId
     private Long id;
 
-    @GraphProperty
     private String name;
 
-    @GraphProperty
     private double score;
 
     private LinkedList<Color> matches = new LinkedList<>();
 
     @RelatedTo(type = "MET", direction = Direction.BOTH)
+    @Fetch
     private Set<Player> playersMet = new HashSet<>();
 
     private Player() {}
@@ -102,8 +95,8 @@ public class Player {
         //matches.removeLast();
     }
 
-    public List<Player> hasMet() {
-        return null;//playersMet;
+    public Set<Player> hasMet() {
+        return playersMet;
     }
 
     public List<Color> getColors() {

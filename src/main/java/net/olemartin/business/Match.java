@@ -20,11 +20,11 @@ public class Match {
 
     @RelatedTo(type = "WHITE", direction = Direction.OUTGOING)
     @Fetch
-    public Player white;
+    private Player white;
 
     @RelatedTo(type = "BLACK", direction = Direction.OUTGOING)
     @Fetch
-    public Player black;
+    private Player black;
 
     private Result result;
 
@@ -62,6 +62,10 @@ public class Match {
                 black.increaseScore(0.5);
                 break;
         }
+    }
+
+    public boolean hasResult() {
+        return result != null;
     }
 
     public static class MatchSerializer implements JsonSerializer<Match> {

@@ -1,0 +1,34 @@
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+
+<polymer-element name="new-tournament" vertical layout>
+
+    <template>
+
+        <h1>Ny turnering</h1>
+        <paper-input label="Navn på turneringen" value="{{tournamentName}}" id="tournamentName"></paper-input>
+        <paper-button label="Send" id="send" on-tap="{{doSend}}"/>
+
+
+        <core-ajax
+                auto="false"
+                method="POST"
+                url="/rest/tournament/new"
+                body='{"name":"{{tournamentName}}"}'
+                handleAs="json"
+                id="save"
+                contentType="application/json"
+                on-core-response="{{handleResponse}}"></core-ajax>
+    </template>
+    <script>
+        Polymer('new-tournament', {
+            doSend: function (e) {
+                this.$.save.go()
+            },
+            handleResponse: function (e) {
+                console.log(e.detail.response.id);
+            }
+        });
+    </script>
+</polymer-element>

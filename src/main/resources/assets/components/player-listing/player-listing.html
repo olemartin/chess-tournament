@@ -1,0 +1,52 @@
+<link rel="import" href="../../bower_components/core-list/core-list.html">
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+
+
+<polymer-element name="player-listing" vertical layout>
+    <template>
+        <!--url="/rest/tournament/385877"-->
+
+        <h1>Turnering</h1>
+
+        <h2>Spillere</h2>
+        <core-ajax
+                auto="true"
+                url="/rest/tournament/2"
+                handleAs="json"
+                contentType="application/json"
+                on-core-response="{{handleResponse}}">
+
+            <core-ajax
+                    auto="false"
+                    method="POST"
+                    url="/rest/2/add"
+                    body='{"name":"{{playerName}}"}'
+                    handleAs="json"
+                    id="save"
+                    contentType="application/json"></core-ajax>
+
+        </core-ajax>
+
+        <core-list data="{{data}}" height="80">
+            <template>
+                <div>{{name}}: {{score}}</div>
+            </template>
+        </core-list>
+
+        <paper-input label="Spillerens navn" value="{{playerName}}" id="playerName"></paper-input>
+        <paper-button label="Send" id="send" on-tap="{{doSend}}"/>
+
+    </template>
+    <script>
+        Polymer('player-listing', {
+            handleResponse: function (e) {
+                console.log(e);
+                this.data = e.detail.response.players;
+            },
+            doSend: function (e) {
+                this.$.save.go();
+            }
+        });
+    </script>
+
+</polymer-element>
