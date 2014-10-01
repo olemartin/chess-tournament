@@ -38,8 +38,9 @@ public class TournamentResource {
 
     @POST
     @Path("{tournamentId}/add")
-    public void addPlayersToTournament(@PathParam("tournamentId")Long tournamentId, List<Player> players) {
-        tournamentService.addPlayers(tournamentId, players);
+    public Player addPlayerToTournament(@PathParam("tournamentId")Long tournamentId, Player player) {
+        tournamentService.addPlayer(tournamentId, player);
+        return player;
     }
 
     @GET

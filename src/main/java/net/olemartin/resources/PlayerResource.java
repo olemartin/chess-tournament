@@ -25,13 +25,6 @@ public class PlayerResource {
         this.playerService = playerService;
     }
 
-
-    @Path("register")
-    @POST
-    public void registerPlayer(Player player) {
-        playerService.save(player);
-    }
-
     @Path("list")
     @GET
     public List<Player> getPlayers() {

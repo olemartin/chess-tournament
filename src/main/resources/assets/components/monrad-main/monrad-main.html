@@ -1,0 +1,66 @@
+<link rel="import" href="../../bower_components/core-animated-pages/core-animated-pages.html"/>
+<link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html"/>
+<link rel="import" href="../../bower_components/paper-button/paper-button.html"/>
+<link rel="import" href="../../components/new-tournament/new-tournament.html">
+<link rel="import" href="../../components/player-listing/player-listing.html">
+<link rel="import" href="../../components/current-matches/current-matches.html">
+
+
+<polymer-element name="monrad-main" vertical layout>
+    <template>
+        <link rel="stylesheet" href="monrad-main.css">
+        <core-toolbar>
+            <span flex>BEKK Chess</span>
+
+            <div>
+                <paper-button label="Players" on-tap="{{players_selected}}"/>
+            </div>
+            <div>
+                <paper-button label="Matches" on-tap="{{matches_selected}}"/>
+            </div>
+        </core-toolbar>
+        <core-animated-pages selected="{{selected}}" flex auto transitions="slide-up slide-down cross-fade">
+            <section name="start">
+                <new-tournament id="new_tournament" cross-fade selectedSection="{{selected}}"
+                                on-tournament_created="{{tournament_created}}"></new-tournament>
+            </section>
+            <section name="players">
+                <player-listing id="players" tournamentId="{{tournamentId}}" tournamentName="{{tournamentName}}"
+                                cross-fade selectedSection="{{selected}}"></player-listing>
+            </section>
+            <section name="matches">
+                <current-matches id="matches" tournamentId="{{tournamentId}}" tournamentName="{{tournamentName}}"
+                                 cross-fade selectedSection="{{selected}}"></current-matches>
+            </section>
+        </core-animated-pages>
+    </template>
+    <script>
+        Polymer("monrad-main", {
+            created: function () {
+                if (window.location.hash) {
+                    this.tournamentId = window.location.hash.substring(1);
+                    this.selected = "matches";
+                } else {
+                    this.tournamentId = {}
+                    this.selected = "start";
+                }
+            },
+            players_selected: function () {
+                this.selected = "players";
+                this.$.players.updatePlayers();
+            },
+            matches_selected: function () {
+                this.selected = "matches";
+                this.$.matches.update();
+            },
+            tournament_created: function (event, arguments) {
+                this.tournamentId = arguments.id;
+                this.tournamentName = arguments.name;
+                this.selected = "players";
+                window.location.hash = this.tournamentId;
+            }
+        });
+
+    </script>
+
+</polymer-element>

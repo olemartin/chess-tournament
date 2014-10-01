@@ -1,14 +1,18 @@
 package net.olemartin.business;
 
-import com.google.gson.*;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import org.neo4j.graphdb.Direction;
-import org.springframework.data.neo4j.annotation.*;
+import org.springframework.data.neo4j.annotation.Fetch;
+import org.springframework.data.neo4j.annotation.GraphId;
+import org.springframework.data.neo4j.annotation.NodeEntity;
+import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import java.lang.reflect.Type;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static net.olemartin.business.Color.BLACK;
 import static net.olemartin.business.Color.WHITE;
@@ -23,13 +27,20 @@ public class Player {
 
     private double score;
 
-    private LinkedList<Color> matches = new LinkedList<>();
+    private StringBuffer colors;
+
+    private volatile LinkedList<Color> matches;
 
     @RelatedTo(type = "MET", direction = Direction.BOTH)
     @Fetch
     private Set<Player> playersMet = new HashSet<>();
 
-    private Player() {}
+    private Player() {
+        matches = new LinkedList<>(Arrays.asList(colors.toString().split(":"))
+                .stream().map(s -> Color.valueOf(s))
+                .collect(Collectors.toList()));
+    }
+
     public Player(String name) {
         this.name = name;
     }
@@ -45,6 +56,7 @@ public class Player {
     public void countRound(Color color, Player otherPlayer) {
         playersMet.add(otherPlayer);
         matches.add(color);
+        colors.append(color.name()).append(":");
     }
 
     private long numberOfRounds(Color color) {

@@ -6,9 +6,9 @@
 
     <template>
 
-        <h1>Ny turnering</h1>
-        <paper-input label="Navn på turneringen" value="{{tournamentName}}" id="tournamentName"></paper-input>
-        <paper-button label="Send" id="send" on-tap="{{doSend}}"/>
+        <h1>New tournament</h1>
+        <paper-input label="The tournament's name" value="{{tournamentName}}" id="tournamentName"></paper-input>
+        <paper-button raisedButton label="Send" id="send" on-tap="{{doSend}}"/>
 
 
         <core-ajax
@@ -20,6 +20,7 @@
                 id="save"
                 contentType="application/json"
                 on-core-response="{{handleResponse}}"></core-ajax>
+
     </template>
     <script>
         Polymer('new-tournament', {
@@ -27,6 +28,7 @@
                 this.$.save.go()
             },
             handleResponse: function (e) {
+                this.fire('tournament_created', {id: e.detail.response.id, name: e.detail.response.name});
                 console.log(e.detail.response.id);
             }
         });

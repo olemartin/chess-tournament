@@ -2,49 +2,58 @@
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 
 
-<polymer-element name="player-listing" vertical layout>
+<polymer-element name="player-listing" vertical layout attributes="tournamentId tournamentName">
     <template>
         <!--url="/rest/tournament/385877"-->
 
-        <h1>Turnering</h1>
+        <h1>{{tournamentName}}</h1>
 
-        <h2>Spillere</h2>
+        <h2>Players</h2>
         <core-ajax
-                auto="true"
-                url="/rest/tournament/2"
+                auto="false"
+                url="/rest/tournament/{{tournamentId}}"
                 handleAs="json"
+                id="updatePlayers"
                 contentType="application/json"
                 on-core-response="{{handleResponse}}">
-
-            <core-ajax
-                    auto="false"
-                    method="POST"
-                    url="/rest/2/add"
-                    body='{"name":"{{playerName}}"}'
-                    handleAs="json"
-                    id="save"
-                    contentType="application/json"></core-ajax>
-
         </core-ajax>
 
-        <core-list data="{{data}}" height="80">
+        <core-ajax
+                auto="false"
+                method="POST"
+                url="/rest/tournament/{{tournamentId}}/add"
+                body='{"name":"{{playerName}}", "score":"0.0"}'
+                handleAs="json"
+                id="addPlayer"
+                contentType="application/json"
+                on-core-response="{{playerAdded}}"></core-ajax>
+
+
+        <core-list data="{{data}}" height="25">
             <template>
                 <div>{{name}}: {{score}}</div>
             </template>
         </core-list>
 
-        <paper-input label="Spillerens navn" value="{{playerName}}" id="playerName"></paper-input>
-        <paper-button label="Send" id="send" on-tap="{{doSend}}"/>
+        <paper-input label="Player's name" value="{{playerName}}" id="playerName"></paper-input>
+        <paper-button raisedButton label="Send" id="send" on-tap="{{doSend}}"/>
 
     </template>
     <script>
         Polymer('player-listing', {
+            updatePlayers: function() {
+                this.$.updatePlayers.go();
+            },
             handleResponse: function (e) {
                 console.log(e);
                 this.data = e.detail.response.players;
             },
             doSend: function (e) {
-                this.$.save.go();
+                this.$.addPlayer.go();
+            },
+            playerAdded:function(e) {
+                this.playerName = '';
+                this.$.updatePlayers.go();
             }
         });
     </script>
