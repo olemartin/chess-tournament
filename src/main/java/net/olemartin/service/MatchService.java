@@ -45,6 +45,7 @@ public class MatchService {
         tournament.addRound(round);
         matchRepository.save(matches);
         tournamentRepository.save(tournament);
+        playerRepository.save(tournament.getPlayers());
         return matches;
     }
 

@@ -28,12 +28,12 @@ public class Monrad {
     }
 
     public List<Player> getPlayers() {
-        sort();
+        Collections.sort(players);
         return players;
     }
 
     public List<Match> round(int round) {
-        sort();
+        Collections.sort(players);
         LinkedList<Match> matches = new LinkedList<>();
         if (round == 1) {
             for (int i = 0; i < players.size() - 1; i += 2) {
@@ -134,17 +134,4 @@ public class Monrad {
         }
     }
 
-    private void sort() {
-        Collections.sort(players, (p1, p2) -> {
-            double score1 = p1.getScore();
-            double score2 = p2.getScore();
-            if (score1 == score2) {
-                return 0;
-            } else if (score1 > score2) {
-                return -1;
-            } else {
-                return 1;
-            }
-        });
-    }
 }

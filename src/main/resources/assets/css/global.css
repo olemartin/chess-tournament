@@ -491,3 +491,8 @@ html /deep/ paper-icon-button[disabled]::shadow core-icon {
 html /deep/ core-selector paper-icon-button:not([active])::shadow core-icon {
                 fill: #c4c7c7;
             }
+html /deep/ table.center {
+                margin-left:auto;
+                margin-right:auto;
+                border: solid #606565 thin;
+            }

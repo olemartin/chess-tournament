@@ -13,7 +13,7 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 import java.lang.reflect.Type;
 
 @NodeEntity
-public class Match {
+public class Match implements Comparable<Match>{
 
     @GraphId
     private Long id;
@@ -66,6 +66,11 @@ public class Match {
 
     public boolean hasResult() {
         return result != null;
+    }
+
+    @Override
+    public int compareTo(Match o) {
+        return white.getName().compareTo(o.white.getName());
     }
 
     public static class MatchSerializer implements JsonSerializer<Match> {

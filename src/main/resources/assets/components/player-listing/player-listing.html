@@ -4,11 +4,8 @@
 
 <polymer-element name="player-listing" vertical layout attributes="tournamentId tournamentName">
     <template>
-        <!--url="/rest/tournament/385877"-->
+        <h1>{{tournamentName}}'s players</h1>
 
-        <h1>{{tournamentName}}</h1>
-
-        <h2>Players</h2>
         <core-ajax
                 auto="false"
                 url="/rest/tournament/{{tournamentId}}"
@@ -28,12 +25,18 @@
                 contentType="application/json"
                 on-core-response="{{playerAdded}}"></core-ajax>
 
-
-        <core-list data="{{data}}" height="25">
-            <template>
-                <div>{{name}}: {{score}}</div>
+        <table class="center">
+            <tr>
+                <th>Player</th>
+                <th>Score</th>
+            </tr>
+            <template repeat="{{data}}">
+                <tr>
+                    <td>{{name}}</td>
+                    <td>{{score}}</td>
+                </tr>
             </template>
-        </core-list>
+        </table>
 
         <paper-input label="Player's name" value="{{playerName}}" id="playerName"></paper-input>
         <paper-button raisedButton label="Send" id="send" on-tap="{{doSend}}"/>
@@ -41,7 +44,7 @@
     </template>
     <script>
         Polymer('player-listing', {
-            updatePlayers: function() {
+            updatePlayers: function () {
                 this.$.updatePlayers.go();
             },
             handleResponse: function (e) {
@@ -51,7 +54,7 @@
             doSend: function (e) {
                 this.$.addPlayer.go();
             },
-            playerAdded:function(e) {
+            playerAdded: function (e) {
                 this.playerName = '';
                 this.$.updatePlayers.go();
             }

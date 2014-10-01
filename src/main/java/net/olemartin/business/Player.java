@@ -18,7 +18,7 @@ import static net.olemartin.business.Color.BLACK;
 import static net.olemartin.business.Color.WHITE;
 
 @NodeEntity
-public class Player {
+public class Player implements Comparable<Player>{
 
     @GraphId
     private Long id;
@@ -121,6 +121,19 @@ public class Player {
 
     public List<Color> getColors() {
         return matches;
+    }
+
+    @Override
+    public int compareTo(Player p2) {
+        double score1 = getScore();
+        double score2 = p2.getScore();
+        if (score1 == score2) {
+            return 0;
+        } else if (score1 > score2) {
+            return -1;
+        } else {
+            return 1;
+        }
     }
 
     public static class PlayerSerializer implements JsonSerializer<Player> {

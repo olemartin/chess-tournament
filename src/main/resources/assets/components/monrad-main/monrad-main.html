@@ -38,10 +38,11 @@
         Polymer("monrad-main", {
             created: function () {
                 if (window.location.hash) {
-                    this.tournamentId = window.location.hash.substring(1);
+                    this.tournamentId = window.location.hash.substring(1).split("!")[0];
+                    this.tournamentName = decodeURI(window.location.hash.substring(1).split("!")[1]);
                     this.selected = "matches";
                 } else {
-                    this.tournamentId = {}
+                    this.tournamentId = {};
                     this.selected = "start";
                 }
             },
@@ -57,7 +58,7 @@
                 this.tournamentId = arguments.id;
                 this.tournamentName = arguments.name;
                 this.selected = "players";
-                window.location.hash = this.tournamentId;
+                window.location.hash = this.tournamentId + "!" + encodeURI(this.tournamentName);
             }
         });
 

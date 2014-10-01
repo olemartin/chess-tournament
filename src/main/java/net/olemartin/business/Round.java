@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @NodeEntity
-public class Round {
+public class Round implements Comparable<Round> {
 
     @GraphId
     private Long id;
@@ -52,6 +52,11 @@ public class Round {
         return true;
     }
 
+    @Override
+    public int compareTo(Round o) {
+        return o.number - number;
+    }
+
     public static class RoundSerializer implements JsonSerializer<Round> {
 
         @Override
@@ -61,7 +66,7 @@ public class Round {
             root.addProperty("id", src.id);
             root.addProperty("number", src.number);
             JsonArray array = new JsonArray();
-            src.matches.stream().forEach(match -> array.add(matchSerializer.serialize(match, Match.class, context)));
+            src.matches.stream().sorted().forEach(match -> array.add(matchSerializer.serialize(match, Match.class, context)));
             root.add("matches", array);
             return root;
         }

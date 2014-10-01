@@ -5,49 +5,72 @@
 <polymer-element name="current-matches" vertical layout attributes="tournamentId tournamentName">
     <template>
 
-        <h1>{{tournamentName}}</h1>
-
-        <h2>Matches this round</h2>
-
-        <table>
+        <h1>{{tournamentName}}' matches</h1>
+        <table class="center">
             <tr>
-                <th>Hvit</th>
+                <th>White</th>
                 <th></th>
-                <th>Sort</th>
+                <th>Black</th>
             </tr>
             <template repeat="{{data}}">
-                <tr>
-                    <td>
-                        <paper-button
-                                raisedButton
-                                label="{{white.name}}"
-                                on-tap="{{reportResult}}"
-                                data-matchId="{{id}}"
-                                data-result="{{'WHITE'}}"/>
-                    </td>
-                    <td>
-                        <paper-button
-                                raisedButton
-                                label="vs"
-                                on-tap="{{reportResult}}"
-                                data-matchId="{{id}}"
-                                data-result="{{'REMIS'}}"/>
-                    </td>
-                    <td>
-                        <paper-button
-                                raisedButton
-                                label="{{black.name}}"
-                                on-tap="{{reportResult}}"
-                                data-matchId="{{id}}"
-                                data-result="{{'BLACK'}}"/>
-                    </td>
-                <tr>
+                <template if="{{!result}}">
+                    <tr>
+                        <td>
+                            <paper-button
+                                    raisedButton
+                                    label="{{white.name}}"
+                                    on-tap="{{reportResult}}"
+                                    data-matchId="{{id}}"
+                                    data-result="{{'WHITE'}}"/>
+                        </td>
+                        <td>
+                            <paper-button
+                                    raisedButton
+                                    label="vs"
+                                    on-tap="{{reportResult}}"
+                                    data-matchId="{{id}}"
+                                    data-result="{{'REMIS'}}"/>
+                        </td>
+                        <td>
+                            <paper-button
+                                    raisedButton
+                                    label="{{black.name}}"
+                                    on-tap="{{reportResult}}"
+                                    data-matchId="{{id}}"
+                                    data-result="{{'BLACK'}}"/>
+                        </td>
+                    <tr>
+                </template>
             </template>
         </table>
 
-        <paper-button raisedButton label="Neste runde" on-tap="{{nextRound}}"></paper-button>
 
+        <h3>Earlier rounds</h3>
+        <template repeat="{{rounds}}">
+            <h4>Round {{number}}</h4>
+            <table class="center">
+                <tr>
+                    <th>White</th>
+                    <th></th>
+                    <th>Black</th>
+                </tr>
+                <template repeat="{{matches}}">
+                    <tr>
+                        <td class="{{result == 'WHITE' ? 'inverse' : 'looser'}}">
+                            {{white.name}}
+                        </td>
+                        <td class="{{result == 'REMIS' ? 'inverse' : 'looser'}}">
+                            vs
+                        </td>
+                        <td class="{{result == 'BLACK' ? 'inverse' : 'looser'}}">
+                            {{black.name}}
+                        </td>
+                    <tr>
+                </template>
+            </table>
+        </template>
 
+        <paper-button raisedButton label="Next round" on-tap="{{nextRound}}"></paper-button>
         <core-ajax
                 auto="false"
                 url="/rest/tournament/{{tournamentId}}"
@@ -64,7 +87,8 @@
                 url="/rest/match/{{id}}/report/{{result}}"
                 handleAs="json"
                 id="report_result"
-                contentType="application/json"></core-ajax>
+                contentType="application/json"
+                on-core-response="{{update}}"></core-ajax>
 
         <core-ajax
                 auto="false"
@@ -73,21 +97,23 @@
                 handleAs="json"
                 id="next_round"
                 contentType="application/json"
-                on-core-response="{{roundCreated}}"></core-ajax>
+                on-core-response="{{update}}"></core-ajax>
 
     </template>
     <script>
         Polymer('current-matches', {
+            created: function () {
+                this.data = [];
+                this.rounds = [];
+            },
             handleResponse: function (e) {
                 console.log(e);
                 if (e.detail.response.currentRound) {
                     this.data = e.detail.response.currentRound.matches;
+                    this.rounds = e.detail.response.rounds;
                 }
             },
             reportResult: function (e, detail, sender) {
-                console.log(sender);
-                console.log(sender.getAttribute("data-matchId"));
-                console.log(sender.getAttribute("data-result"));
                 this.id = sender.getAttribute("data-matchId");
                 this.result = sender.getAttribute("data-result");
 
@@ -98,11 +124,7 @@
             },
             nextRound: function () {
                 this.$.next_round.go();
-            },
-            roundCreated: function () {
-                this.$.fetchMatches.go();
             }
-
         });
     </script>
 

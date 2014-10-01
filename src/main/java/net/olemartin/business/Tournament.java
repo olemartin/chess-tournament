@@ -71,22 +71,13 @@ public class Tournament {
             root.addProperty("id", tournament.id);
             root.addProperty("name", tournament.name);
             JsonArray playerArray = new JsonArray();
-            tournament.players.stream().sorted((p1, p2) -> {
-                double score1 = p1.getScore();
-                double score2 = p2.getScore();
-                if (score1 == score2) {
-                    return 0;
-                } else if (score1 > score2) {
-                    return -1;
-                } else {
-                    return 1;
-                }
-            }).forEach(player -> playerArray.add(playerSerializer.serialize(player, Player.class, context)));
+            tournament.players.stream().sorted().forEach(player -> playerArray.add(playerSerializer.serialize(player, Player.class, context)));
             root.add("players", playerArray);
 
-            JsonObject roundsObject = new JsonObject();
-            tournament.rounds.forEach(round -> roundsObject.add(String.valueOf(round.getNumber()), roundSerializer.serialize(round, Round.class, context)));
-            root.add("rounds", roundsObject);
+            JsonArray roundsArray = new JsonArray();
+            tournament.rounds.stream().sorted().forEach(
+                    round -> roundsArray.add(roundSerializer.serialize(round, Round.class, context)));
+            root.add("rounds", roundsArray);
             if (tournament.round != null) {
                 root.add("currentRound", roundSerializer.serialize(tournament.round, Round.class, context));
             }
