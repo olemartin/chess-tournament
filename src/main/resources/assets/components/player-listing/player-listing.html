@@ -27,15 +27,25 @@
 
         <table class="center">
             <tr>
-                <th>Player</th>
-                <th>Round results</th>
-                <th>Score</th>
+                <th style="padding-left:10px;">Rank</th>
+                <th style="padding-left:10px;">Player</th>
+                <th style="padding-left:10px;">Results</th>
+                <th style="padding-left:10px;">Score</th>
+                <th style="padding-left:10px;">Monrad-2</th>
+                <th style="padding-left:10px;">Monrad-1</th>
+                <th style="padding-left:10px;">Monrad</th>
+                <th style="padding-left:10px;">Berger</th>
             </tr>
-            <template repeat="{{data}}">
+            <template repeat="{{player, i in data}}">
                 <tr>
-                    <td>{{name}}</td>
-                    <td>{{roundResults}}</td>
-                    <td>{{score}}</td>
+                    <td style="padding-left:10px;text-align:left;">{{i+1}}.</td>
+                    <td style="padding-left:10px;text-align:left;">{{player.name}}</td>
+                    <td style="padding-left:10px;text-align:left;">{{player.roundResults}}</td>
+                    <td style="padding-left:10px;text-align:left;">{{player.score}}</td>
+                    <td style="padding-left:10px;text-align:left;">{{player.monrad2}}</td>
+                    <td style="padding-left:10px;text-align:left;">{{player.monrad1}}</td>
+                    <td style="padding-left:10px;text-align:left;">{{player.monrad}}</td>
+                    <td style="padding-left:10px;text-align:left;">{{player.berger}}</td>
                 </tr>
             </template>
         </table>

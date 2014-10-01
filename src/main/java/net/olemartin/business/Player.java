@@ -5,7 +5,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import org.neo4j.graphdb.Direction;
-import org.springframework.data.neo4j.annotation.*;
+import org.springframework.data.neo4j.annotation.Fetch;
+import org.springframework.data.neo4j.annotation.GraphId;
+import org.springframework.data.neo4j.annotation.NodeEntity;
+import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -35,6 +38,10 @@ public class Player implements Comparable<Player> {
     private Set<Player> playersMet = new HashSet<>();
 
     private volatile String roundResults;
+    private volatile double monrad2;
+    private volatile double monrad1;
+    private volatile double monrad;
+    private volatile double berger;
 
     private Player() {
         if (colors != null) {
@@ -52,34 +59,52 @@ public class Player implements Comparable<Player> {
         List<Player> allPlayers = new ArrayList<>();
         allPlayers.addAll(players.stream().collect(Collectors.toList()));
         Collections.sort(allPlayers);
+        final Set<Player> remis = new HashSet<>();
+        final Set<Player> won = new HashSet<>();
+
         roundResults = rounds.stream()
-                .sorted()
-                .map(round -> round.getMatches().stream().filter(new Predicate<Match>() {
-                    @Override
-                    public boolean test(Match match) {
-                        return match.getBlack().id.equals(id) || match.getWhite().id.equals(id);
-                    }
-                }).findFirst().get())
+                .sorted((o1, o2) -> o1.getNumber() - o2.getNumber())
+                .map(round -> round.getMatches().stream().filter(playerInMatch()).findFirst().get())
                 .map(match -> {
-                    Player opponent = match.getPlayers().stream().filter(new Predicate<Player>() {
-                        @Override
-                        public boolean test(Player player) {
-                            return !player.id.equals(id);
-                        }
-                    }).findFirst().get();
+                    Player opponent = match.getPlayers().stream().filter(playerInequalThisPlayer()).findFirst().get();
                     int position = allPlayers.indexOf(opponent) + 1;
-                    if (match.getResult() == Result.REMIS) {
-                        return "=" + position;
-                    } else if (match.getWinner().id.equals(id)) {
-                        return "+" + position;
+                    if (match.hasResult()) {
+                        if (match.getResult() == Result.REMIS) {
+                            remis.add(opponent);
+                            return "=" + position;
+                        } else if (match.getWinner().id.equals(id)) {
+                            won.add(opponent);
+                            return "+" + position;
+                        } else {
+                            return "-" + position;
+                        }
                     } else {
-                        return "-" + position;
+                        return "?" + position;
                     }
                 }).collect(Collectors.joining(", "));
 
+        LinkedList<Player> opponents = new LinkedList<>();
+        opponents.addAll(playersMet.stream().sorted().collect(Collectors.toList()));
+        if (opponents.size() >= 2) {
+            berger = sumOpponentPoints(won) + (sumOpponentPoints(remis) / 2.0);
+            monrad = sumOpponentPoints(opponents);
+            opponents.removeLast();
+            monrad1 = sumOpponentPoints(opponents);
+            opponents.removeLast();
+            monrad2 = sumOpponentPoints(opponents);
+        }
+    }
 
+    private Double sumOpponentPoints(Collection<Player> players) {
+        return players.stream().map(player -> player.score).reduce((d, d2) -> d + d2).orElse(0.0);
+    }
 
+    private Predicate<Player> playerInequalThisPlayer() {
+        return player -> !player.id.equals(id);
+    }
 
+    private Predicate<Match> playerInMatch() {
+        return match -> match.getBlack().id.equals(id) || match.getWhite().id.equals(id);
     }
 
     public void increaseScore(double score) {
@@ -162,11 +187,14 @@ public class Player implements Comparable<Player> {
         double score1 = getScore();
         double score2 = p2.getScore();
         if (score1 == score2) {
-            return 0;
-        } else if (score1 > score2) {
-            return -1;
+            int monrad2 = (int) (1000.0 * (p2.monrad2 - this.monrad2));
+            int monrad1 = (int) (1000.0 * (p2.monrad1 - this.monrad1));
+            int monrad = (int) (1000.0 * (p2.monrad - this.monrad));
+            int berger = (int) (1000.0 * (p2.berger - this.berger));
+
+            return monrad2 == 0 ? monrad1 == 0 ? monrad == 0 ? berger : monrad : monrad1 : monrad2;
         } else {
-            return 1;
+            return (int) (1000.0 * (score2 - score1));
         }
     }
 
@@ -195,6 +223,10 @@ public class Player implements Comparable<Player> {
             root.addProperty("name", player.name);
             root.addProperty("score", player.score);
             root.addProperty("roundResults", player.roundResults);
+            root.addProperty("monrad", player.monrad);
+            root.addProperty("monrad1", player.monrad1);
+            root.addProperty("monrad2", player.monrad2);
+            root.addProperty("berger", player.berger);
 
             return root;
         }

@@ -40,11 +40,14 @@
                 if (window.location.hash) {
                     this.tournamentId = window.location.hash.substring(1).split("!")[0];
                     this.tournamentName = decodeURI(window.location.hash.substring(1).split("!")[1]);
-                    this.selected = "matches";
+                    this.selected = "players";
                 } else {
                     this.tournamentId = {};
                     this.selected = "start";
                 }
+            },
+            ready : function() {
+                this.$.players.updatePlayers();
             },
             players_selected: function () {
                 this.selected = "players";
