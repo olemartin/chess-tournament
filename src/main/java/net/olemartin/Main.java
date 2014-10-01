@@ -21,7 +21,7 @@ public class Main extends Application<MonradConfiguration> {
     @Override
     public void initialize(Bootstrap<MonradConfiguration> bootstrap) {
         CacheBuilderSpec.disableCaching();
-        bootstrap.addBundle(new AssetsBundle("/assets/", "/"));
+        bootstrap.addBundle(new AssetsBundle("/assets/", "/", "index.html"));
     }
 
     @Override
