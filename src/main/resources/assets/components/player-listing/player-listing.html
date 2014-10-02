@@ -25,19 +25,24 @@
                 id="addPlayer"
                 contentType="application/json"
                 on-core-response="{{playerAdded}}"></core-ajax>
-
-        <x-websocket id="websocket" on-open="{{connected}}" on-message="{{handleMessage}}" url="ws://localhost:8080/push" json="true"></x-websocket>
-
-        <table class="center">
-            <tr>
-                <th style="padding-left:10px;">Rank</th>
-                <th style="padding-left:10px;">Player</th>
-                <th style="padding-left:10px;">Results</th>
-                <th style="padding-left:10px;">Score</th>
-                <th style="padding-left:10px;">Monrad-2</th>
-                <th style="padding-left:10px;">Monrad-1</th>
-                <th style="padding-left:10px;">Monrad</th>
-                <th style="padding-left:10px;">Berger</th>
+        
+        <x-websocket 
+                id="websocket" 
+                on-open="{{connected}}" 
+                on-message="{{handleMessage}}" 
+                url="ws://localhost:8080/push" 
+                json="true"></x-websocket>
+        
+        <table class="center" cellspacing="0">
+            <tr class="core-header" style="height: 40px;">
+                <th style="text-align:left; padding-left:10px;">Rank</th>
+                <th style="text-align:left; padding-left:10px;">Player</th>
+                <th style="text-align:left; padding-left:10px;">Results</th>
+                <th style="text-align:left; padding-left:10px;">Score</th>
+                <th style="text-align:left; padding-left:10px;">Monrad-2</th>
+                <th style="text-align:left; padding-left:10px;">Monrad-1</th>
+                <th style="text-align:left; padding-left:10px;">Monrad</th>
+                <th style="text-align:left; padding-left:10px;">Berger</th>
             </tr>
             <template repeat="{{player, i in data}}">
                 <tr>
@@ -53,7 +58,7 @@
             </template>
         </table>
 
-        <paper-input label="Player's name" value="{{playerName}}" id="playerName"></paper-input>
+        <paper-input label="New player's name" value="{{playerName}}" id="playerName"></paper-input>
         <paper-button raisedButton label="Send" id="send" on-tap="{{doSend}}"/>
 
     </template>

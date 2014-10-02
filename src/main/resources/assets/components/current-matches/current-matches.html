@@ -5,9 +5,9 @@
 <polymer-element name="current-matches" vertical layout attributes="tournamentId tournamentName">
     <template>
 
-        <h1>{{tournamentName}}' matches</h1>
-        <table class="center">
-            <tr>
+        <h1>{{tournamentName}}'s matches</h1>
+        <table class="center" cellspacing="0">
+            <tr class="core-header" style="height: 40px;">
                 <th>White</th>
                 <th></th>
                 <th>Black</th>
@@ -15,8 +15,9 @@
             <template repeat="{{data}}">
                 <template if="{{!result}}">
                     <tr>
-                        <td>
+                        <td style="padding-left: 5px;padding-right: 5px; text-align: center;">
                             <paper-button
+                                    style="width:100%;"
                                     raisedButton
                                     label="{{white.name}}"
                                     on-tap="{{reportResult}}"
@@ -31,9 +32,10 @@
                                     data-matchId="{{id}}"
                                     data-result="{{'REMIS'}}"/>
                         </td>
-                        <td>
+                        <td style="padding-left: 5px;padding-right: 5px; text-align: center;">
                             <paper-button
                                     raisedButton
+                                    style="width:100%;"
                                     label="{{black.name}}"
                                     on-tap="{{reportResult}}"
                                     data-matchId="{{id}}"
@@ -45,11 +47,11 @@
         </table>
 
 
-        <h3>Earlier rounds</h3>
+        <h2>Earlier rounds</h2>
         <template repeat="{{rounds}}">
-            <h4>Round {{number}}</h4>
-            <table class="center">
-                <tr>
+            <h3>Round {{number}}</h3>
+            <table class="center" cellspacing="0">
+                <tr class="core-header" style="height: 40px;">
                     <th>White</th>
                     <th></th>
                     <th>Black</th>
