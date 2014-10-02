@@ -2,10 +2,8 @@ package net.olemartin.service;
 
 import net.olemartin.business.Player;
 import net.olemartin.business.Tournament;
-import net.olemartin.database.PlayerRepository;
 import net.olemartin.database.TournamentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,14 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class TournamentService {
 
     private final TournamentRepository tournamentRepository;
-    private final PlayerRepository playerRepository;
-    private final Neo4jTemplate neo4jTemplate;
 
     @Autowired
-    public TournamentService(TournamentRepository tournamentRepository, PlayerRepository playerRepository, @SuppressWarnings("SpringJavaAutowiringInspection") Neo4jTemplate neo4jTemplate) {
+    public TournamentService(TournamentRepository tournamentRepository) {
         this.tournamentRepository = tournamentRepository;
-        this.playerRepository = playerRepository;
-        this.neo4jTemplate = neo4jTemplate;
     }
 
     public Tournament save(Tournament tournament) {

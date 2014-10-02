@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/core-list/core-list.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../x-websocket/x-websocket.html">
 
 
 <polymer-element name="player-listing" vertical layout attributes="tournamentId tournamentName">
@@ -24,7 +25,14 @@
                 id="addPlayer"
                 contentType="application/json"
                 on-core-response="{{playerAdded}}"></core-ajax>
-
+        
+        <x-websocket 
+                id="websocket" 
+                on-open="{{connected}}" 
+                on-message="{{handleMessage}}" 
+                url="ws://localhost:8080/push" 
+                json="true"></x-websocket>
+        
         <table class="center" cellspacing="0">
             <tr class="core-header" style="height: 40px;">
                 <th style="text-align:left; padding-left:10px;">Rank</th>
@@ -69,6 +77,13 @@
             playerAdded: function (e) {
                 this.playerName = '';
                 this.$.updatePlayers.go();
+            },
+            handleMessage: function() {
+                console.log("Got message!");
+                this.$.updatePlayers.go();
+            },
+            connected: function() {
+                this.$.websocket.send("Hello");
             }
         });
     </script>
