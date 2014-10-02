@@ -3,9 +3,12 @@ package net.olemartin.resources;
 import net.olemartin.business.Match;
 import net.olemartin.business.Player;
 import net.olemartin.business.Tournament;
+import net.olemartin.event.TournamentUpdated;
 import net.olemartin.service.MatchService;
 import net.olemartin.service.TournamentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -18,11 +21,12 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Service
 @Resource
-public class TournamentResource {
+public class TournamentResource implements ApplicationEventPublisherAware {
 
 
     private final TournamentService tournamentService;
     private MatchService matchService;
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
     public TournamentResource(TournamentService tournamentService, MatchService matchService) {
@@ -39,6 +43,7 @@ public class TournamentResource {
     @POST
     @Path("{tournamentId}/add")
     public Player addPlayerToTournament(@PathParam("tournamentId")Long tournamentId, Player player) {
+        applicationEventPublisher.publishEvent(new TournamentUpdated(this));
         tournamentService.addPlayer(tournamentId, player);
         return player;
     }
@@ -52,6 +57,13 @@ public class TournamentResource {
     @POST
     @Path("{tournamentId}/next-round")
     public List<Match> nextRound(@PathParam("tournamentId")Long tournamentId) {
-        return matchService.nextRound(tournamentId);
+        List<Match> matches = matchService.nextRound(tournamentId);
+        applicationEventPublisher.publishEvent(new TournamentUpdated(this));
+        return matches;
+    }
+
+    @Override
+    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 }

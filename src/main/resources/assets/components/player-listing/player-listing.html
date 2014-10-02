@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/core-list/core-list.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../x-websocket/x-websocket.html">
 
 
 <polymer-element name="player-listing" vertical layout attributes="tournamentId tournamentName">
@@ -24,6 +25,8 @@
                 id="addPlayer"
                 contentType="application/json"
                 on-core-response="{{playerAdded}}"></core-ajax>
+
+        <x-websocket on-message="{{handleMessage}}" url="/rest/tournament/{{tournamentId}}event" json="true"/>
 
         <table class="center">
             <tr>
@@ -68,6 +71,9 @@
             },
             playerAdded: function (e) {
                 this.playerName = '';
+                this.$.updatePlayers.go();
+            },
+            handleMessage: function() {
                 this.$.updatePlayers.go();
             }
         });

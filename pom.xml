@@ -13,6 +13,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.springframework-version>4.0.7.RELEASE</org.springframework-version>
+        <atmosphere-version>2.2.0</atmosphere-version>
+        <dropwizard.version>0.7.1</dropwizard.version>
     </properties>
 
     <dependencies>
@@ -25,6 +27,12 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <version>${org.springframework-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-event</artifactId>
+            <version>4.0.4.RELEASE</version>
         </dependency>
 
         <dependency>
@@ -57,8 +65,14 @@
         <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-assets</artifactId>
-            <version>0.7.0</version>
+            <version>${dropwizard.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-server</artifactId>
+            <version>9.0.7.v20131107</version>
+        </dependency>
+
     </dependencies>
 
     <build>
