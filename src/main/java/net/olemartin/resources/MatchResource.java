@@ -2,11 +2,9 @@ package net.olemartin.resources;
 
 import net.olemartin.business.Match;
 import net.olemartin.business.Result;
-import net.olemartin.event.TournamentUpdated;
+import net.olemartin.push.ChangeEndpoint;
 import net.olemartin.service.MatchService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -15,15 +13,17 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
+import java.util.HashSet;
+import java.util.Set;
 
 @Path("/match")
 @Consumes(MediaType.APPLICATION_JSON)
 @Service
 @Resource
-public class MatchResource implements ApplicationEventPublisherAware {
+public class MatchResource {
 
     private final MatchService matchService;
-    private ApplicationEventPublisher applicationEventPublisher;
+    private Set<ChangeEndpoint> endpoints = new HashSet<>();
 
     @Autowired
     public MatchResource(MatchService matchService) {
@@ -34,12 +34,17 @@ public class MatchResource implements ApplicationEventPublisherAware {
     @POST
     public Match reportResult(@PathParam("matchId") long matchId, @PathParam("result") String result) {
         Match match =  matchService.reportResult(matchId, Result.valueOf(result));
-        applicationEventPublisher.publishEvent(new TournamentUpdated(this));
+        sendNotification("new result");
         return match;
     }
 
-    @Override
-    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-        this.applicationEventPublisher = applicationEventPublisher;
+    public void registerEndpoint(ChangeEndpoint changeEndpoint) {
+        endpoints.add(changeEndpoint);
+    }
+
+    private void sendNotification(String message) {
+        for (ChangeEndpoint endpoint : endpoints) {
+            endpoint.sendPush(message);
+        }
     }
 }

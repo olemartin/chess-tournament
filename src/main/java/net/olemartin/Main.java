@@ -36,11 +36,7 @@ public class Main extends Application<MonradConfiguration> {
         environment.jersey().register(GsonJSONProvider.class);
         environment.jersey().setUrlPattern("/rest/*");
 
-        final ServletRegistration.Dynamic websocket = environment.servlets().addServlet(
-                "websocket",
-                new ChangeNotification()
-        );
-
+        ServletRegistration.Dynamic websocket = environment.servlets().addServlet("websocket", context.getBean(ChangeNotification.class));
         websocket.setAsyncSupported(true);
         websocket.addMapping("/push/*");
 

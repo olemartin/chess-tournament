@@ -26,7 +26,7 @@
                 contentType="application/json"
                 on-core-response="{{playerAdded}}"></core-ajax>
 
-        <x-websocket on-message="{{handleMessage}}" url="/rest/tournament/{{tournamentId}}event" json="true"/>
+        <x-websocket id="websocket" on-open="{{connected}}" on-message="{{handleMessage}}" url="ws://localhost:8080/push" json="true"></x-websocket>
 
         <table class="center">
             <tr>
@@ -74,7 +74,11 @@
                 this.$.updatePlayers.go();
             },
             handleMessage: function() {
+                console.log("Got message!");
                 this.$.updatePlayers.go();
+            },
+            connected: function() {
+                this.$.websocket.send("Hello");
             }
         });
     </script>
