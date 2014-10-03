@@ -12,7 +12,7 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import java.lang.reflect.Type;
 import java.util.*;
-import java.util.function.Predicate;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static net.olemartin.business.Color.BLACK;
@@ -25,18 +25,15 @@ public class Player implements Comparable<Player> {
     private Long id;
 
     private String name;
-
     private double score;
-
     private StringBuffer colors;
-
-    private volatile LinkedList<Color> matches = new LinkedList<>();
-    private volatile Player newOpponent;
 
     @RelatedTo(type = "MET", direction = Direction.BOTH)
     @Fetch
     private Set<Player> playersMet = new HashSet<>();
 
+    private volatile LinkedList<Color> matches = new LinkedList<>();
+    private volatile Player newOpponent;
     private volatile String roundResults;
     private volatile double monrad2;
     private volatile double monrad1;
@@ -55,33 +52,22 @@ public class Player implements Comparable<Player> {
         this.name = name;
     }
 
-    public void updateRoundScore(Set<Player> players, Set<Round> rounds) {
-        List<Player> allPlayers = new ArrayList<>();
-        allPlayers.addAll(players.stream().collect(Collectors.toList()));
-        Collections.sort(allPlayers);
+    public void setMonradEtc(Set<Round> rounds) {
         final Set<Player> remis = new HashSet<>();
         final Set<Player> won = new HashSet<>();
 
-        roundResults = rounds.stream()
-                .sorted((o1, o2) -> o1.getNumber() - o2.getNumber())
-                .map(round -> round.getMatches().stream().filter(playerInMatch()).findFirst().get())
-                .map(match -> {
-                    Player opponent = match.getPlayers().stream().filter(playerInequalThisPlayer()).findFirst().get();
-                    int position = allPlayers.indexOf(opponent) + 1;
+        rounds.stream()
+                .map(matchesPlayerPlayed())
+                .forEach(match -> {
+                    Player opponent = getOpponent(match);
                     if (match.hasResult()) {
                         if (match.getResult() == Result.REMIS) {
                             remis.add(opponent);
-                            return "=" + position;
                         } else if (match.getWinner().id.equals(id)) {
                             won.add(opponent);
-                            return "+" + position;
-                        } else {
-                            return "-" + position;
                         }
-                    } else {
-                        return "?" + position;
                     }
-                }).collect(Collectors.joining(", "));
+                });
 
         LinkedList<Player> opponents = new LinkedList<>();
         opponents.addAll(playersMet.stream().sorted().collect(Collectors.toList()));
@@ -95,16 +81,48 @@ public class Player implements Comparable<Player> {
         }
     }
 
+    public void setRoundScore(Set<Player> players, Set<Round> rounds) {
+
+        List<Player> allPlayers = new ArrayList<>();
+        allPlayers.addAll(players.stream().collect(Collectors.toList()));
+        Collections.sort(allPlayers);
+
+        roundResults = rounds.stream()
+                .sorted((r1, r2) -> r1.getNumber() - r2.getNumber())
+                .map(matchesPlayerPlayed())
+                .map(match -> {
+                    Player opponent = getOpponent(match);
+                    int position = allPlayers.indexOf(opponent) + 1;
+                    if (match.hasResult()) {
+                        if (match.getResult() == Result.REMIS) {
+                            return "=" + position;
+                        } else if (match.getWinner().id.equals(id)) {
+                            return "+" + position;
+                        } else {
+                            return "-" + position;
+                        }
+                    } else {
+                        return "?" + position;
+                    }
+                }).collect(Collectors.joining(", "));
+    }
+
+    private Function<Round, Match> matchesPlayerPlayed() {
+        return round -> round.getMatches()
+                .stream()
+                .filter(match -> match.getBlack().id.equals(id) || match.getWhite().id.equals(id)).findFirst().get();
+    }
+
+    private Player getOpponent(Match match) {
+        return match.getPlayers()
+                .stream()
+                .filter(player -> !player.id.equals(id)).findFirst().get();
+    }
+
     private Double sumOpponentPoints(Collection<Player> players) {
-        return players.stream().map(player -> player.score).reduce((d, d2) -> d + d2).orElse(0.0);
-    }
-
-    private Predicate<Player> playerInequalThisPlayer() {
-        return player -> !player.id.equals(id);
-    }
-
-    private Predicate<Match> playerInMatch() {
-        return match -> match.getBlack().id.equals(id) || match.getWhite().id.equals(id);
+        return players
+                .stream()
+                .map(player -> player.score).reduce((d, d2) -> d + d2).orElse(0.0);
     }
 
     public void increaseScore(double score) {
@@ -205,9 +223,8 @@ public class Player implements Comparable<Player> {
 
         Player player = (Player) o;
 
-        if (id != null ? !id.equals(player.id) : player.id != null) return false;
+        return !(id != null ? !id.equals(player.id) : player.id != null);
 
-        return true;
     }
 
     @Override

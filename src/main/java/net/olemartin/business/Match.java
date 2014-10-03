@@ -20,6 +20,8 @@ public class Match implements Comparable<Match>{
     @GraphId
     private Long id;
 
+    private Result result;
+    
     @RelatedTo(type = "WHITE", direction = Direction.OUTGOING)
     @Fetch
     private Player white;
@@ -39,9 +41,6 @@ public class Match implements Comparable<Match>{
     @RelatedTo(type = "PLAYER", direction = Direction.OUTGOING)
     @Fetch
     private Set<Player> players = new HashSet<>();
-
-    private Result result;
-
 
     private Match() {
     }

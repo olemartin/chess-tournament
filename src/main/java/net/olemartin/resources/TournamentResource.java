@@ -24,8 +24,8 @@ import java.util.Set;
 public class TournamentResource {
 
     private final TournamentService tournamentService;
-    private MatchService matchService;
-    private Set<ChangeEndpoint> endpoints = new HashSet<>();
+    private final MatchService matchService;
+    private final Set<ChangeEndpoint> endpoints = new HashSet<>();
 
     @Autowired
     public TournamentResource(TournamentService tournamentService, MatchService matchService) {

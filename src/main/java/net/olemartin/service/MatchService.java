@@ -15,8 +15,8 @@ import java.util.List;
 @Transactional
 public class MatchService {
 
-    private MatchRepository matchRepository;
-    private TournamentRepository tournamentRepository;
+    private final MatchRepository matchRepository;
+    private final TournamentRepository tournamentRepository;
     private final RoundRepository roundRepository;
     private final PlayerRepository playerRepository;
 

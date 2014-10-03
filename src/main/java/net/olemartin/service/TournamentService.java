@@ -24,7 +24,8 @@ public class TournamentService {
 
     public Tournament retrieve(Long tournamentId) {
         Tournament tournament = tournamentRepository.findOne(tournamentId);
-        tournament.getPlayers().forEach(player -> player.updateRoundScore(tournament.getPlayers(), tournament.getRounds()));
+        tournament.getPlayers().forEach(player -> player.setMonradEtc(tournament.getRounds()));
+        tournament.getPlayers().forEach(player -> player.setRoundScore(tournament.getPlayers(), tournament.getRounds()));
         return tournament;
     }
 

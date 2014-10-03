@@ -13,7 +13,7 @@ public class ChangeEndpoint {
     private Session session;
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String s) throws IOException {
+    public void onMessage(Session session, String s) {
         this.session = session;
         SpringContext.getTournamentResource().registerEndpoint(this);
         SpringContext.getMatchResource().registerEndpoint(this);

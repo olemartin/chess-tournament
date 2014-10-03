@@ -8,10 +8,8 @@ import static net.olemartin.business.Color.WHITE;
 
 public class Monrad {
 
-    private Randomizer random;
-
-    private List<Player> players = new ArrayList<>();
-
+    private final Randomizer random;
+    private final List<Player> players = new ArrayList<>();
     private Set<String> triedCombinations = new HashSet<>();
 
     public Monrad(Randomizer random, Collection<Player> players) {
