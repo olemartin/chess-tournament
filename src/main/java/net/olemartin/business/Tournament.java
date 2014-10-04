@@ -1,7 +1,6 @@
 package net.olemartin.business;
 
 import com.google.gson.*;
-import com.google.gson.annotations.Expose;
 import org.neo4j.graphdb.Direction;
 import org.springframework.data.neo4j.annotation.*;
 
@@ -12,17 +11,13 @@ import java.util.Set;
 public class Tournament {
 
     @GraphId
-    @Expose
     private Long id;
 
-    @Expose
     private String name;
 
-    @Expose
     private int currentRound;
 
     @RelatedTo(type = "PLAYS_IN", direction = Direction.INCOMING)
-    @Expose
     @Fetch
     private Set<Player> players;
 

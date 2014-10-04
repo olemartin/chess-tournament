@@ -1,0 +1,46 @@
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html"/>
+
+
+<polymer-element name="tournament-listing" vertical layout attributes="tournamentId tournamentName">
+    <template>
+        <h1>Registered tournaments</h1>
+
+        <template repeat="{{data}}">
+            <paper-button
+                    link
+                    class="colored"
+                    label="{{name}}"
+                    on-tap="{{tournamentSelected}}"
+                    data-id="{{id}}"
+                    data-name="{{name}}"/>
+
+        </template>
+
+        <new-tournament id="new_tournament" cross-fade
+                        on-tournament_created="{{tournamentCreated}}"/>
+
+
+        <core-ajax
+                auto="true"
+                url="/rest/tournament/list"
+                handleAs="json"
+                id="listTournaments"
+                contentType="application/json"
+                on-core-response="{{handleResponse}}">
+        </core-ajax>
+    </template>
+    <script>
+        Polymer('tournament-listing', {
+            handleResponse: function (e) {
+                this.data = e.detail.response;
+            },
+            tournamentSelected: function(e, detail, sender) {
+                this.fire('tournament_changed', {id: sender.getAttribute("data-id"), name: sender.getAttribute("data-name")});
+            },
+            tournamentCreated: function() {
+                this.$.listTournaments.go();
+            }
+        });
+    </script>
+</polymer-element>

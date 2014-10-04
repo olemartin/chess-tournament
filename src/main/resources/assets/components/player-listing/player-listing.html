@@ -1,65 +1,60 @@
 <link rel="import" href="../../bower_components/core-list/core-list.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../../bower_components/web-loader/src/web-loader.html">
 <link rel="import" href="../x-websocket/x-websocket.html">
 
 
-<polymer-element name="player-listing" vertical layout attributes="tournamentId tournamentName">
+<polymer-element name="player-listing" vertical layout attributes="tournamentId tournamentName large">
     <template>
-        <h1>{{tournamentName}}'s players</h1>
-
         <core-ajax
                 auto="false"
-                url="/rest/tournament/{{tournamentId}}"
+                url="/rest/tournament/{{tournamentId}}/players"
                 handleAs="json"
                 id="updatePlayers"
                 contentType="application/json"
                 on-core-response="{{handleResponse}}">
         </core-ajax>
 
-        <core-ajax
-                auto="false"
-                method="POST"
-                url="/rest/tournament/{{tournamentId}}/add"
-                body='{"name":"{{playerName}}", "score":"0.0"}'
-                handleAs="json"
-                id="addPlayer"
-                contentType="application/json"
-                on-core-response="{{playerAdded}}"></core-ajax>
-        
-        <x-websocket 
-                id="websocket" 
-                on-open="{{connected}}" 
-                on-message="{{handleMessage}}" 
-                url="ws://localhost:8080/push" 
+        <x-websocket
+                id="websocket"
+                on-open="{{connected}}"
+                on-message="{{handleMessage}}"
+                url="ws://localhost:8080/push"
                 json="true"></x-websocket>
-        
-        <table class="center" cellspacing="0">
+
+        <table class="center" cellspacing="0" id="table" style="display: none;">
             <tr class="core-header" style="height: 40px;">
                 <th style="text-align:left; padding-left:10px;">Rank</th>
                 <th style="text-align:left; padding-left:10px;">Player</th>
-                <th style="text-align:left; padding-left:10px;">Results</th>
+                <template if="{{large}}">
+                    <th style="text-align:left; padding-left:10px;">Results</th>
+                </template>
                 <th style="text-align:left; padding-left:10px;">Score</th>
-                <th style="text-align:left; padding-left:10px;">Monrad-2</th>
-                <th style="text-align:left; padding-left:10px;">Monrad-1</th>
-                <th style="text-align:left; padding-left:10px;">Monrad</th>
-                <th style="text-align:left; padding-left:10px;">Berger</th>
+                <template if="{{large}}">
+                    <th style="text-align:left; padding-left:10px;">Monrad-2</th>
+                    <th style="text-align:left; padding-left:10px;">Monrad-1</th>
+                    <th style="text-align:left; padding-left:10px;">Monrad</th>
+                    <th style="text-align:left; padding-left:10px;">Berger</th>
+                </template>
             </tr>
             <template repeat="{{player, i in data}}">
                 <tr>
                     <td style="padding-left:10px;text-align:left;">{{i+1}}.</td>
                     <td style="padding-left:10px;text-align:left;">{{player.name}}</td>
-                    <td style="padding-left:10px;text-align:left;">{{player.roundResults}}</td>
+                    <template if="{{large}}">
+                        <td style="padding-left:10px;text-align:left;">{{player.roundResults}}</td>
+                    </template>
                     <td style="padding-left:10px;text-align:left;">{{player.score}}</td>
-                    <td style="padding-left:10px;text-align:left;">{{player.monrad2}}</td>
-                    <td style="padding-left:10px;text-align:left;">{{player.monrad1}}</td>
-                    <td style="padding-left:10px;text-align:left;">{{player.monrad}}</td>
-                    <td style="padding-left:10px;text-align:left;">{{player.berger}}</td>
+                    <template if="{{large}}">
+                        <td style="padding-left:10px;text-align:left;">{{player.monrad2}}</td>
+                        <td style="padding-left:10px;text-align:left;">{{player.monrad1}}</td>
+                        <td style="padding-left:10px;text-align:left;">{{player.monrad}}</td>
+                        <td style="padding-left:10px;text-align:left;">{{player.berger}}</td>
+                    </template>
                 </tr>
             </template>
         </table>
-
-        <paper-input label="New player's name" value="{{playerName}}" id="playerName"></paper-input>
-        <paper-button raisedButton label="Send" id="send" on-tap="{{doSend}}"/>
+        <web-loader id="loader" display="block"/>
 
     </template>
     <script>
@@ -69,19 +64,15 @@
             },
             handleResponse: function (e) {
                 console.log(e);
-                this.data = e.detail.response.players;
+                this.$.loader.display='none';
+                this.data = e.detail.response;
+                this.$.table.style.display='block';
             },
-            doSend: function (e) {
-                this.$.addPlayer.go();
-            },
-            playerAdded: function (e) {
-                this.playerName = '';
-            },
-            handleMessage: function() {
+            handleMessage: function () {
                 console.log("Got message!");
                 this.$.updatePlayers.go();
             },
-            connected: function() {
+            connected: function () {
                 this.$.websocket.send("Hello");
             }
         });

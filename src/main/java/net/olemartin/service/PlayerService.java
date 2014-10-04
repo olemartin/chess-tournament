@@ -1,7 +1,7 @@
 package net.olemartin.service;
 
 import net.olemartin.business.Player;
-import net.olemartin.database.PlayerRepository;
+import net.olemartin.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.conversion.Result;
 import org.springframework.stereotype.Service;

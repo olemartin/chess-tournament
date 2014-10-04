@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import org.neo4j.graphdb.Direction;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
@@ -12,9 +13,9 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import java.lang.reflect.Type;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 import static net.olemartin.business.Color.BLACK;
 import static net.olemartin.business.Color.WHITE;
 
@@ -32,19 +33,26 @@ public class Player implements Comparable<Player> {
     @Fetch
     private Set<Player> playersMet = new HashSet<>();
 
-    private volatile LinkedList<Color> matches = new LinkedList<>();
-    private volatile Player newOpponent;
-    private volatile String roundResults;
-    private volatile double monrad2;
-    private volatile double monrad1;
-    private volatile double monrad;
-    private volatile double berger;
+    @Transient
+    private LinkedList<Color> matches = new LinkedList<>();
+    @Transient
+    private Player newOpponent;
+    @Transient
+    private String roundResults;
+    @Transient
+    private double monrad2;
+    @Transient
+    private double monrad1;
+    @Transient
+    private double monrad;
+    @Transient
+    private double berger;
 
     private Player() {
         if (colors != null) {
             matches = new LinkedList<>(Arrays.asList(colors.toString().split(":"))
                     .stream().map(s -> Color.valueOf(s))
-                    .collect(Collectors.toList()));
+                    .collect(toList()));
         }
     }
 
@@ -52,27 +60,14 @@ public class Player implements Comparable<Player> {
         this.name = name;
     }
 
-    public void setMonradEtc(Set<Round> rounds) {
-        final Set<Player> remis = new HashSet<>();
-        final Set<Player> won = new HashSet<>();
+    public void setMonradAndBerger(Iterable<Player> wonIterable, Iterable<Player> remisIterable) {
 
-        rounds.stream()
-                .map(matchesPlayerPlayed())
-                .forEach(match -> {
-                    Player opponent = getOpponent(match);
-                    if (match.hasResult()) {
-                        if (match.getResult() == Result.REMIS) {
-                            remis.add(opponent);
-                        } else if (match.getWinner().id.equals(id)) {
-                            won.add(opponent);
-                        }
-                    }
-                });
+        setBerger(wonIterable, remisIterable);
 
-        LinkedList<Player> opponents = new LinkedList<>();
-        opponents.addAll(playersMet.stream().sorted().collect(Collectors.toList()));
+        LinkedList<Player> opponents = getOpponents();
+
         if (opponents.size() >= 2) {
-            berger = sumOpponentPoints(won) + (sumOpponentPoints(remis) / 2.0);
+
             monrad = sumOpponentPoints(opponents);
             opponents.removeLast();
             monrad1 = sumOpponentPoints(opponents);
@@ -81,36 +76,45 @@ public class Player implements Comparable<Player> {
         }
     }
 
-    public void setRoundScore(Set<Player> players, Set<Round> rounds) {
-
-        List<Player> allPlayers = new ArrayList<>();
-        allPlayers.addAll(players.stream().collect(Collectors.toList()));
-        Collections.sort(allPlayers);
-
-        roundResults = rounds.stream()
-                .sorted((r1, r2) -> r1.getNumber() - r2.getNumber())
-                .map(matchesPlayerPlayed())
-                .map(match -> {
-                    Player opponent = getOpponent(match);
-                    int position = allPlayers.indexOf(opponent) + 1;
-                    if (match.hasResult()) {
-                        if (match.getResult() == Result.REMIS) {
-                            return "=" + position;
-                        } else if (match.getWinner().id.equals(id)) {
-                            return "+" + position;
-                        } else {
-                            return "-" + position;
-                        }
-                    } else {
-                        return "?" + position;
-                    }
-                }).collect(Collectors.joining(", "));
+    private LinkedList<Player> getOpponents() {
+        LinkedList<Player> opponents = new LinkedList<>();
+        opponents.addAll(playersMet.stream().sorted().collect(toList()));
+        return opponents;
     }
 
-    private Function<Round, Match> matchesPlayerPlayed() {
-        return round -> round.getMatches()
-                .stream()
-                .filter(match -> match.getBlack().id.equals(id) || match.getWhite().id.equals(id)).findFirst().get();
+    private void setBerger(Iterable<Player> wonIterable, Iterable<Player> remisIterable) {
+        final Set<Player> remis = new HashSet<>();
+        final Set<Player> won = new HashSet<>();
+        remisIterable.forEach(remis::add);
+        wonIterable.forEach(won::add);
+
+        berger = sumOpponentPoints(won) + (sumOpponentPoints(remis) / 2.0);
+    }
+
+    public void setRoundScore(Iterable<Match> matches, Set<Player> players) {
+
+        List<Player> allPlayers = new ArrayList<>();
+        allPlayers.addAll(players.stream().collect(toList()));
+        Collections.sort(allPlayers);
+
+        List<String> result = new ArrayList<>();
+
+        matches.forEach(match -> {
+            Player opponent = getOpponent(match);
+            int position = allPlayers.indexOf(opponent) + 1;
+            if (match.hasResult()) {
+                if (match.getResult() == Result.REMIS) {
+                    result.add("=" + position);
+                } else if (match.getWinner().id.equals(id)) {
+                    result.add("+" + position);
+                } else {
+                    result.add("-" + position);
+                }
+            } else {
+                result.add("?" + position);
+            }
+        });
+        roundResults = result.stream().collect(joining(", "));
     }
 
     private Player getOpponent(Match match) {
@@ -189,7 +193,7 @@ public class Player implements Comparable<Player> {
     public void removeLastOpponent() {
         playersMet.remove(newOpponent);
         matches.removeLast();
-        colors = new StringBuffer(matches.stream().map(Enum::name).collect(Collectors.joining(":")));
+        colors = new StringBuffer(matches.stream().map(Enum::name).collect(joining(":")));
     }
 
     public Set<Player> hasMet() {
@@ -230,6 +234,10 @@ public class Player implements Comparable<Player> {
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public static class PlayerSerializer implements JsonSerializer<Player> {

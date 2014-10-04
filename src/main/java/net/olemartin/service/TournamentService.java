@@ -1,21 +1,35 @@
 package net.olemartin.service;
 
+import net.olemartin.business.Match;
 import net.olemartin.business.Player;
+import net.olemartin.business.Round;
 import net.olemartin.business.Tournament;
-import net.olemartin.database.TournamentRepository;
+import net.olemartin.repository.MatchRepository;
+import net.olemartin.repository.PlayerRepository;
+import net.olemartin.repository.TournamentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.neo4j.conversion.Result;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class TournamentService {
 
     private final TournamentRepository tournamentRepository;
+    private MatchRepository matchRepository;
+    private PlayerRepository playerRepository;
 
     @Autowired
-    public TournamentService(TournamentRepository tournamentRepository) {
+    public TournamentService(TournamentRepository tournamentRepository, MatchRepository matchRepository, PlayerRepository playerRepository) {
         this.tournamentRepository = tournamentRepository;
+        this.matchRepository = matchRepository;
+        this.playerRepository = playerRepository;
     }
 
     public Tournament save(Tournament tournament) {
@@ -24,8 +38,16 @@ public class TournamentService {
 
     public Tournament retrieve(Long tournamentId) {
         Tournament tournament = tournamentRepository.findOne(tournamentId);
-        tournament.getPlayers().forEach(player -> player.setMonradEtc(tournament.getRounds()));
-        tournament.getPlayers().forEach(player -> player.setRoundScore(tournament.getPlayers(), tournament.getRounds()));
+        tournament.getPlayers().forEach(player -> {
+            player.setMonradAndBerger(
+                    playerRepository.findOpponentsPlayerBeat(player.getId()),
+                    playerRepository.findOpponentsRemis(player.getId()));
+        });
+        tournament.getPlayers().forEach(player -> {
+            player.setRoundScore(
+                    matchRepository.findMatchesPlayerPlayed(player.getId()),
+                    tournament.getPlayers());
+        });
         return tournament;
     }
 
@@ -33,5 +55,27 @@ public class TournamentService {
         Tournament tournament = retrieve(tournamentId);
         tournament.addPlayer(player);
         save(tournament);
+    }
+
+    public List<Tournament> retrieveAll() {
+        Result<Tournament> tournaments = tournamentRepository.query("MATCH (tournament:Tournament) RETURN tournament", new HashMap<>());
+        List<Tournament> list = new ArrayList<>();
+        for (Tournament tournament : tournaments) {
+            list.add(tournament);
+        }
+        return list;
+    }
+
+    public List<Match> retrieveCurrentRoundsMatches(Long tournamentId) {
+        Result<Match> matches = matchRepository.retrieveCurrentRoundsMatches(tournamentId);
+        List<Match> list = new ArrayList<>();
+        for (Match match : matches) {
+            list.add(match);
+        }
+        return list;
+    }
+
+    public List<Round> retrieveRounds(Long tournamentId) {
+        return tournamentRepository.findOne(tournamentId).getRounds().stream().sorted().collect(Collectors.toList());
     }
 }

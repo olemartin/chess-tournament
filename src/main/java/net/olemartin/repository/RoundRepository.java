@@ -1,4 +1,4 @@
-package net.olemartin.database;
+package net.olemartin.repository;
 
 import net.olemartin.business.Round;
 import org.springframework.data.neo4j.repository.GraphRepository;

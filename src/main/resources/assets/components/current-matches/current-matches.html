@@ -6,8 +6,8 @@
     <template>
 
         <h1>{{tournamentName}}'s matches</h1>
-        <table class="center" cellspacing="0">
-            <tr class="core-header" style="height: 40px;">
+        <table class="center" cellspacing="0" id="current_round" style="display: none;">
+            <tr class="core-header rounds" style="height: 40px;">
                 <th>White</th>
                 <th></th>
                 <th>Black</th>
@@ -50,7 +50,7 @@
         <h2>Earlier rounds</h2>
         <template repeat="{{rounds}}">
             <h3>Round {{number}}</h3>
-            <table class="center" cellspacing="0">
+            <table class="center rounds" cellspacing="0">
                 <tr class="core-header" style="height: 40px;">
                     <th>White</th>
                     <th></th>
@@ -72,16 +72,29 @@
             </table>
         </template>
 
-        <paper-button raisedButton label="Next round" on-tap="{{nextRound}}"></paper-button>
+        <div>
+            <paper-button primary
+                          raisedButton
+                          label="Next round"
+                          on-tap="{{nextRound}}"/>
+        </div>
         <core-ajax
                 auto="false"
-                url="/rest/tournament/{{tournamentId}}"
+                url="/rest/tournament/{{tournamentId}}/matches"
                 handleAs="json"
                 id="fetchMatches"
                 contentType="application/json"
-                on-core-response="{{handleResponse}}">
+                on-core-response="{{handleMatches}}">
         </core-ajax>
 
+        <core-ajax
+                auto="false"
+                url="/rest/tournament/{{tournamentId}}/rounds"
+                handleAs="json"
+                id="fetchRounds"
+                contentType="application/json"
+                on-core-response="{{handleRounds}}">
+        </core-ajax>
 
         <core-ajax
                 auto="false"
@@ -108,11 +121,15 @@
                 this.data = [];
                 this.rounds = [];
             },
-            handleResponse: function (e) {
-                console.log(e);
-                if (e.detail.response.currentRound) {
-                    this.data = e.detail.response.currentRound.matches;
-                    this.rounds = e.detail.response.rounds;
+            handleRounds: function (e) {
+                this.rounds = e.detail.response;
+            },
+            handleMatches: function (e) {
+                this.data = e.detail.response;
+                if (this.data.length > 0) {
+                    this.$.current_round.style.display = 'block';
+                } else {
+                    this.$.current_round.style.display = 'none';
                 }
             },
             reportResult: function (e, detail, sender) {
@@ -123,6 +140,7 @@
             },
             update: function () {
                 this.$.fetchMatches.go();
+                this.$.fetchRounds.go();
             },
             nextRound: function () {
                 this.$.next_round.go();

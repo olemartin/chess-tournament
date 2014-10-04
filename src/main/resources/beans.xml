@@ -21,7 +21,7 @@
     <context:component-scan base-package="net.olemartin.tools"/>
     <tx:annotation-driven mode="proxy"/>
     <neo4j:config storeDirectory="data" base-package="net.olemartin.business" />
-    <neo4j:repositories base-package="net.olemartin.database" neo4j-template-ref="neo4jTemplate"/>
+    <neo4j:repositories base-package="net.olemartin.repository" neo4j-template-ref="neo4jTemplate"/>
 
 
 </beans>

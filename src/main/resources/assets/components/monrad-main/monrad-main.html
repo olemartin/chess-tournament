@@ -1,38 +1,61 @@
 <link rel="import" href="../../bower_components/core-animated-pages/core-animated-pages.html"/>
 <link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html"/>
 <link rel="import" href="../../bower_components/paper-button/paper-button.html"/>
+<link rel="import" href="../../bower_components/core-drawer-panel/core-drawer-panel.html"/>
 <link rel="import" href="../../components/new-tournament/new-tournament.html">
 <link rel="import" href="../../components/player-listing/player-listing.html">
 <link rel="import" href="../../components/current-matches/current-matches.html">
+<link rel="import" href="../../components/tournament-listing/tournament-listing.html">
+<link rel="import" href="../../components/new-player/new-player.html">
 
 
 <polymer-element name="monrad-main" vertical layout>
     <template>
-        <link rel="stylesheet" href="monrad-main.css">
-        <core-toolbar>
-            <span flex>BEKK Chess</span>
+        <core-drawer-panel drawerWidth="300px">
+            <div drawer style="background-color: #f2f7fa;">
+                <core-toolbar>
+                    <span flex>BEKK Chess</span>
+                </core-toolbar>
+                <section>
+                <player-listing id="small_players"
+                                tournamentId="{{tournamentId}}"
+                                tournamentName="{{tournamentName}}"
+                                cross-fade
+                                selectedSection="{{selected}}"/>
+                </section>
+            </div>
+            <div main>
+                <core-toolbar>
+                    <div>
+                        <paper-button label="Players" on-tap="{{players_selected}}"/>
+                    </div>
+                    <div>
+                        <paper-button label="Matches" on-tap="{{matches_selected}}"/>
+                    </div>
+                    <div>
+                        <paper-button label="Tournaments" on-tap="{{tournaments_selected}}"/>
+                    </div>
+                </core-toolbar>
+                <core-animated-pages selected="{{selected}}" flex auto transitions="slide-up slide-down cross-fade">
+                    <section name="players">
+                        <h1>{{tournamentName}}'s players</h1>
+                        <player-listing id="players" tournamentId="{{tournamentId}}" tournamentName="{{tournamentName}}"
+                                        large="true" cross-fade selectedSection="{{selected}}"></player-listing>
+                        <new-player tournamentId="{{tournamentId}}"/>
+                    </section>
+                    <section name="matches">
+                        <current-matches id="matches" tournamentId="{{tournamentId}}"
+                                         tournamentName="{{tournamentName}}"
+                                         cross-fade selectedSection="{{selected}}"></current-matches>
+                    </section>
+                    <section name="tournaments">
+                        <tournament-listing id="tournaments" on-tournament_changed="{{tournament_changed}}"
+                                            cross-fade selectedSection="{{selected}}"></tournament-listing>
+                    </section>
+                </core-animated-pages>
 
-            <div>
-                <paper-button label="Players" on-tap="{{players_selected}}"/>
             </div>
-            <div>
-                <paper-button label="Matches" on-tap="{{matches_selected}}"/>
-            </div>
-        </core-toolbar>
-        <core-animated-pages selected="{{selected}}" flex auto transitions="slide-up slide-down cross-fade">
-            <section name="start">
-                <new-tournament id="new_tournament" cross-fade selectedSection="{{selected}}"
-                                on-tournament_created="{{tournament_created}}"></new-tournament>
-            </section>
-            <section name="players">
-                <player-listing id="players" tournamentId="{{tournamentId}}" tournamentName="{{tournamentName}}"
-                                cross-fade selectedSection="{{selected}}"></player-listing>
-            </section>
-            <section name="matches">
-                <current-matches id="matches" tournamentId="{{tournamentId}}" tournamentName="{{tournamentName}}"
-                                 cross-fade selectedSection="{{selected}}"></current-matches>
-            </section>
-        </core-animated-pages>
+        </core-drawer-panel>
     </template>
     <script>
         Polymer("monrad-main", {
@@ -43,11 +66,12 @@
                     this.selected = "players";
                 } else {
                     this.tournamentId = {};
-                    this.selected = "start";
+                    this.selected = "tournaments";
                 }
             },
-            ready : function() {
+            ready: function () {
                 this.$.players.updatePlayers();
+                this.$.small_players.updatePlayers();
             },
             players_selected: function () {
                 this.selected = "players";
@@ -57,10 +81,13 @@
                 this.selected = "matches";
                 this.$.matches.update();
             },
-            tournament_created: function (event, arguments) {
+            tournaments_selected: function () {
+                this.selected = "tournaments";
+            },
+            tournament_changed: function (event, arguments) {
                 this.tournamentId = arguments.id;
                 this.tournamentName = arguments.name;
-                this.selected = "players";
+                this.players_selected();
                 window.location.hash = this.tournamentId + "!" + encodeURI(this.tournamentName);
             }
         });

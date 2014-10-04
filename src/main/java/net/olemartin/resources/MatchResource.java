@@ -8,12 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Path("/match")
@@ -36,6 +34,12 @@ public class MatchResource {
         Match match =  matchService.reportResult(matchId, Result.valueOf(result));
         sendNotification("new result");
         return match;
+    }
+
+    @Path("player/{playerId}")
+    @GET
+    public List<Match> getMatchesByPlayer(@PathParam("playerId") long playerId) {
+        return matchService.findMatchesPlayerPlayed(playerId);
     }
 
     public void registerEndpoint(ChangeEndpoint changeEndpoint) {

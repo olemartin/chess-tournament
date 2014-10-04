@@ -1,14 +1,15 @@
 package net.olemartin.service;
 
 import net.olemartin.business.*;
-import net.olemartin.database.MatchRepository;
-import net.olemartin.database.PlayerRepository;
-import net.olemartin.database.RoundRepository;
-import net.olemartin.database.TournamentRepository;
+import net.olemartin.repository.MatchRepository;
+import net.olemartin.repository.PlayerRepository;
+import net.olemartin.repository.RoundRepository;
+import net.olemartin.repository.TournamentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -46,6 +47,14 @@ public class MatchService {
         matchRepository.save(matches);
         tournamentRepository.save(tournament);
         playerRepository.save(tournament.getPlayers());
+        return matches;
+    }
+
+    public List<Match> findMatchesPlayerPlayed(long playerId) {
+        List<Match> matches = new ArrayList<>();
+        for (Match m : matchRepository.findMatchesPlayerPlayed(playerId)) {
+            matches.add(m);
+        }
         return matches;
     }
 

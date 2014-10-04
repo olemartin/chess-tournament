@@ -1,0 +1,47 @@
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+
+<polymer-element name="new-player" attributes="tournamentId" vertical layout>
+    <template>
+        <paper-dialog title="New player" id="new_player">
+
+            <paper-input label="New player's name" value="{{playerName}}" id="playerName"></paper-input>
+            <paper-button primary
+                          raisedButton
+                          label="Send"
+                          id="send"
+                          on-tap="{{doSend}}"/>
+        </paper-dialog>
+        <div>
+            <paper-button
+                    label="New player"
+                    raisedButton
+                    primary
+                    on-tap="{{openDialog}}"/>
+        </div>
+        <core-ajax
+                auto="false"
+                method="POST"
+                url="/rest/tournament/{{tournamentId}}/add"
+                body='{"name":"{{playerName}}", "score":"0.0"}'
+                handleAs="json"
+                id="addPlayer"
+                contentType="application/json"
+                on-core-response="{{playerAdded}}"></core-ajax>
+    </template>
+    <script>
+        Polymer("new-player", {
+            openDialog: function () {
+                this.$.new_player.toggle();
+            },
+            doSend: function (e) {
+                this.$.addPlayer.go();
+            },
+            playerAdded: function (e) {
+                this.playerName = '';
+            }
+        });
+    </script>
+</polymer-element>

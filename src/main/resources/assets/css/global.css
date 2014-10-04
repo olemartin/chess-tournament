@@ -122,7 +122,7 @@ html /deep/ paper-button {
             }
 html /deep/ paper-button[link] #content span,
             html /deep/ paper-button[link]::shadow #content span {
-                            text-decoration: underline;
+                            color: #7ec0ee;
                         }
 html /deep/ paper-button[disabled] {
                 color: #545660 !important;
@@ -495,5 +495,10 @@ html /deep/ table.center {
                 margin-left:auto;
                 margin-right:auto;
                 border: solid #606565 thin;
-                min-width: 30em;
+            }
+html /deep/ table.rounds {
+                             min-width: 30em;
+                         }
+            section {
+                vertical-align: middle;
             }
