@@ -1,0 +1,39 @@
+<link rel="import" href="../../bower_components/core-list/core-list.html">
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../../bower_components/paper-shadow/paper-shadow.html">
+<link rel="import" href="../../bower_components/web-loader/src/web-loader.html">
+
+<polymer-element name="person-listing" vertical layout>
+    <template>
+        <h2>Ratings</h2>
+        <div vertical layout shadow style="width: 400px; align-self: center; margin-bottom: 30px; padding:20px;">
+            <paper-shadow id="myShadow" z="1"></paper-shadow>
+                <template repeat="{{data}}">
+                    <div horizontal layout>
+                        <div style="text-align: left;" flex three>{{name}}</div>
+                        <div flex>{{rating}}</div>
+                </template>
+        </div>
+        <core-ajax
+                auto="true"
+                url="/rest/person/list"
+                handleAs="json"
+                id="getPersons"
+                contentType="application/json"
+                on-core-response="{{handleResponse}}">
+        </core-ajax>
+    </template>
+    <script>
+        Polymer('person-listing', {
+            created: function () {
+                this.data = {};
+            },
+            handleResponse: function (e) {
+                this.data = e.detail.response;
+            }
+
+        });
+
+
+    </script>
+</polymer-element>

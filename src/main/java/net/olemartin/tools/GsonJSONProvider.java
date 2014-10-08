@@ -2,10 +2,7 @@ package net.olemartin.tools;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.olemartin.business.Match;
-import net.olemartin.business.Player;
-import net.olemartin.business.Round;
-import net.olemartin.business.Tournament;
+import net.olemartin.business.*;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -34,6 +31,7 @@ public final class GsonJSONProvider implements MessageBodyWriter<Object>,
             gsonBuilder.registerTypeAdapter(Tournament.class, new Tournament.TournamentSerializer());
             gsonBuilder.registerTypeAdapter(Round.class, new Round.RoundSerializer());
             gsonBuilder.registerTypeAdapter(Player.class, new Player.PlayerSerializer());
+            gsonBuilder.registerTypeAdapter(Person.class, new Person.PersonSerializer());
             gsonBuilder.registerTypeAdapter(Match.class, new Match.MatchSerializer());
             gson = gsonBuilder.create();
         }

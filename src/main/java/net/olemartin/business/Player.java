@@ -48,6 +48,10 @@ public class Player implements Comparable<Player> {
     @Transient
     private double berger;
 
+    @RelatedTo(type = "IS_PLAYER", direction = Direction.INCOMING)
+    @Fetch
+    private Person person;
+
     private Player() {
         if (colors != null) {
             matches = new LinkedList<>(Arrays.asList(colors.toString().split(":"))
@@ -238,6 +242,10 @@ public class Player implements Comparable<Player> {
 
     public Long getId() {
         return id;
+    }
+
+    public Person getPerson() {
+        return person;
     }
 
     public static class PlayerSerializer implements JsonSerializer<Player> {

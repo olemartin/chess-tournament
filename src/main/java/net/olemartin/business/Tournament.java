@@ -1,11 +1,13 @@
 package net.olemartin.business;
 
 import com.google.gson.*;
+import net.olemartin.rating.EloRatingSystem;
 import org.neo4j.graphdb.Direction;
 import org.springframework.data.neo4j.annotation.*;
 
 import java.lang.reflect.Type;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @NodeEntity
 public class Tournament {
@@ -25,11 +27,39 @@ public class Tournament {
     @Fetch
     private Set<Round> rounds;
 
-    @Query(value = "start n=node({self}) match n-[:ROUND_OF]->round where round.number = n.currentRound return round", elementClass=Round.class)
+    @Query(value = "start n=node({self}) match n-[:ROUND_OF]->round where round.number = n.currentRound return round", elementClass = Round.class)
     private Round round;
+    private boolean finished;
 
     private Tournament() {
 
+    }
+
+    public void calculateRatings(EloRatingSystem system) {
+        for (Round round : rounds.stream().sorted().collect(Collectors.toList())) {
+            for (Match match : round.getMatches()) {
+
+                if (match.getResult() == Result.REMIS) {
+                    Person white = match.getWhite().getPerson();
+                    Person black = match.getBlack().getPerson();
+                    white.setRating(system.getNewRating(white.getRating(), black.getRating(), PlayerResult.DRAW));
+                    black.setRating(system.getNewRating(black.getRating(), white.getRating(), PlayerResult.DRAW));
+                } else {
+                    Person winner = match.getWinner().getPerson();
+                    Person looser = match.getLooser().getPerson();
+                    winner.setRating(
+                            system.getNewRating(
+                                    winner.getRating(),
+                                    looser.getRating(),
+                                    PlayerResult.WIN));
+                    looser.setRating(
+                            system.getNewRating(
+                                    looser.getRating(),
+                                    winner.getRating(),
+                                    PlayerResult.LOSS));
+                }
+            }
+        }
     }
 
     public String getName() {
@@ -58,6 +88,10 @@ public class Tournament {
 
     public Set<Round> getRounds() {
         return rounds;
+    }
+
+    public void setFinished(boolean finished) {
+        this.finished = finished;
     }
 
     public static class TournamentSerializer implements JsonSerializer<Tournament> {

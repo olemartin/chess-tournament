@@ -5,7 +5,7 @@
 <polymer-element name="current-matches" vertical layout attributes="tournamentId tournamentName">
     <template>
 
-        <h1>{{tournamentName}}'s matches</h1>
+        <h2>{{tournamentName}}'s matches</h2>
         <table class="center" cellspacing="0" id="current_round" style="display: none;">
             <tr class="core-header rounds" style="height: 40px;">
                 <th>White</th>
@@ -78,6 +78,12 @@
                           label="Next round"
                           on-tap="{{nextRound}}"/>
         </div>
+        <div>
+            <paper-button primary
+                          raisedButton
+                          label="Finish tournament"
+                          on-tap="{{finish}}"/>
+        </div>
         <core-ajax
                 auto="false"
                 url="/rest/tournament/{{tournamentId}}/matches"
@@ -85,6 +91,15 @@
                 id="fetchMatches"
                 contentType="application/json"
                 on-core-response="{{handleMatches}}">
+        </core-ajax>
+
+        <core-ajax
+                auto="false"
+                method="POST"
+                url="/rest/tournament/{{tournamentId}}/finish"
+                handleAs="json"
+                id="finishTournament"
+                contentType="application/json">
         </core-ajax>
 
         <core-ajax
@@ -144,6 +159,9 @@
             },
             nextRound: function () {
                 this.$.next_round.go();
+            },
+            finish: function() {
+                this.$.finishTournament.go();
             }
         });
     </script>

@@ -1,22 +1,31 @@
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html"/>
-
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html"/>
+<link rel="import" href="../../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="../../bower_components/paper-shadow/paper-shadow.html">
 
 <polymer-element name="tournament-listing" vertical layout attributes="tournamentId tournamentName">
     <template>
-        <h1>Registered tournaments</h1>
+        <h2>Registered tournaments</h2>
 
-        <template repeat="{{data}}">
-            <paper-button
-                    link
-                    class="colored"
-                    label="{{name}}"
-                    on-tap="{{tournamentSelected}}"
-                    data-id="{{id}}"
-                    data-name="{{name}}"/>
-
-        </template>
-
+        <div vertical layout shadow style="width: 400px; align-self: center; margin-bottom: 30px;">
+            <paper-shadow id="myShadow" z="1"></paper-shadow>
+            <template repeat="{{data}}">
+                <div horizontal layout>
+                    <paper-button
+                            flex three
+                            style="text-align: left;"
+                            link
+                            class="colored"
+                            label="{{name}}"
+                            on-tap="{{tournamentSelected}}"
+                            data-id="{{id}}"
+                            data-name="{{name}}"></paper-button>
+                    <paper-icon-button  flex icon="delete"></paper-icon-button>
+                </div>
+            </template>
+        </div>
         <new-tournament id="new_tournament" cross-fade
                         on-tournament_created="{{tournamentCreated}}"/>
 
@@ -35,10 +44,10 @@
             handleResponse: function (e) {
                 this.data = e.detail.response;
             },
-            tournamentSelected: function(e, detail, sender) {
+            tournamentSelected: function (e, detail, sender) {
                 this.fire('tournament_changed', {id: sender.getAttribute("data-id"), name: sender.getAttribute("data-name")});
             },
-            tournamentCreated: function() {
+            tournamentCreated: function () {
                 this.$.listTournaments.go();
             }
         });

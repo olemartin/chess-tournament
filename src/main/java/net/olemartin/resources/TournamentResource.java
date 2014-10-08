@@ -74,6 +74,13 @@ public class TournamentResource {
     }
 
     @POST
+    @Path("{tournamentId}/finish")
+    public String finish(@PathParam("tournamentId") Long tournamentId) {
+        tournamentService.finishTournament(tournamentId);
+        return "OK";
+    }
+
+    @POST
     @Path("{tournamentId}/next-round")
     public List<Match> nextRound(@PathParam("tournamentId")Long tournamentId) {
         List<Match> matches =  matchService.nextRound(tournamentId);

@@ -4,7 +4,9 @@ import net.olemartin.business.Match;
 import net.olemartin.business.Player;
 import net.olemartin.business.Round;
 import net.olemartin.business.Tournament;
+import net.olemartin.rating.EloRatingSystem;
 import net.olemartin.repository.MatchRepository;
+import net.olemartin.repository.PersonRepository;
 import net.olemartin.repository.PlayerRepository;
 import net.olemartin.repository.TournamentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +26,14 @@ public class TournamentService {
     private final TournamentRepository tournamentRepository;
     private MatchRepository matchRepository;
     private PlayerRepository playerRepository;
+    private PersonRepository personRepository;
 
     @Autowired
-    public TournamentService(TournamentRepository tournamentRepository, MatchRepository matchRepository, PlayerRepository playerRepository) {
+    public TournamentService(TournamentRepository tournamentRepository, MatchRepository matchRepository, PlayerRepository playerRepository, PersonRepository personRepository) {
         this.tournamentRepository = tournamentRepository;
         this.matchRepository = matchRepository;
         this.playerRepository = playerRepository;
+        this.personRepository = personRepository;
     }
 
     public Tournament save(Tournament tournament) {
@@ -49,6 +53,15 @@ public class TournamentService {
                     tournament.getPlayers());
         });
         return tournament;
+    }
+
+    public void finishTournament(Long tournamentId) {
+        Tournament tournament = retrieve(tournamentId);
+        tournament.setFinished(true);
+        tournament.calculateRatings(EloRatingSystem.getInstance(tournament.getName()));
+        save(tournament);
+        playerRepository.save(tournament.getPlayers());
+        personRepository.save(tournament.getPlayers().stream().map(Player::getPerson).collect(Collectors.toList()));
     }
 
     public void addPlayer(Long tournamentId, Player player) {

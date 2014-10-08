@@ -104,6 +104,10 @@ public class Match implements Comparable<Match>{
         return winner;
     }
 
+    public Player getLooser() {
+        return looser;
+    }
+
     public static class MatchSerializer implements JsonSerializer<Match> {
 
         @Override
