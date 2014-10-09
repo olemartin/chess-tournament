@@ -6,7 +6,6 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
@@ -111,17 +110,6 @@ public class MonradTest {
             }
         }
 
-        System.out.println("Score:");
-        for (Player player : monrad.getPlayers()) {
-            System.out.println(
-                    player.getName() + ": " + player.getScore() +
-                            ". Has met: " + player.hasMet()
-                            .stream()
-                            .map(Player::getName)
-                            .collect(toList()) + " with colors: " +
-                            player.getColors()
-            );
-        }
     }
 
 

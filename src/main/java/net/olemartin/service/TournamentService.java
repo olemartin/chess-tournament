@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,18 +42,7 @@ public class TournamentService {
     }
 
     public Tournament retrieve(Long tournamentId) {
-        Tournament tournament = tournamentRepository.findOne(tournamentId);
-        tournament.getPlayers().forEach(player -> {
-            player.setMonradAndBerger(
-                    playerRepository.findOpponentsPlayerBeat(player.getId()),
-                    playerRepository.findOpponentsRemis(player.getId()));
-        });
-        tournament.getPlayers().forEach(player -> {
-            player.setRoundScore(
-                    matchRepository.findMatchesPlayerPlayed(player.getId()),
-                    tournament.getPlayers());
-        });
-        return tournament;
+        return tournamentRepository.findOne(tournamentId);
     }
 
     public void finishTournament(Long tournamentId) {
@@ -95,4 +85,15 @@ public class TournamentService {
     public void delete(Long tournamentId) {
         tournamentRepository.delete(tournamentId);
     }
+
+    public List<Player> retrievePlayers(Long tournamentId) {
+        Set<Player> players = retrieve(tournamentId).getPlayers();
+        for (Player player : players) {
+            player.setRoundScore(
+                    matchRepository.findMatchesPlayerPlayed(player.getId()),
+                    tournamentRepository.findPlayersTournament(player.getId()).getPlayers());
+        }
+        return players.stream().sorted().collect(Collectors.toList());
+    }
+
 }

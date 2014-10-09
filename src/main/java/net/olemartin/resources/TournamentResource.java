@@ -16,7 +16,6 @@ import javax.ws.rs.core.MediaType;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static net.olemartin.push.ChangeEndpoint.MessageType.NEW_MATCH;
 import static net.olemartin.push.ChangeEndpoint.MessageType.PLAYER_ADDED;
@@ -67,7 +66,7 @@ public class TournamentResource {
     @GET
     @Path("{tournamentId}/players")
     public List<Player> retrievePlayers(@PathParam("tournamentId") Long tournamentId) {
-        return tournamentService.retrieve(tournamentId).getPlayers().stream().sorted().collect(Collectors.toList());
+        return tournamentService.retrievePlayers(tournamentId);
     }
 
     @GET

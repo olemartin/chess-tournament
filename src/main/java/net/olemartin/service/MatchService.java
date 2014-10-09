@@ -6,6 +6,7 @@ import net.olemartin.repository.PlayerRepository;
 import net.olemartin.repository.RoundRepository;
 import net.olemartin.repository.TournamentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,13 +22,16 @@ public class MatchService {
     private final RoundRepository roundRepository;
     private final PlayerRepository playerRepository;
 
+    private final Neo4jTemplate template;
+
 
     @Autowired
-    public MatchService(MatchRepository matchRepository, TournamentRepository tournamentRepository, RoundRepository roundRepository, PlayerRepository playerRepository) {
+    public MatchService(MatchRepository matchRepository, TournamentRepository tournamentRepository, RoundRepository roundRepository, PlayerRepository playerRepository, Neo4jTemplate template) {
         this.matchRepository = matchRepository;
         this.tournamentRepository = tournamentRepository;
         this.roundRepository = roundRepository;
         this.playerRepository = playerRepository;
+        this.template = template;
     }
 
     public List<Match> nextRound(long tournamentId) {
@@ -67,6 +71,20 @@ public class MatchService {
         matchRepository.save(match);
         playerRepository.save(match.getBlack());
         playerRepository.save(match.getWhite());
+        updateMonradAndBerger(match.getWhite(), match.getBlack());
+
+        playerRepository.save(match.getBlack());
+        playerRepository.save(match.getWhite());
         return match;
+    }
+
+
+
+    private void updateMonradAndBerger(Player... players) {
+        for (Player player : players) {
+            player.setMonradAndBerger(
+                    playerRepository.findOpponentsPlayerBeat(player.getId()),
+                    playerRepository.findOpponentsRemis(player.getId()));
+        }
     }
 }

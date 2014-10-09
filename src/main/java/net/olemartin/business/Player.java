@@ -1,5 +1,6 @@
 package net.olemartin.business;
 
+import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
@@ -36,15 +37,12 @@ public class Player implements Comparable<Player> {
 
     @Transient
     private Player newOpponent;
+
     @Transient
     private String roundResults;
-    @Transient
     private double monrad2;
-    @Transient
     private double monrad1;
-    @Transient
     private double monrad;
-    @Transient
     private double berger;
 
     @RelatedTo(type = "IS_PLAYER", direction = Direction.INCOMING)
@@ -89,10 +87,10 @@ public class Player implements Comparable<Player> {
         berger = sumOpponentPoints(won) + (sumOpponentPoints(remis) / 2.0);
     }
 
-    public void setRoundScore(Iterable<Match> matches, Set<Player> players) {
+    public void setRoundScore(Iterable<Match> matches, Iterable<Player> players) {
 
         List<Player> allPlayers = new ArrayList<>();
-        allPlayers.addAll(players.stream().collect(toList()));
+        allPlayers.addAll(Lists.newArrayList(players).stream().collect(toList()));
         Collections.sort(allPlayers);
 
         List<String> result = new ArrayList<>();

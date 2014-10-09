@@ -21,4 +21,9 @@ public interface PlayerRepository extends GraphRepository<Player> {
             "RETURN otherPlayer")
     public Iterable<Player> findOpponentsRemis(@Param("who") long player);
 
+    @Query("MATCH (p1:Player) -[:PLAYS_IN]- (t:Tournament)\n" +
+            "where id(t) = {who}\n" +
+            "return p1")
+    Iterable<Player> playersInTournament(@Param("who") Long tournamentId);
+
 }
