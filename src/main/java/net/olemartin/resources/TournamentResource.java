@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static net.olemartin.push.ChangeEndpoint.MessageType.NEW_MATCH;
+import static net.olemartin.push.ChangeEndpoint.MessageType.PLAYER_ADDED;
+
 @Path("/tournament")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -45,7 +48,7 @@ public class TournamentResource {
     @Path("{tournamentId}/add")
     public Player addPlayerToTournament(@PathParam("tournamentId")Long tournamentId, Player player) {
         tournamentService.addPlayer(tournamentId, player);
-        sendNotification("player added");
+        sendNotification(PLAYER_ADDED);
         return player;
     }
 
@@ -53,6 +56,12 @@ public class TournamentResource {
     @Path("{tournamentId}")
     public Tournament retrieve(@PathParam("tournamentId")Long tournamentId) {
         return tournamentService.retrieve(tournamentId);
+    }
+
+    @DELETE
+    @Path("{tournamentId}")
+    public void delete(@PathParam("tournamentId") Long tournamentId) {
+        tournamentService.delete(tournamentId);
     }
 
     @GET
@@ -84,7 +93,7 @@ public class TournamentResource {
     @Path("{tournamentId}/next-round")
     public List<Match> nextRound(@PathParam("tournamentId")Long tournamentId) {
         List<Match> matches =  matchService.nextRound(tournamentId);
-        sendNotification("new match");
+        sendNotification(NEW_MATCH);
         return matches;
     }
 
@@ -99,7 +108,7 @@ public class TournamentResource {
     }
 
 
-    private void sendNotification(String message) {
+    private void sendNotification(ChangeEndpoint.MessageType message) {
         for (ChangeEndpoint endpoint : endpoints) {
             endpoint.sendPush(message);
         }

@@ -94,6 +94,10 @@ public class Tournament {
         this.finished = finished;
     }
 
+    public boolean isFinished() {
+        return finished;
+    }
+
     public static class TournamentSerializer implements JsonSerializer<Tournament> {
 
         @Override

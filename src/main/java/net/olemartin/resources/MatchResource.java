@@ -14,6 +14,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static net.olemartin.push.ChangeEndpoint.MessageType.NEW_RESULT;
+
 @Path("/match")
 @Consumes(MediaType.APPLICATION_JSON)
 @Service
@@ -32,7 +34,7 @@ public class MatchResource {
     @POST
     public Match reportResult(@PathParam("matchId") long matchId, @PathParam("result") String result) {
         Match match =  matchService.reportResult(matchId, Result.valueOf(result));
-        sendNotification("new result");
+        sendNotification();
         return match;
     }
 
@@ -46,9 +48,9 @@ public class MatchResource {
         endpoints.add(changeEndpoint);
     }
 
-    private void sendNotification(String message) {
+    private void sendNotification() {
         for (ChangeEndpoint endpoint : endpoints) {
-            endpoint.sendPush(message);
+            endpoint.sendPush(NEW_RESULT);
         }
     }
 }

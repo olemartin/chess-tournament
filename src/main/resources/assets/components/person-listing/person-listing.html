@@ -6,13 +6,19 @@
 <polymer-element name="person-listing" vertical layout>
     <template>
         <h2>Ratings</h2>
-        <div vertical layout shadow style="width: 400px; align-self: center; margin-bottom: 30px; padding:20px;">
-            <paper-shadow id="myShadow" z="1"></paper-shadow>
+
+        <div horizontal layout>
+            <div flex></div>
+            <div flex three vertical layout style="align-self: center; margin-bottom: 30px; padding:20px;">
+                <paper-shadow id="myShadow" z="1"></paper-shadow>
                 <template repeat="{{data}}">
-                    <div horizontal layout>
+                    <div horizontal layout style="border-bottom: solid thin #373b50;">
                         <div style="text-align: left;" flex three>{{name}}</div>
                         <div flex>{{rating}}</div>
+                    </div>
                 </template>
+            </div>
+            <div flex></div>
         </div>
         <core-ajax
                 auto="true"

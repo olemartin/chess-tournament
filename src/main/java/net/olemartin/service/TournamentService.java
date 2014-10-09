@@ -91,4 +91,8 @@ public class TournamentService {
     public List<Round> retrieveRounds(Long tournamentId) {
         return tournamentRepository.findOne(tournamentId).getRounds().stream().sorted().collect(Collectors.toList());
     }
+
+    public void delete(Long tournamentId) {
+        tournamentRepository.delete(tournamentId);
+    }
 }

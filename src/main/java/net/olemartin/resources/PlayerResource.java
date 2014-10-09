@@ -30,10 +30,4 @@ public class PlayerResource {
     public List<Player> getPlayers() {
         return playerService.getPlayers();
     }
-
-    @GET
-    @Path("ping")
-    public String ping() {
-        return "ping";
-    }
 }

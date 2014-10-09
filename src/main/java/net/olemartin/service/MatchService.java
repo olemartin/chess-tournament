@@ -32,8 +32,11 @@ public class MatchService {
 
     public List<Match> nextRound(long tournamentId) {
         Tournament tournament = tournamentRepository.findOne(tournamentId);
+        if (tournament.isFinished()) {
+            throw new IllegalArgumentException("Tournament is finished.");
+        }
         if (!tournament.isCurrentRoundFinished()) {
-            throw new IllegalArgumentException("Current round is not finished");
+            throw new IllegalArgumentException("Current round is not finished.");
         }
         int roundNumber = tournament.increaseRound();
         Round round = new Round(tournament, roundNumber);

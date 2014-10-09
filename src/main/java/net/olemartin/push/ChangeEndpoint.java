@@ -10,6 +10,7 @@ import java.io.IOException;
 @WebSocket
 public class ChangeEndpoint {
 
+    public static enum MessageType {NEW_RESULT, PLAYER_ADDED, NEW_MATCH}
     private Session session;
 
     @OnWebSocketMessage
@@ -19,10 +20,10 @@ public class ChangeEndpoint {
         SpringContext.getMatchResource().registerEndpoint(this);
     }
 
-    public void sendPush(String message) {
+    public void sendPush(MessageType message) {
         if (session.isOpen()) {
             try {
-                session.getRemote().sendString("{\"message\":\""+message+"\"}");
+                session.getRemote().sendString("{\"message\":\""+message.name()+"\"}");
             } catch (IOException e) {
                 e.printStackTrace();
             }

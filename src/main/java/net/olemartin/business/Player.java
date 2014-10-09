@@ -13,6 +13,7 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -34,8 +35,6 @@ public class Player implements Comparable<Player> {
     private Set<Player> playersMet = new HashSet<>();
 
     @Transient
-    private LinkedList<Color> matches = new LinkedList<>();
-    @Transient
     private Player newOpponent;
     @Transient
     private String roundResults;
@@ -53,11 +52,6 @@ public class Player implements Comparable<Player> {
     private Person person;
 
     private Player() {
-        if (colors != null) {
-            matches = new LinkedList<>(Arrays.asList(colors.toString().split(":"))
-                    .stream().map(s -> Color.valueOf(s))
-                    .collect(toList()));
-        }
     }
 
     public Player(String name) {
@@ -144,7 +138,6 @@ public class Player implements Comparable<Player> {
     public void countRound(Color color, Player otherPlayer) {
         this.newOpponent = otherPlayer;
         playersMet.add(otherPlayer);
-        matches.add(color);
         if (colors == null) {
             colors = new StringBuffer();
         }
@@ -152,7 +145,7 @@ public class Player implements Comparable<Player> {
     }
 
     private long numberOfRounds(Color color) {
-        return matches.stream().filter(c -> c == color).count();
+        return asLinkedList().stream().filter(c -> c == color).count();
     }
 
     public Color nextOptimalColor() {
@@ -165,8 +158,16 @@ public class Player implements Comparable<Player> {
         } else if (white > blacks) {
             return BLACK;
         } else {
-            return matches.get(matches.size() - 1).getOther();
+            return asLinkedList().getLast();
         }
+    }
+
+    private LinkedList<Color> asLinkedList() {
+        return new LinkedList<>(Arrays.asList(
+                colors.toString().split(":"))
+                .stream()
+                .map(Color::valueOf)
+                .collect(Collectors.toList()));
     }
 
     public boolean hasMet(Player otherPlayer) {
@@ -174,6 +175,7 @@ public class Player implements Comparable<Player> {
     }
 
     public Color mustHaveColor() {
+        LinkedList<Color> matches = asLinkedList();
         if (matches.size() >= 2) {
             if (matches.get(matches.size() - 2) == matches.get(matches.size() - 1)) {
                 return matches.get(matches.size() - 2).getOther();
@@ -196,16 +198,13 @@ public class Player implements Comparable<Player> {
 
     public void removeLastOpponent() {
         playersMet.remove(newOpponent);
+        LinkedList<Color> matches = asLinkedList();
         matches.removeLast();
-        colors = new StringBuffer(matches.stream().map(Enum::name).collect(joining(":")));
+        colors = new StringBuffer(matches.stream().map(Enum::name).collect(joining(":", "", ":")));
     }
 
     public Set<Player> hasMet() {
         return playersMet;
-    }
-
-    public List<Color> getColors() {
-        return matches;
     }
 
     @Override
