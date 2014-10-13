@@ -98,6 +98,11 @@ public class Tournament {
         return finished;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+
     public static class TournamentSerializer implements JsonSerializer<Tournament> {
 
         @Override

@@ -1,9 +1,6 @@
 package net.olemartin.service;
 
-import net.olemartin.business.Match;
-import net.olemartin.business.Player;
-import net.olemartin.business.Round;
-import net.olemartin.business.Tournament;
+import net.olemartin.business.*;
 import net.olemartin.rating.EloRatingSystem;
 import net.olemartin.repository.MatchRepository;
 import net.olemartin.repository.PersonRepository;
@@ -54,10 +51,15 @@ public class TournamentService {
         personRepository.save(tournament.getPlayers().stream().map(Player::getPerson).collect(Collectors.toList()));
     }
 
-    public void addPlayer(Long tournamentId, Player player) {
+    public void addPlayers(Long tournamentId, List<Person> persons) {
         Tournament tournament = retrieve(tournamentId);
-        tournament.addPlayer(player);
+        for (Person person : persons) {
+            Player player = new Player(person);
+            player = playerRepository.save(player);
+            tournament.addPlayer(player);
+        }
         save(tournament);
+        personRepository.save(persons);
     }
 
     public List<Tournament> retrieveAll() {

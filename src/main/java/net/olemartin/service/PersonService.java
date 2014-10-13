@@ -24,4 +24,12 @@ public class PersonService {
     public List<Person> getPersons() {
         return Lists.newArrayList(personRepository.getPersons());
     }
+
+    public Person createPerson(Person person) {
+        return personRepository.save(person);
+    }
+
+    public List<Person> getPersonsNotInTournament(Long tournamentId) {
+        return Lists.newArrayList(personRepository.getPersonsNotInTournament(tournamentId));
+    }
 }

@@ -1,9 +1,6 @@
 package net.olemartin.resources;
 
-import net.olemartin.business.Match;
-import net.olemartin.business.Player;
-import net.olemartin.business.Round;
-import net.olemartin.business.Tournament;
+import net.olemartin.business.*;
 import net.olemartin.push.ChangeEndpoint;
 import net.olemartin.service.MatchService;
 import net.olemartin.service.TournamentService;
@@ -45,10 +42,10 @@ public class TournamentResource {
 
     @POST
     @Path("{tournamentId}/add")
-    public Player addPlayerToTournament(@PathParam("tournamentId")Long tournamentId, Player player) {
-        tournamentService.addPlayer(tournamentId, player);
+    public List<Person> addPlayerToTournament(@PathParam("tournamentId") Long tournamentId, List<Person> persons) {
+        tournamentService.addPlayers(tournamentId, persons);
         sendNotification(PLAYER_ADDED);
-        return player;
+        return persons;
     }
 
     @GET

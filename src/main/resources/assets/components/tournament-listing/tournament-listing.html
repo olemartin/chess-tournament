@@ -1,3 +1,4 @@
+
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html"/>
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html"/>
@@ -6,29 +7,46 @@
 <link rel="import" href="../../bower_components/paper-shadow/paper-shadow.html">
 
 <polymer-element name="tournament-listing" vertical layout attributes="tournamentId tournamentName">
+
     <template>
+        <style type="text/css">
+            div.list {
+                align-self: center;
+                margin-bottom: 30px;
+                padding: 20px 20px 40px;
+            }
+            .item {
+                border-bottom: solid thin #373b50;
+            }
+            .button {
+                text-align: left;
+            }
+        </style>
         <h2>Registered tournaments</h2>
 
-        <div vertical layout shadow style="width: 400px; align-self: center; margin-bottom: 30px;">
-            <paper-shadow id="myShadow" z="1"></paper-shadow>
-            <template repeat="{{data}}">
-                <div horizontal layout>
-                    <paper-button
-                            flex three
-                            style="text-align: left;"
-                            link
-                            class="colored"
-                            label="{{name}}"
-                            on-tap="{{tournamentSelected}}"
-                            data-id="{{id}}"
-                            data-name="{{name}}"></paper-button>
-                    <paper-icon-button
-                            flex
-                            on-tap="{{deleteTournament}}"
-                            data-id="{{id}}"
-                            icon="delete"></paper-icon-button>
-                </div>
-            </template>
+        <div horizontal layout>
+            <div flex></div>
+            <div flex two vertical layout class="list">
+                <paper-shadow id="myShadow" z="1"></paper-shadow>
+                <template repeat="{{data}}">
+                    <div horizontal layout class="item">
+                        <paper-button
+                                flex three
+                                link
+                                class="colored button"
+                                label="{{name}}"
+                                on-tap="{{tournamentSelected}}"
+                                data-id="{{id}}"
+                                data-name="{{name}}"></paper-button>
+                        <paper-icon-button
+                                flex
+                                on-tap="{{deleteTournament}}"
+                                data-id="{{id}}"
+                                icon="delete"></paper-icon-button>
+                    </div>
+                </template>
+            </div>
+            <div flex></div>
         </div>
         <new-tournament id="new_tournament" cross-fade
                         on-tournament_created="{{tournamentCreated}}"/>
@@ -68,7 +86,7 @@
                 this.deleteTournamentId = sender.getAttribute("data-id");
                 this.$.deleteTournamentAjax.go();
             },
-            handleDelete: function() {
+            handleDelete: function () {
                 this.$.listTournaments.go();
             }
         });

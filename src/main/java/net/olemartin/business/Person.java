@@ -6,7 +6,6 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import net.olemartin.rating.EloRatingSystem;
 import org.neo4j.graphdb.Direction;
-import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
@@ -21,7 +20,6 @@ public class Person {
     private Long id;
 
     @RelatedTo(type = "IS_PLAYER", direction = Direction.OUTGOING)
-    @Fetch
     private Set<Player> players;
 
     private String name;
@@ -43,6 +41,10 @@ public class Person {
 
     public void setRating(int rating) {
         this.rating = rating;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public static class PersonSerializer implements JsonSerializer<Person> {

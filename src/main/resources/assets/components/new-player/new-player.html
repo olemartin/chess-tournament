@@ -1,46 +1,126 @@
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../../bower_components/core-selector/core-selector.html">
+<link rel="import" href="../../bower_components/core-list/core-list.html">
 
 <polymer-element name="new-player" attributes="tournamentId" vertical layout>
-    <template>
-        <paper-dialog title="New player" id="new_player">
 
-            <paper-input label="New player's name" value="{{playerName}}" id="playerName"></paper-input>
-            <paper-button primary
-                          raisedButton
-                          label="Send"
-                          id="send"
-                          on-tap="{{doSend}}"/>
+    <template>
+        <style>
+            .selected {
+                background-color: #373b50;
+                color: white;
+            }
+
+            .item:hover {
+                cursor: pointer;
+                background-color: #add8e6;
+            }
+
+            #new_player {
+                min-width: 300px;
+            }
+        </style>
+        <paper-dialog heading="Add person" id="new_player">
+            <core-list data="{{persons}}" height="20" on-core-activate="{{itemSelected}}" id="playerlist" multi="true">
+                <template>
+                    <div class="item {{ {selected: selected} | tokenList }}">
+                        {{name}}
+                    </div>
+                </template>
+            </core-list>
+            <div vertical layout>
+                <div>
+                    <paper-icon-button style="margin-bottom: 30px;"
+                                       primary
+                                       raisedButton
+                                       label="Add player to tournament"
+                                       id="send"
+                                       icon="add"
+                                       on-tap="{{doSend}}"/>
+                </div>
+                <div horizontal layout layout>
+                    <div>
+                        <paper-input label="Create new person" floatingLabel="true" value="{{personName}}" id="personName"></paper-input>
+                    </div>
+                    <div horizontal layout center>
+                        <paper-icon-button raisedButton
+                                           label="Create"
+                                           id="newPerson"
+                                           on-tap="{{newPerson}}"
+                                           icon="create"/>
+                    </div>
+                </div>
+            </div>
         </paper-dialog>
         <div>
-            <paper-button
+            <paper-icon-button
                     label="New player"
+                    icon="create"
                     raisedButton
                     primary
                     on-tap="{{openDialog}}"/>
         </div>
         <core-ajax
+                auto="true"
+                method="POST"
+                url="/rest/person/list"
+                body='{"id":"{{tournamentId}}"}'
+                handleAs="json"
+                id="getPersons"
+                contentType="application/json"
+                on-core-response="{{personsRetrieved}}"></core-ajax>
+        <core-ajax
                 auto="false"
                 method="POST"
                 url="/rest/tournament/{{tournamentId}}/add"
-                body='{"name":"{{playerName}}", "score":"0.0"}'
+                body='[{{personsFormatted}}]'
                 handleAs="json"
                 id="addPlayer"
                 contentType="application/json"
                 on-core-response="{{playerAdded}}"></core-ajax>
+
+        <core-ajax
+                auto="false"
+                method="POST"
+                url="/rest/person/new"
+                body='{"name":"{{personName}}"}'
+                handleAs="json"
+                id="addPerson"
+                contentType="application/json"
+                on-core-response="{{personCreated}}"></core-ajax>
     </template>
     <script>
         Polymer("new-player", {
+            created: function () {
+                this.persons = {};
+            },
             openDialog: function () {
+                this.$.getPersons.go();
                 this.$.new_player.toggle();
             },
-            doSend: function (e) {
-                this.$.addPlayer.go();
+            doSend: function () {
+                if (this.$.playerlist.selection.length > 0) {
+                    this.personsFormatted= this.$.playerlist.selection.map(function(element) { return JSON.stringify(element)});
+                    this.$.addPlayer.go();
+                    this.$.playerlist.clearSelection();
+                    this.personsFormatted = '';
+                }
             },
-            playerAdded: function (e) {
-                this.playerName = '';
+            playerAdded: function () {
+                this.$.getPersons.go();
+            },
+            personsRetrieved: function (e) {
+                this.persons = e.detail.response;
+            },
+            newPerson: function() {
+                this.$.addPerson.go();
+            },
+            personCreated:function() {
+                this.$.getPersons.go();
             }
         });
     </script>

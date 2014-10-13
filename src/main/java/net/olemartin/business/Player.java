@@ -56,6 +56,10 @@ public class Player implements Comparable<Player> {
         this.name = name;
     }
 
+    public Player(Person person) {
+        this.person = person;
+    }
+
     public void setMonradAndBerger(Iterable<Player> wonIterable, Iterable<Player> remisIterable) {
 
         setBerger(wonIterable, remisIterable);
@@ -228,13 +232,17 @@ public class Player implements Comparable<Player> {
 
         Player player = (Player) o;
 
-        return !(id != null ? !id.equals(player.id) : player.id != null);
+        if (id != null ? !id.equals(player.id) : player.id != null) return false;
+        if (name != null ? !name.equals(player.name) : player.name != null) return false;
 
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        return result;
     }
 
     public Long getId() {
@@ -250,7 +258,9 @@ public class Player implements Comparable<Player> {
         public JsonElement serialize(Player player, Type typeOfSrc, JsonSerializationContext context) {
             JsonObject root = new JsonObject();
             root.addProperty("id", player.id);
-            root.addProperty("name", player.name);
+            if (player.person != null) {
+                root.addProperty("name", player.person.getName());
+            }
             root.addProperty("score", player.score);
             root.addProperty("roundResults", player.roundResults);
             root.addProperty("monrad", player.monrad);

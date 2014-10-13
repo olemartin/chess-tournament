@@ -40,6 +40,8 @@
             handleResponse: function (e) {
                 this.fire('tournament_created');
                 console.log(e.detail.response.id);
+                this.$.new_tournament.toggle();
+                this.tournamentName = '';
             },
             openDialog: function (e) {
                 this.$.new_tournament.toggle();

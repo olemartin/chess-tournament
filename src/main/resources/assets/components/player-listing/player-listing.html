@@ -54,19 +54,19 @@
                 </tr>
             </template>
         </table>
-        <web-loader id="loader" display="block"/>
-
+        <web-loader id="loader" display="none"/>
     </template>
     <script>
         Polymer('player-listing', {
             updatePlayers: function () {
+                this.$.loader.display = 'block';
                 this.$.updatePlayers.go();
             },
             handleResponse: function (e) {
                 console.log(e);
-                this.$.loader.display='none';
+                this.$.loader.display = 'none';
                 this.data = e.detail.response;
-                this.$.table.style.display='block';
+                this.$.table.style.display = 'block';
             },
             handleMessage: function () {
                 console.log("Got message!");
