@@ -1,5 +1,7 @@
 package net.olemartin.business;
 
+import com.google.common.collect.Lists;
+
 import java.util.*;
 
 import static java.util.stream.Collectors.joining;
@@ -9,12 +11,12 @@ import static net.olemartin.business.Color.WHITE;
 public class Monrad {
 
     private final Randomizer random;
-    private final List<Player> players = new ArrayList<>();
+    private final List<Player> players;
     private Set<String> triedCombinations = new HashSet<>();
 
-    public Monrad(Randomizer random, Collection<Player> players) {
+    public Monrad(Randomizer random, Iterable<Player> players) {
         this.random = random;
-        this.players.addAll(players);
+        this.players = Lists.newArrayList(players);
     }
 
     public void addPlayer(String name) {
@@ -26,7 +28,6 @@ public class Monrad {
     }
 
     public List<Player> getPlayers() {
-        Collections.sort(players);
         return players;
     }
 

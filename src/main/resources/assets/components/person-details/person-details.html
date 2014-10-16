@@ -1,0 +1,43 @@
+<polymer-element name="person-details" attr="personId" vertical layout>
+    <template>
+        <paper-dialog heading="{{person.name}}" id="person_details">
+            <span>Rating: {{person.rating}}</span>
+
+            <h3 style="min-width: 300px;">Tournaments</h3>
+            <table class="center">
+                <tr>
+                    <td>Name</td>
+                    <td>Rank</td>
+                </tr>
+                <template repeat="{{person.tournaments}}">
+                    <tr>
+                        <td>{{name}}</td>
+                        <td>{{rank}}</td>
+                    </tr>
+                </template>
+            </table>
+        </paper-dialog>
+        <core-ajax
+                auto="true"
+                url="/rest/person/{{personId}}"
+                handleAs="json"
+                id="getPerson"
+                contentType="application/json"
+                on-core-response="{{handleResponse}}"></core-ajax>
+    </template>
+    <script>
+        Polymer('person-details', {
+            created: function () {
+                this.data = {};
+            },
+            handleResponse: function (response, detail, target) {
+                this.person = detail.response;
+            },
+            show: function (personId) {
+                this.personId = personId;
+                this.$.getPerson.go();
+                this.$.person_details.toggle();
+            }
+        });
+    </script>
+</polymer-element>

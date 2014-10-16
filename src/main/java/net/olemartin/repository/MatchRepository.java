@@ -24,4 +24,9 @@ public interface MatchRepository extends GraphRepository<Match> {
             "match.result IS NULL " +
             "RETURN match")
     Result<Match> retrieveCurrentRoundsMatches(@Param("tournamentId") Long tournamentId);
+
+    @Query("MATCH (m:Match) -[rel]- () " +
+            "WHERE NOT m -- (:Round) " +
+            "DELETE rel, m")
+    void deleteLooseMatches();
 }

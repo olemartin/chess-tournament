@@ -29,7 +29,7 @@ public class Player implements Comparable<Player> {
 
     private String name;
     private double score;
-    private StringBuffer colors;
+    private String colors;
 
     @RelatedTo(type = "MET", direction = Direction.BOTH)
     @Fetch
@@ -45,9 +45,14 @@ public class Player implements Comparable<Player> {
     private double monrad;
     private double berger;
 
+    private int tournamentRank;
+
     @RelatedTo(type = "IS_PLAYER", direction = Direction.INCOMING)
     @Fetch
     private Person person;
+
+    @RelatedTo(type = "PLAYS_IN", direction = Direction.OUTGOING)
+    private Tournament tournament;
 
     private Player() {
     }
@@ -58,6 +63,7 @@ public class Player implements Comparable<Player> {
 
     public Player(Person person) {
         this.person = person;
+        person.addPlayer(this);
     }
 
     public void setMonradAndBerger(Iterable<Player> wonIterable, Iterable<Player> remisIterable) {
@@ -134,16 +140,16 @@ public class Player implements Comparable<Player> {
     }
 
     public String getName() {
-        return name;
+        return person != null ? person.getName() : "no-name";
     }
 
     public void countRound(Color color, Player otherPlayer) {
         this.newOpponent = otherPlayer;
         playersMet.add(otherPlayer);
         if (colors == null) {
-            colors = new StringBuffer();
+            colors = "";
         }
-        colors.append(color.name()).append(":");
+        colors += color.name() + ":";
     }
 
     private long numberOfRounds(Color color) {
@@ -202,7 +208,7 @@ public class Player implements Comparable<Player> {
         playersMet.remove(newOpponent);
         LinkedList<Color> matches = asLinkedList();
         matches.removeLast();
-        colors = new StringBuffer(matches.stream().map(Enum::name).collect(joining(":", "", ":")));
+        colors = matches.stream().map(Enum::name).collect(joining(":", "", ":"));
     }
 
     public Set<Player> hasMet() {
@@ -253,14 +259,24 @@ public class Player implements Comparable<Player> {
         return person;
     }
 
+    public void setTournamentRank(int tournamentRank) {
+        this.tournamentRank = tournamentRank;
+    }
+
+    public int getTournamentRank() {
+        return tournamentRank;
+    }
+
+    public Tournament getTournament() {
+        return tournament;
+    }
+
     public static class PlayerSerializer implements JsonSerializer<Player> {
         @Override
         public JsonElement serialize(Player player, Type typeOfSrc, JsonSerializationContext context) {
             JsonObject root = new JsonObject();
             root.addProperty("id", player.id);
-            if (player.person != null) {
-                root.addProperty("name", player.person.getName());
-            }
+            root.addProperty("name", player.getName());
             root.addProperty("score", player.score);
             root.addProperty("roundResults", player.roundResults);
             root.addProperty("monrad", player.monrad);

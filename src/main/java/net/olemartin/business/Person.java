@@ -1,11 +1,9 @@
 package net.olemartin.business;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.google.gson.*;
 import net.olemartin.rating.EloRatingSystem;
 import org.neo4j.graphdb.Direction;
+import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
@@ -20,11 +18,12 @@ public class Person {
     private Long id;
 
     @RelatedTo(type = "IS_PLAYER", direction = Direction.OUTGOING)
+    @Fetch
     private Set<Player> players;
 
     private String name;
 
-    private int rating;
+    private int rating = 1200;
 
 
     private Person() {
@@ -47,13 +46,27 @@ public class Person {
         return name;
     }
 
+    public Set<Player> getPlayers() {
+        return players;
+    }
+
+    public void addPlayer(Player player) {
+        players.add(player);
+    }
+
     public static class PersonSerializer implements JsonSerializer<Person> {
         @Override
         public JsonElement serialize(Person person, Type typeOfSrc, JsonSerializationContext context) {
+            JsonSerializer<Player> playerSerializer = new Player.PlayerSerializer();
             JsonObject root = new JsonObject();
             root.addProperty("id", person.id);
             root.addProperty("name", person.name);
             root.addProperty("rating", person.rating);
+
+            JsonArray playerArray = new JsonArray();
+            person.players.stream().forEach(player -> playerArray.add(playerSerializer.serialize(player, Player.class, context)));
+            root.add("players", playerArray);
+
 
             return root;
         }

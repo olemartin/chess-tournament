@@ -3,6 +3,7 @@ package net.olemartin.resources;
 import net.olemartin.business.Person;
 import net.olemartin.business.Tournament;
 import net.olemartin.service.PersonService;
+import net.olemartin.view.PersonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +38,13 @@ public class PersonResource {
     public List<Person> getPersons() {
         return personService.getPersons();
     }
+
+    @Path("/{id}")
+    @GET
+    public PersonView getPerson(@PathParam("id")Long id) {
+        return personService.getPerson(id);
+    }
+
 
 
     @Path("/new")

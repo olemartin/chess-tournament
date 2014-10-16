@@ -44,7 +44,7 @@ public class MatchService {
         }
         int roundNumber = tournament.increaseRound();
         Round round = new Round(tournament, roundNumber);
-        Monrad monrad = new Monrad(new Randomizer(), tournament.getPlayers());
+        Monrad monrad = new Monrad(new Randomizer(), playerRepository.playersInTournament(tournamentId));
         List<Match> matches = monrad.round(roundNumber);
 
         matches.stream().forEach(round::addMatch);
@@ -53,7 +53,7 @@ public class MatchService {
         tournament.addRound(round);
         matchRepository.save(matches);
         tournamentRepository.save(tournament);
-        playerRepository.save(tournament.getPlayers());
+        playerRepository.save(monrad.getPlayers());
         return matches;
     }
 

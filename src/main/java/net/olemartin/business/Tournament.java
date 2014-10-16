@@ -20,7 +20,6 @@ public class Tournament {
     private int currentRound;
 
     @RelatedTo(type = "PLAYS_IN", direction = Direction.INCOMING)
-    @Fetch
     private Set<Player> players;
 
     @RelatedTo(type = "ROUND_OF", direction = Direction.OUTGOING)

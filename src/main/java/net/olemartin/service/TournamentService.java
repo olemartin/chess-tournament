@@ -2,12 +2,10 @@ package net.olemartin.service;
 
 import net.olemartin.business.*;
 import net.olemartin.rating.EloRatingSystem;
-import net.olemartin.repository.MatchRepository;
-import net.olemartin.repository.PersonRepository;
-import net.olemartin.repository.PlayerRepository;
-import net.olemartin.repository.TournamentRepository;
+import net.olemartin.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.conversion.Result;
+import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,7 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Transactional
@@ -25,13 +24,17 @@ public class TournamentService {
     private MatchRepository matchRepository;
     private PlayerRepository playerRepository;
     private PersonRepository personRepository;
+    private RoundRepository roundRepository;
+    private Neo4jTemplate neo4jTemplate;
 
     @Autowired
-    public TournamentService(TournamentRepository tournamentRepository, MatchRepository matchRepository, PlayerRepository playerRepository, PersonRepository personRepository) {
+    public TournamentService(TournamentRepository tournamentRepository, MatchRepository matchRepository, PlayerRepository playerRepository, PersonRepository personRepository, RoundRepository roundRepository, Neo4jTemplate neo4jTemplate) {
         this.tournamentRepository = tournamentRepository;
         this.matchRepository = matchRepository;
         this.playerRepository = playerRepository;
         this.personRepository = personRepository;
+        this.roundRepository = roundRepository;
+        this.neo4jTemplate = neo4jTemplate;
     }
 
     public Tournament save(Tournament tournament) {
@@ -46,9 +49,14 @@ public class TournamentService {
         Tournament tournament = retrieve(tournamentId);
         tournament.setFinished(true);
         tournament.calculateRatings(EloRatingSystem.getInstance(tournament.getName()));
+        List<Player> players = tournament.getPlayers().stream().sorted().collect(toList());
+
+        for (int i = 0; i < players.size(); i++) {
+            players.get(i).setTournamentRank(i + 1);
+        }
         save(tournament);
         playerRepository.save(tournament.getPlayers());
-        personRepository.save(tournament.getPlayers().stream().map(Player::getPerson).collect(Collectors.toList()));
+        personRepository.save(tournament.getPlayers().stream().map(Player::getPerson).collect(toList()));
     }
 
     public void addPlayers(Long tournamentId, List<Person> persons) {
@@ -81,21 +89,26 @@ public class TournamentService {
     }
 
     public List<Round> retrieveRounds(Long tournamentId) {
-        return tournamentRepository.findOne(tournamentId).getRounds().stream().sorted().collect(Collectors.toList());
+        return tournamentRepository.findOne(tournamentId).getRounds().stream().sorted().collect(toList());
     }
 
     public void delete(Long tournamentId) {
         tournamentRepository.delete(tournamentId);
+        playerRepository.deleteLoosePlayers();
+        roundRepository.deleteLooseRounds();
+        matchRepository.deleteLooseMatches();
     }
 
     public List<Player> retrievePlayers(Long tournamentId) {
         Set<Player> players = retrieve(tournamentId).getPlayers();
+
         for (Player player : players) {
+            player = neo4jTemplate.fetch(player);
             player.setRoundScore(
                     matchRepository.findMatchesPlayerPlayed(player.getId()),
                     tournamentRepository.findPlayersTournament(player.getId()).getPlayers());
         }
-        return players.stream().sorted().collect(Collectors.toList());
+        return players.stream().sorted().collect(toList());
     }
 
 }
