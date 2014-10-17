@@ -1,7 +1,6 @@
 package net.olemartin.business;
 
 import com.google.gson.*;
-import net.olemartin.rating.EloRatingSystem;
 import org.neo4j.graphdb.Direction;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.GraphId;
@@ -29,9 +28,8 @@ public class Person {
     private Person() {
     }
 
-    public void calculateRating(EloRatingSystem system, Set<Round> rounds) {
-
-
+    public Person(String name) {
+        this.name = name;
     }
 
     public int getRating() {

@@ -34,6 +34,10 @@ public class Tournament {
 
     }
 
+    public Tournament(String name) {
+        this.name = name;
+    }
+
     public void calculateRatings(EloRatingSystem system) {
         for (Round round : rounds.stream().sorted().collect(Collectors.toList())) {
             for (Match match : round.getMatches()) {

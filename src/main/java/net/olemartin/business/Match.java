@@ -108,6 +108,10 @@ public class Match implements Comparable<Match>{
         return looser;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public static class MatchSerializer implements JsonSerializer<Match> {
 
         @Override

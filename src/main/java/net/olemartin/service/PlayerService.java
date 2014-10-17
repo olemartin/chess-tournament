@@ -1,13 +1,12 @@
 package net.olemartin.service;
 
+import com.google.common.collect.Lists;
 import net.olemartin.business.Player;
 import net.olemartin.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.conversion.Result;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedList;
 import java.util.List;
 
 @Service
@@ -22,12 +21,7 @@ public class PlayerService {
     }
 
     public List<Player> getPlayers() {
-        Result<Player> result = playerRepository.findAll();
-        List<Player> players = new LinkedList<>();
-        for (Player player : result) {
-            players.add(player);
-        }
-        return players;
+        return Lists.newArrayList(playerRepository.findAll());
     }
 
     public void save(Player player) {
