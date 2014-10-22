@@ -29,7 +29,7 @@ public class Player implements Comparable<Player> {
 
     private String name;
     private double score;
-    private String colors;
+    private String colors = "";
 
     @RelatedTo(type = "MET", direction = Direction.BOTH)
     @Fetch
@@ -53,6 +53,7 @@ public class Player implements Comparable<Player> {
 
     @RelatedTo(type = "PLAYS_IN", direction = Direction.OUTGOING)
     private Tournament tournament;
+    private boolean walkover;
 
     private Player() {
     }
@@ -106,18 +107,23 @@ public class Player implements Comparable<Player> {
         List<String> result = new ArrayList<>();
 
         matches.forEach(match -> {
-            Player opponent = getOpponent(match);
-            int position = allPlayers.indexOf(opponent) + 1;
+
             if (match.hasResult()) {
-                if (match.getResult() == Result.REMIS) {
-                    result.add("=" + position);
-                } else if (match.getWinner().id.equals(id)) {
-                    result.add("+" + position);
+                if (match.getResult() == Result.WALKOVER) {
+                    result.add("WO");
                 } else {
-                    result.add("-" + position);
+                    Player opponent = getOpponent(match);
+                    int position = allPlayers.indexOf(opponent) + 1;
+                    if (match.getResult() == Result.REMIS) {
+                        result.add("=" + position);
+                    } else if (match.getWinner().id.equals(id)) {
+                        result.add("+" + position);
+                    } else {
+                        result.add("-" + position);
+                    }
                 }
             } else {
-                result.add("?" + position);
+                result.add("?");
             }
         });
         roundResults = result.stream().collect(joining(", "));
@@ -146,6 +152,15 @@ public class Player implements Comparable<Player> {
     public void countRound(Color color, Player otherPlayer) {
         this.newOpponent = otherPlayer;
         playersMet.add(otherPlayer);
+        addColor(color);
+    }
+
+    public void countWalkover() {
+        this.walkover = true;
+        addColor(Color.WHITE);
+    }
+
+    private void addColor(Color color) {
         if (colors == null) {
             colors = "";
         }
@@ -271,7 +286,11 @@ public class Player implements Comparable<Player> {
         return tournament;
     }
 
-    public static class PlayerSerializer implements JsonSerializer<Player> {
+    public boolean hasWalkover() {
+        return walkover;
+    }
+
+        public static class PlayerSerializer implements JsonSerializer<Player> {
         @Override
         public JsonElement serialize(Player player, Type typeOfSrc, JsonSerializationContext context) {
             JsonObject root = new JsonObject();

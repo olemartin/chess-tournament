@@ -15,13 +15,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 @NodeEntity
-public class Match implements Comparable<Match>{
+public class Match implements Comparable<Match> {
 
     @GraphId
     private Long id;
 
+    private boolean walkover;
+
     private Result result;
-    
+
     @RelatedTo(type = "WHITE", direction = Direction.OUTGOING)
     @Fetch
     private Player white;
@@ -55,6 +57,13 @@ public class Match implements Comparable<Match>{
         black.countRound(Color.BLACK, white);
     }
 
+    public Match(Player walkover) {
+        this.white = walkover;
+        this.walkover = true;
+        players.add(white);
+        white.countWalkover();
+    }
+
     public Player getWhite() {
         return white;
     }
@@ -79,6 +88,10 @@ public class Match implements Comparable<Match>{
             case REMIS:
                 white.increaseScore(0.5);
                 black.increaseScore(0.5);
+                break;
+            case WALKOVER:
+                white.increaseScore(1);
+                winner = white;
                 break;
         }
     }
@@ -112,6 +125,10 @@ public class Match implements Comparable<Match>{
         return id;
     }
 
+    public boolean isWalkover() {
+        return walkover;
+    }
+
     public static class MatchSerializer implements JsonSerializer<Match> {
 
         @Override
@@ -120,7 +137,9 @@ public class Match implements Comparable<Match>{
             JsonObject root = new JsonObject();
             root.addProperty("id", src.id);
             root.add("white", playerSerializer.serialize(src.white, Player.class, context));
-            root.add("black", playerSerializer.serialize(src.black, Player.class, context));
+            if (src.black != null) {
+                root.add("black", playerSerializer.serialize(src.black, Player.class, context));
+            }
             if (src.result != null) {
                 root.addProperty("result", src.result.name());
             }

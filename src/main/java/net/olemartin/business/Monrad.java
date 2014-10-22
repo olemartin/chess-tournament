@@ -38,6 +38,11 @@ public class Monrad {
             for (int i = 0; i < players.size() - 1; i += 2) {
                 matches.add(new Match(players.get(i + 1), players.get(i)));
             }
+            if (players.size() % 2 == 1) {
+                Match walkoverMatch = new Match(players.get(players.size() - 1));
+                walkoverMatch.reportResult(Result.WALKOVER);
+                matches.add(walkoverMatch);
+            }
         } else {
             System.out.println("Current round: " + round + "\n\n");
             otherRounds(matches);
@@ -49,11 +54,30 @@ public class Monrad {
 
         LinkedList<Player> pickedPlayers = new LinkedList<>();
         triedCombinations = new HashSet<>();
+
+        if (players.size() % 2 == 1) {
+            Player walkoverPlayer = findLowestRankedPlayerWithoutWalkover(players);
+            pickedPlayers.add(walkoverPlayer);
+            Match walkoverMatch = new Match(walkoverPlayer);
+            walkoverMatch.reportResult(Result.WALKOVER);
+            matches.add(walkoverMatch);
+        }
+
         while (pickedPlayers.size() != players.size()) {
             Player player = players.stream().filter(p -> !pickedPlayers.contains(p)).findFirst().get();
             System.out.println("Trying player " + player.getName());
             pickPlayer(matches, pickedPlayers, player, false);
         }
+    }
+
+    private Player findLowestRankedPlayerWithoutWalkover(List<Player> players) {
+        for (int i = players.size() - 1; i >= 0; i--) {
+            Player player = players.get(i);
+            if (!player.hasWalkover() && player.mustHaveColor() != Color.BLACK) {
+                return player;
+            }
+        }
+        throw new IllegalStateException("All players has had walkover");
     }
 
     private void pickPlayer(LinkedList<Match> matches, LinkedList<Player> pickedPlayers, Player player1, boolean overrideThreeRule) {
@@ -65,7 +89,7 @@ public class Monrad {
                 .filter(p -> p != player1)
                 .filter(p -> !pickedPlayers.contains(p))
                 .filter(p -> !p.hasMet(player1))
-                .filter(p -> overrideThreeRule || mustHave == null || p.mustHaveColor() == null || (p.mustHaveColor() != null && mustHave != p.mustHaveColor()))
+                .filter(p -> matchColor(overrideThreeRule, mustHave, p))
                 .filter(p -> !triedCombination(pickedPlayers, player1, p))
                 .toArray();
 
@@ -96,6 +120,13 @@ public class Monrad {
         updateTriedCombination(pickedPlayers);
     }
 
+    private boolean matchColor(boolean overrideThreeRule, Color mustHave, Player p) {
+        return overrideThreeRule
+                || mustHave == null
+                || p.mustHaveColor() == null
+                || mustHave != p.mustHaveColor();
+    }
+
     private void updateTriedCombination(LinkedList<Player> pickedPlayers) {
         String collect = pickedPlayers.stream().map(Player::getName).collect(joining(", "));
         triedCombinations.add(collect);
@@ -120,7 +151,7 @@ public class Monrad {
 
     private void rollback(LinkedList<Match> matches, LinkedList<Player> pickedPlayers, Player player) {
         System.out.println("Rolling back because of player " + player.getName());
-        if (pickedPlayers.size() < 2 || matches.size() < 1) {
+        if (pickedPlayers.size() == 0 || (matches.size() == 0 || (matches.size() == 1 && matches.get(0).isWalkover()))) {
             System.out.println(triedCombinations.size() + ". " + pickedPlayers.stream().map(Player::getName).collect(joining(", ")));
             pickPlayer(matches, pickedPlayers, player, true);
         } else {

@@ -47,6 +47,9 @@ public class TournamentService {
 
     public void finishTournament(Long tournamentId) {
         Tournament tournament = retrieve(tournamentId);
+        if (tournament.isFinished()) {
+            throw new IllegalStateException("Tournament already finished");
+        }
         tournament.setFinished(true);
         tournament.calculateRatings(EloRatingSystem.getInstance(tournament.getName()));
         List<Player> players = tournament.getPlayers().stream().sorted().collect(toList());

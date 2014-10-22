@@ -73,9 +73,17 @@
                 this.$.updatePlayers.go();
             },
             connected: function () {
-                this.$.websocket.send("Hello");
+                this.$.websocket.send("ping");
+                this.$.ping();
+            },
+            ping : function () {
+                setTimeout(function(){
+                    this.$.websocket.send("ping");
+                    this.$.ping();
+                }, 60000);
             }
         });
+
     </script>
 
 </polymer-element>

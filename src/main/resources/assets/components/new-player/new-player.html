@@ -112,6 +112,7 @@
             },
             playerAdded: function () {
                 this.$.getPersons.go();
+                this.fire("tournament_updated");
             },
             personsRetrieved: function (e) {
                 this.persons = e.detail.response;
@@ -120,6 +121,7 @@
                 this.$.addPerson.go();
             },
             personCreated:function() {
+                this.personName = '';
                 this.$.getPersons.go();
             }
         });

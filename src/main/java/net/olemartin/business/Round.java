@@ -70,7 +70,7 @@ public class Round implements Comparable<Round> {
             root.addProperty("id", src.id);
             root.addProperty("number", src.number);
             JsonArray array = new JsonArray();
-            src.matches.stream().sorted().forEach(match -> array.add(matchSerializer.serialize(match, Match.class, context)));
+            src.matches.stream().filter(m -> !m.isWalkover()).forEach(match -> array.add(matchSerializer.serialize(match, Match.class, context)));
             root.add("matches", array);
             return root;
         }

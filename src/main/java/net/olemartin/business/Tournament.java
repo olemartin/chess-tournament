@@ -7,7 +7,8 @@ import org.springframework.data.neo4j.annotation.*;
 
 import java.lang.reflect.Type;
 import java.util.Set;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @NodeEntity
 public class Tournament {
@@ -39,8 +40,8 @@ public class Tournament {
     }
 
     public void calculateRatings(EloRatingSystem system) {
-        for (Round round : rounds.stream().sorted().collect(Collectors.toList())) {
-            for (Match match : round.getMatches()) {
+        for (Round round : rounds.stream().sorted().collect(toList())) {
+            for (Match match : round.getMatches().stream().filter(match1 -> !match1.isWalkover()).collect(toList())) {
 
                 if (match.getResult() == Result.REMIS) {
                     Person white = match.getWhite().getPerson();

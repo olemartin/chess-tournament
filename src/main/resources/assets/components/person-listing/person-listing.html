@@ -58,6 +58,9 @@
             personTapped:function (e, detail, target) {
                 personId = target.getAttribute("data-id");
                 this.$.personDetails.show(personId);
+            },
+            update: function() {
+                this.$.getPersons.go();
             }
         });
 
