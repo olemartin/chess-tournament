@@ -181,7 +181,7 @@ public class Player implements Comparable<Player> {
         } else if (white > blacks) {
             return BLACK;
         } else {
-            return asLinkedList().getLast();
+            return asLinkedList().getLast().getOther();
         }
     }
 
@@ -200,9 +200,18 @@ public class Player implements Comparable<Player> {
     public Color mustHaveColor() {
         LinkedList<Color> matches = asLinkedList();
         if (matches.size() >= 2) {
-            if (matches.get(matches.size() - 2) == matches.get(matches.size() - 1)) {
-                return matches.get(matches.size() - 2).getOther();
+            if (matches.get(matches.size() - 2) == matches.getLast()) {
+                return matches.getLast().getOther();
+            } else {
+                long blacks = numberOfRounds(BLACK);
+                long white = numberOfRounds(WHITE);
+                if (blacks - white >= 2) {
+                    return WHITE;
+                } else if ( white - blacks >= 2) {
+                    return BLACK;
+                }
             }
+
         }
         return null;
     }
@@ -211,7 +220,8 @@ public class Player implements Comparable<Player> {
     public String toString() {
         return "Player{" +
                 "score=" + score +
-                ", name='" + name + '\'' +
+                ", name='" + getName() + '\'' +
+                ", colors='" + asLinkedList() + '\'' +
                 '}';
     }
 
@@ -290,7 +300,11 @@ public class Player implements Comparable<Player> {
         return walkover;
     }
 
-        public static class PlayerSerializer implements JsonSerializer<Player> {
+    public LinkedList<Color> getColors() {
+        return asLinkedList();
+    }
+
+    public static class PlayerSerializer implements JsonSerializer<Player> {
         @Override
         public JsonElement serialize(Player player, Type typeOfSrc, JsonSerializationContext context) {
             JsonObject root = new JsonObject();

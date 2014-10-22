@@ -43,10 +43,10 @@ public class MatchService {
             throw new IllegalArgumentException("Current round is not finished.");
         }
         int roundNumber = tournament.increaseRound();
-        Round round = new Round(tournament, roundNumber);
         Monrad monrad = new Monrad(new Randomizer(), playerRepository.playersInTournament(tournamentId));
         List<Match> matches = monrad.round(roundNumber);
 
+        Round round = new Round(tournament, roundNumber);
         matches.stream().forEach(round::addMatch);
 
         round = roundRepository.save(round);

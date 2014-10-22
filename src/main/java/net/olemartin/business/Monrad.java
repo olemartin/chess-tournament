@@ -3,6 +3,7 @@ package net.olemartin.business;
 import com.google.common.collect.Lists;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 import static net.olemartin.business.Color.BLACK;
@@ -24,7 +25,7 @@ public class Monrad {
     }
 
     public void init() {
-        random.shuffle(players);
+
     }
 
     public List<Player> getPlayers() {
@@ -66,7 +67,7 @@ public class Monrad {
         while (pickedPlayers.size() != players.size()) {
             Player player = players.stream().filter(p -> !pickedPlayers.contains(p)).findFirst().get();
             System.out.println("Trying player " + player.getName());
-            pickPlayer(matches, pickedPlayers, player, false);
+            pickPlayer(matches, pickedPlayers, player, false, 0);
         }
     }
 
@@ -80,32 +81,34 @@ public class Monrad {
         throw new IllegalStateException("All players has had walkover");
     }
 
-    private void pickPlayer(LinkedList<Match> matches, LinkedList<Player> pickedPlayers, Player player1, boolean overrideThreeRule) {
+    private void pickPlayer(LinkedList<Match> matches, LinkedList<Player> pickedPlayers, Player player1, boolean overrideThreeRule, int rollbackCount) {
 
 
         Color mustHave = player1.mustHaveColor();
+        Color color1 = player1.nextOptimalColor();
 
-        Object[] opponents = players.stream()
+        List<Player> opponents = players.stream()
                 .filter(p -> p != player1)
                 .filter(p -> !pickedPlayers.contains(p))
                 .filter(p -> !p.hasMet(player1))
                 .filter(p -> matchColor(overrideThreeRule, mustHave, p))
                 .filter(p -> !triedCombination(pickedPlayers, player1, p))
-                .toArray();
+                .collect(Collectors.toList());
 
         Player player2;
-        if (opponents.length == 0) {
-            rollback(matches, pickedPlayers, player1);
+        if (opponents.isEmpty()) {
+            rollback(matches, pickedPlayers, player1, rollbackCount);
             return;
         } else {
-            player2 = (Player) opponents[0];
+            Optional<Player> opponent = opponents.stream().filter(p -> p.nextOptimalColor() != color1).findFirst();
+            player2 = opponent.orElse(opponents.get(0));
         }
-        Color color1 = player1.nextOptimalColor();
+
         Color color2 = player2.nextOptimalColor();
 
-        if (mustHave == WHITE) {
+        if (mustHave == WHITE || player2.mustHaveColor() == BLACK) {
             matches.add(new Match(player1, player2));
-        } else if (mustHave == BLACK) {
+        } else if (mustHave == BLACK || player2.mustHaveColor() == WHITE) {
             matches.add(new Match(player2, player1));
         } else if (color1 == color2) {
             matches.add(new Match(player2, player1));
@@ -149,18 +152,21 @@ public class Monrad {
         return triedCombinations.contains(combination);
     }
 
-    private void rollback(LinkedList<Match> matches, LinkedList<Player> pickedPlayers, Player player) {
+    private void rollback(LinkedList<Match> matches, LinkedList<Player> pickedPlayers, Player player, int rollbackCount) {
         System.out.println("Rolling back because of player " + player.getName());
         if (pickedPlayers.size() == 0 || (matches.size() == 0 || (matches.size() == 1 && matches.get(0).isWalkover()))) {
-            System.out.println(triedCombinations.size() + ". " + pickedPlayers.stream().map(Player::getName).collect(joining(", ")));
-            pickPlayer(matches, pickedPlayers, player, true);
+            if (rollbackCount > 10) {
+                throw new NotPossibleException();
+            }
+            System.out.println("!!!!!!!!!!!!Overriding max three equal rounds rule!!!!!!!!");
+            pickPlayer(matches, pickedPlayers, player, true, rollbackCount+1);
         } else {
             pickedPlayers.removeLast();
             pickedPlayers.removeLast();
             matches.getLast().getBlack().removeLastOpponent();
             matches.getLast().getWhite().removeLastOpponent();
             matches.removeLast();
-            pickPlayer(matches, pickedPlayers, player, false);
+            pickPlayer(matches, pickedPlayers, player, false, rollbackCount);
         }
     }
 
