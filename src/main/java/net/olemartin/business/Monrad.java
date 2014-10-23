@@ -25,7 +25,7 @@ public class Monrad {
     }
 
     public void init() {
-
+        random.shuffle(players);
     }
 
     public List<Player> getPlayers() {
@@ -54,7 +54,6 @@ public class Monrad {
     private void otherRounds(LinkedList<Match> matches) {
 
         LinkedList<Player> pickedPlayers = new LinkedList<>();
-        triedCombinations = new HashSet<>();
 
         if (players.size() % 2 == 1) {
             Player walkoverPlayer = findLowestRankedPlayerWithoutWalkover(players);
@@ -64,10 +63,20 @@ public class Monrad {
             matches.add(walkoverMatch);
         }
 
-        while (pickedPlayers.size() != players.size()) {
-            Player player = players.stream().filter(p -> !pickedPlayers.contains(p)).findFirst().get();
-            System.out.println("Trying player " + player.getName());
-            pickPlayer(matches, pickedPlayers, player, false, 0);
+        try {
+            triedCombinations = new HashSet<>();
+            while (pickedPlayers.size() != players.size()) {
+                Player player = players.stream().filter(p -> !pickedPlayers.contains(p)).findFirst().get();
+                System.out.println("Trying player " + player.getName());
+                pickPlayer(matches, pickedPlayers, player, false);
+            }
+        } catch (NotPossibleException e) {
+            triedCombinations = new HashSet<>();
+            while (pickedPlayers.size() != players.size()) {
+                Player player = players.stream().filter(p -> !pickedPlayers.contains(p)).findFirst().get();
+                System.out.println("Trying player " + player.getName());
+                pickPlayer(matches, pickedPlayers, player, true);
+            }
         }
     }
 
@@ -81,7 +90,7 @@ public class Monrad {
         throw new IllegalStateException("All players has had walkover");
     }
 
-    private void pickPlayer(LinkedList<Match> matches, LinkedList<Player> pickedPlayers, Player player1, boolean overrideThreeRule, int rollbackCount) {
+    private void pickPlayer(LinkedList<Match> matches, LinkedList<Player> pickedPlayers, Player player1, boolean overrideThreeRule) {
 
 
         Color mustHave = player1.mustHaveColor();
@@ -97,7 +106,7 @@ public class Monrad {
 
         Player player2;
         if (opponents.isEmpty()) {
-            rollback(matches, pickedPlayers, player1, rollbackCount);
+            rollback(matches, pickedPlayers, player1, overrideThreeRule);
             return;
         } else {
             Optional<Player> opponent = opponents.stream().filter(p -> p.nextOptimalColor() != color1).findFirst();
@@ -152,21 +161,19 @@ public class Monrad {
         return triedCombinations.contains(combination);
     }
 
-    private void rollback(LinkedList<Match> matches, LinkedList<Player> pickedPlayers, Player player, int rollbackCount) {
+    private void rollback(LinkedList<Match> matches, LinkedList<Player> pickedPlayers, Player player, boolean override) {
         System.out.println("Rolling back because of player " + player.getName());
         if (pickedPlayers.size() == 0 || (matches.size() == 0 || (matches.size() == 1 && matches.get(0).isWalkover()))) {
-            if (rollbackCount > 10) {
-                throw new NotPossibleException();
-            }
-            System.out.println("!!!!!!!!!!!!Overriding max three equal rounds rule!!!!!!!!");
-            pickPlayer(matches, pickedPlayers, player, true, rollbackCount+1);
+            System.out.println("Tried combinations: " + triedCombinations.size());
+            System.out.println("\n\n\n\n FAILED \n\n\n\n");
+            throw new NotPossibleException();
         } else {
             pickedPlayers.removeLast();
             pickedPlayers.removeLast();
             matches.getLast().getBlack().removeLastOpponent();
             matches.getLast().getWhite().removeLastOpponent();
             matches.removeLast();
-            pickPlayer(matches, pickedPlayers, player, false, rollbackCount);
+            pickPlayer(matches, pickedPlayers, player, override);
         }
     }
 

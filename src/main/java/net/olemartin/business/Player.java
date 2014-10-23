@@ -187,10 +187,10 @@ public class Player implements Comparable<Player> {
 
     private LinkedList<Color> asLinkedList() {
         return new LinkedList<>(Arrays.asList(
-                colors.toString().split(":"))
+                colors.split(":"))
                 .stream()
                 .map(Color::valueOf)
-                .collect(Collectors.toList()));
+                .collect(toList()));
     }
 
     public boolean hasMet(Player otherPlayer) {
@@ -207,7 +207,7 @@ public class Player implements Comparable<Player> {
                 long white = numberOfRounds(WHITE);
                 if (blacks - white >= 2) {
                     return WHITE;
-                } else if ( white - blacks >= 2) {
+                } else if (white - blacks >= 2) {
                     return BLACK;
                 }
             }
@@ -219,9 +219,12 @@ public class Player implements Comparable<Player> {
     @Override
     public String toString() {
         return "Player{" +
-                "score=" + score +
+                " id=" + id +
+                ", score=" + score +
                 ", name='" + getName() + '\'' +
                 ", colors='" + asLinkedList() + '\'' +
+                ", met='" + playersMet.stream().map(p -> String.valueOf(p.getId())).collect(Collectors.joining(",")) + '\'' +
+                ", must='" + mustHaveColor() + '\'' +
                 '}';
     }
 
@@ -236,10 +239,6 @@ public class Player implements Comparable<Player> {
         colors = matches.stream().map(Enum::name).collect(joining(":", "", ":"));
     }
 
-    public Set<Player> hasMet() {
-        return playersMet;
-    }
-
     @Override
     public int compareTo(Player p2) {
         double score1 = getScore();
@@ -250,7 +249,16 @@ public class Player implements Comparable<Player> {
             int monrad = (int) (1000.0 * (p2.monrad - this.monrad));
             int berger = (int) (1000.0 * (p2.berger - this.berger));
 
-            return monrad2 == 0 ? monrad1 == 0 ? monrad == 0 ? berger : monrad : monrad1 : monrad2;
+            return
+                    monrad2 == 0 ?
+                            monrad1 == 0 ?
+                                    monrad == 0 ?
+                                            berger == 0 ?
+                                                    id.compareTo(p2.id)
+                                                    : berger
+                                            : monrad
+                                    : monrad1
+                            : monrad2;
         } else {
             return (int) (1000.0 * (score2 - score1));
         }
@@ -263,10 +271,8 @@ public class Player implements Comparable<Player> {
 
         Player player = (Player) o;
 
-        if (id != null ? !id.equals(player.id) : player.id != null) return false;
-        if (name != null ? !name.equals(player.name) : player.name != null) return false;
-
-        return true;
+        return !(id != null ? !id.equals(player.id) : player.id != null) && !(name != null ? !name.equals(player.name) :
+                player.name != null);
     }
 
     @Override
