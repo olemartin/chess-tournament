@@ -132,6 +132,7 @@ public class Tournament {
             if (tournament.round != null) {
                 root.add("currentRound", roundSerializer.serialize(tournament.round, Round.class, context));
             }
+            root.addProperty("finished", tournament.finished);
             return root;
         }
     }

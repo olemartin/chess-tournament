@@ -1,4 +1,3 @@
-
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html"/>
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html"/>
@@ -15,11 +14,16 @@
                 margin-bottom: 30px;
                 padding: 20px 20px 40px;
             }
-            .item {
+
+            .tournaments {
                 border-bottom: solid thin #373b50;
             }
+
             .button {
                 text-align: left;
+            }
+            .finished {
+                font-style: italic;
             }
         </style>
         <h2>Registered tournaments</h2>
@@ -27,23 +31,25 @@
         <div horizontal layout>
             <div flex></div>
             <div flex two vertical layout class="list">
-                <paper-shadow id="myShadow" z="1"></paper-shadow>
-                <template repeat="{{data}}">
-                    <div horizontal layout class="item">
-                        <paper-button
-                                flex three
-                                link
-                                class="colored button"
-                                on-tap="{{tournamentSelected}}"
-                                data-id="{{id}}"
-                                data-name="{{name}}">{{name}}</paper-button>
-                        <paper-icon-button
-                                flex
-                                on-tap="{{deleteTournament}}"
-                                data-id="{{id}}"
-                                icon="delete"></paper-icon-button>
-                    </div>
-                </template>
+                <paper-shadow id="myShadow" z="1">
+                    <template repeat="{{data}}">
+                        <div horizontal layout class="tournaments">
+                            <paper-button
+                                    flex three
+                                    link
+                                    class="colored button {{ {finished: finished} | tokenList }}"
+                                    on-tap="{{tournamentSelected}}"
+                                    data-id="{{id}}"
+                                    data-name="{{name}}">{{name}}
+                            </paper-button>
+                            <paper-icon-button
+                                    flex
+                                    on-tap="{{deleteTournament}}"
+                                    data-id="{{id}}"
+                                    icon="delete"></paper-icon-button>
+                        </div>
+                    </template>
+                </paper-shadow>
             </div>
             <div flex></div>
         </div>
@@ -76,7 +82,10 @@
                 this.data = e.detail.response;
             },
             tournamentSelected: function (e, detail, sender) {
-                this.fire('tournament_changed', {id: sender.getAttribute("data-id"), name: sender.getAttribute("data-name")});
+                this.fire('tournament_changed', {
+                    id: sender.getAttribute("data-id"),
+                    name: sender.getAttribute("data-name")
+                });
             },
             tournamentCreated: function () {
                 this.$.listTournaments.go();

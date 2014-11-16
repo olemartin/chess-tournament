@@ -25,13 +25,14 @@
         <div horizontal layout>
             <div flex></div>
             <div flex three vertical layout style="align-self: center; margin-bottom: 30px; padding:20px;">
-                <paper-shadow id="myShadow" z="1"></paper-shadow>
+                <paper-shadow id="myShadow" z="1">
                 <template repeat="{{data}}">
                     <div horizontal layout class="person" on-tap="{{personTapped}}" data-id="{{id}}">
                         <div style="text-align: left;" flex three>{{name}}</div>
                         <div flex>{{rating}}</div>
                     </div>
                 </template>
+                </paper-shadow>
             </div>
             <div flex></div>
         </div>

@@ -100,6 +100,11 @@ html /deep/ h3 {
                 font-size: 25px;
                 margin: 15px 0px;
             }
+
+html /deep/ paper-dialog h1 {
+    font-size: 25px;
+    margin: 15px 0px;
+}
 html /deep/ h4 {
                 font-size: 20px;
             }
@@ -510,4 +515,8 @@ html /deep/ .selected {
 html /deep/ .item:hover {
     cursor: pointer;
     background-color: #add8e6;
+}
+
+html /deep/ paper-shadow {
+    padding: 10px;
 }
