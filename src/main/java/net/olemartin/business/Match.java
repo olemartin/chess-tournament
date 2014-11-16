@@ -136,7 +136,9 @@ public class Match implements Comparable<Match> {
             JsonSerializer<Player> playerSerializer = new Player.PlayerSerializer();
             JsonObject root = new JsonObject();
             root.addProperty("id", src.id);
-            root.add("white", playerSerializer.serialize(src.white, Player.class, context));
+            if (src.black != null) {
+                root.add("white", playerSerializer.serialize(src.white, Player.class, context));
+            }
             if (src.black != null) {
                 root.add("black", playerSerializer.serialize(src.black, Player.class, context));
             }

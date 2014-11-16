@@ -39,6 +39,12 @@ public class PersonResource {
         return personService.getPersons();
     }
 
+    @Path("/")
+    @GET
+    public List<Person> getAllPersons() {
+        return personService.getPersons();
+    }
+
     @Path("/{id}")
     @GET
     public PersonView getPerson(@PathParam("id")Long id) {

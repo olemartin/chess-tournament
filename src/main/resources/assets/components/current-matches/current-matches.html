@@ -19,27 +19,24 @@
                             <paper-button
                                     style="width:100%;"
                                     raisedButton
-                                    label="{{white.name}}"
                                     on-tap="{{reportResult}}"
                                     data-matchId="{{id}}"
-                                    data-result="{{'WHITE'}}"/>
+                                    data-result="{{'WHITE'}}">{{white.name}}</paper-button>
                         </td>
                         <td>
                             <paper-button
                                     raisedButton
-                                    label="vs"
                                     on-tap="{{reportResult}}"
                                     data-matchId="{{id}}"
-                                    data-result="{{'REMIS'}}"/>
+                                    data-result="{{'REMIS'}}">vs</paper-button>
                         </td>
                         <td style="padding-left: 5px;padding-right: 5px; text-align: center;">
                             <paper-button
                                     raisedButton
                                     style="width:100%;"
-                                    label="{{black.name}}"
                                     on-tap="{{reportResult}}"
                                     data-matchId="{{id}}"
-                                    data-result="{{'BLACK'}}"/>
+                                    data-result="{{'BLACK'}}">{{black.name}}</paper-button>
                         </td>
                     <tr>
                 </template>
@@ -75,14 +72,12 @@
         <div>
             <paper-button primary
                           raisedButton
-                          label="Next round"
-                          on-tap="{{nextRound}}"/>
+                          on-tap="{{nextRound}}">Next round</paper-button>
         </div>
         <div>
             <paper-button primary
                           raisedButton
-                          label="Finish tournament"
-                          on-tap="{{finish}}"/>
+                          on-tap="{{finish}}">Finish tournament</paper-button>
         </div>
         <core-ajax
                 auto="false"

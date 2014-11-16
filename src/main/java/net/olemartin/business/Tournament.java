@@ -30,6 +30,7 @@ public class Tournament {
     @Query(value = "start n=node({self}) match n-[:ROUND_OF]->round where round.number = n.currentRound return round", elementClass = Round.class)
     private Round round;
     private boolean finished;
+    private String engine;
 
     private Tournament() {
 
@@ -104,6 +105,10 @@ public class Tournament {
 
     public Long getId() {
         return id;
+    }
+
+    public String getEngine() {
+        return engine;
     }
 
 

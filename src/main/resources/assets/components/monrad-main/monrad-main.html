@@ -1,3 +1,4 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html"/>
 <link rel="import" href="../../bower_components/core-animated-pages/core-animated-pages.html"/>
 <link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html"/>
 <link rel="import" href="../../bower_components/core-header-panel/core-header-panel.html"/>
@@ -31,11 +32,11 @@
                 <core-toolbar>
                     <span flex></span>
                     <template if="{{tournamentId}}">
-                        <paper-button id="b2" label="Players" on-tap="{{players_selected}}"></paper-button>
-                        <paper-button id="b3" label="Matches" on-tap="{{matches_selected}}"></paper-button>
+                        <paper-button id="b2" on-tap="{{players_selected}}">Players</paper-button>
+                        <paper-button id="b3" on-tap="{{matches_selected}}">Matches</paper-button>
                     </template>
-                    <paper-button id="b4" label="Tournaments" on-tap="{{tournaments_selected}}"></paper-button>
-                    <paper-button id="b1" label="Persons" on-tap="{{persons_selected}}"></paper-button>
+                    <paper-button id="b4" on-tap="{{tournaments_selected}}">Tournaments</paper-button>
+                    <paper-button id="b1" on-tap="{{persons_selected}}">Persons</paper-button>
                 </core-toolbar>
                 <core-animated-pages selected="{{selected}}" flex auto
                                      transitions="slide-up slide-down cross-fade">

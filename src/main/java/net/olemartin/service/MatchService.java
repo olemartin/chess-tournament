@@ -43,8 +43,11 @@ public class MatchService {
             throw new IllegalArgumentException("Current round is not finished.");
         }
         int roundNumber = tournament.increaseRound();
-        Monrad monrad = new Monrad(new Randomizer(), playerRepository.playersInTournament(tournamentId));
-        List<Match> matches = monrad.round(roundNumber);
+        TournamentEngine tournamentEngine = TournamentEngineFactory.getEngine(
+                new Randomizer(),
+                playerRepository.playersInTournament(tournamentId),
+                tournament.getEngine());
+        List<Match> matches = tournamentEngine.round(roundNumber);
 
         Round round = new Round(tournament, roundNumber);
         matches.stream().forEach(round::addMatch);
@@ -53,7 +56,7 @@ public class MatchService {
         tournament.addRound(round);
         matchRepository.save(matches);
         tournamentRepository.save(tournament);
-        playerRepository.save(monrad.getPlayers());
+        playerRepository.save(tournamentEngine.getPlayers());
         return matches;
     }
 
@@ -77,7 +80,6 @@ public class MatchService {
         playerRepository.save(match.getWhite());
         return match;
     }
-
 
 
     private void updateMonradAndBerger(Player... players) {

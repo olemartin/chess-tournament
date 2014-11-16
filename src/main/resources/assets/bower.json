@@ -1,0 +1,27 @@
+{
+  "name": "monrad",
+  "version": "0.0.0",
+  "homepage": "https://github.com/olemartin/chess-tournament",
+  "authors": [
+    "Ole-Martin Mørk <olemartin@gmail.com>"
+  ],
+  "description": "A chess tournament",
+  "main": "monrad.js",
+  "moduleType": [
+    "globals"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^0.5.1",
+    "core-elements": "Polymer/core-elements#^0.5.1",
+    "paper-elements": "Polymer/paper-elements#^0.5.1"
+  },
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

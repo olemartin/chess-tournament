@@ -5,6 +5,7 @@
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="../../bower_components/core-selector/core-selector.html">
 <link rel="import" href="../../bower_components/core-list/core-list.html">
+<link rel="import" href="../../bower_components/core-label/core-label.html">
 
 <polymer-element name="new-player" attributes="tournamentId" vertical layout>
 
@@ -24,45 +25,52 @@
                 min-width: 300px;
             }
         </style>
-        <paper-dialog heading="Add person" id="new_player">
-            <core-list data="{{persons}}" height="20" on-core-activate="{{itemSelected}}" id="playerlist" multi="true">
-                <template>
-                    <div class="item {{ {selected: selected} | tokenList }}">
-                        {{name}}
-                    </div>
-                </template>
-            </core-list>
+        <paper-dialog id="new_player">
+            <core-label>
+                Choose persons
+            </core-label>
+            <div style="overflow: auto; height:300px;">
+                <core-list data="{{persons}}" style="height:300px" on-core-activate="{{itemSelected}}" id="playerlist" multi="true" flex>
+                    <template>
+                        <div class="item {{ {selected: selected} | tokenList }}">
+                            {{model.name}}
+                        </div>
+                    </template>
+                </core-list>
+            </div>
+
             <div vertical layout>
                 <div>
-                    <paper-icon-button style="margin-bottom: 30px;"
-                                       primary
-                                       raisedButton
-                                       label="Add player to tournament"
-                                       id="send"
-                                       icon="add"
-                                       on-tap="{{doSend}}"/>
+                    <paper-button style="margin-bottom: 30px;"
+                                  primary
+                                  raisedButton
+                                  id="send"
+                                  icon="add"
+                                  on-tap="{{doSend}}">Add player to tournament
+                    </paper-button>
                 </div>
                 <div horizontal layout layout>
                     <div>
-                        <paper-input label="Create new person" floatingLabel="true" value="{{personName}}" id="personName"></paper-input>
+                        <paper-input label="Create new person" floatingLabel="true" value="{{personName}}"
+                                     id="personName"></paper-input>
                     </div>
                     <div horizontal layout center>
-                        <paper-icon-button raisedButton
-                                           label="Create"
-                                           id="newPerson"
-                                           on-tap="{{newPerson}}"
-                                           icon="create"/>
+                        <paper-button raisedButton
+                                      id="newPerson"
+                                      on-tap="{{newPerson}}"
+                                      icon="create">Create
+                        </paper-button>
                     </div>
                 </div>
             </div>
         </paper-dialog>
         <div>
-            <paper-icon-button
-                    label="New player"
+            <paper-button
                     icon="create"
                     raisedButton
                     primary
-                    on-tap="{{openDialog}}"/>
+                    on-tap="{{openDialog}}">New player
+            </paper-button>
         </div>
         <core-ajax
                 auto="true"
@@ -104,7 +112,9 @@
             },
             doSend: function () {
                 if (this.$.playerlist.selection.length > 0) {
-                    this.personsFormatted= this.$.playerlist.selection.map(function(element) { return JSON.stringify(element)});
+                    this.personsFormatted = this.$.playerlist.selection.map(function (element) {
+                        return JSON.stringify(element)
+                    });
                     this.$.addPlayer.go();
                     this.$.playerlist.clearSelection();
                     this.personsFormatted = '';
@@ -116,11 +126,12 @@
             },
             personsRetrieved: function (e) {
                 this.persons = e.detail.response;
+                this.$.playerlist.updateSize();
             },
-            newPerson: function() {
+            newPerson: function () {
                 this.$.addPerson.go();
             },
-            personCreated:function() {
+            personCreated: function () {
                 this.personName = '';
                 this.$.getPersons.go();
             }

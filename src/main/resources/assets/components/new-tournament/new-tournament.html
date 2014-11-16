@@ -2,40 +2,62 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../../bower_components/core-label/core-label.html">
 
 <polymer-element name="new-tournament" vertical layout>
 
     <template>
         <paper-dialog title="New tournament" id="new_tournament">
+            <paper-input value="{{tournamentName}}" id="tournamentName" label="The tournament's name" floatingLabel="true" style="width:100%"></paper-input>
+            <core-label>
+                Choose engine
+            </core-label>
+            <core-list data="{{engines}}" id="engine" multi="false" style="height:150px;" flex>
+                <template>
 
-            <paper-input label="The tournament's name" value="{{tournamentName}}" id="tournamentName"></paper-input>
+                    <div class="item {{ {selected: selected} | tokenList }}">
+                        {{model.name}}
+                    </div>
+                </template>
+            </core-list>
             <paper-button
                     primary
                     raisedButton
-                    label="Send"
                     id="send"
-                    on-tap="{{doSend}}"/>
-
+                    on-tap="{{doSend}}">Send
+            </paper-button>
 
             <core-ajax
                     auto="false"
                     method="POST"
                     url="/rest/tournament/new"
-                    body='{"name":"{{tournamentName}}"}'
+                    body="{{tournamentJSON}}"
                     handleAs="json"
                     id="save"
                     contentType="application/json"
                     on-core-response="{{handleResponse}}"></core-ajax>
+
         </paper-dialog>
 
         <div>
-            <paper-button label="New tournament" raisedButton primary on-tap="{{openDialog}}"/>
+            <paper-button raisedButton primary on-tap="{{openDialog}}">New tournament</paper-button>
         </div>
     </template>
     <script>
         Polymer('new-tournament', {
+            created: function () {
+                this.engines =
+                        [
+                            {"name": "Monrad", "id": "MONRAD"},
+                            {"name": "Round-robin", "id": "ROUND_ROBIN"}
+                        ];
+            },
             doSend: function (e) {
-                this.$.save.go()
+                var tournament = {};
+                tournament.name = this.tournamentName;
+                tournament.engine = this.$.engine.selection.id;
+                this.tournamentJSON = JSON.stringify(tournament);
+                this.$.save.go();
             },
             handleResponse: function (e) {
                 this.fire('tournament_created');
@@ -45,6 +67,8 @@
             },
             openDialog: function (e) {
                 this.$.new_tournament.toggle();
+                that = this;
+                setTimeout(function(){ that.$.engine.updateSize(); }, 100);
             }
         });
     </script>

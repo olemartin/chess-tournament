@@ -9,7 +9,7 @@ import static java.util.stream.Collectors.joining;
 import static net.olemartin.business.Color.BLACK;
 import static net.olemartin.business.Color.WHITE;
 
-public class Monrad {
+public class Monrad implements TournamentEngine {
 
     private final Randomizer random;
     private final List<Player> players;
@@ -18,20 +18,15 @@ public class Monrad {
     public Monrad(Randomizer random, Iterable<Player> players) {
         this.random = random;
         this.players = Lists.newArrayList(players);
+        random.shuffle(this.players);
     }
 
-    public void addPlayer(String name) {
-        players.add(new Player(name));
-    }
-
-    public void init() {
-        random.shuffle(players);
-    }
-
+    @Override
     public List<Player> getPlayers() {
         return players;
     }
 
+    @Override
     public List<Match> round(int round) {
         Collections.sort(players);
         LinkedList<Match> matches = new LinkedList<>();

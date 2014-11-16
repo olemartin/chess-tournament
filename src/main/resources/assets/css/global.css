@@ -502,3 +502,12 @@ html /deep/ table.rounds {
             section {
                 vertical-align: middle;
             }
+html /deep/ .selected {
+    background-color: #373b50;
+    color: white;
+}
+
+html /deep/ .item:hover {
+    cursor: pointer;
+    background-color: #add8e6;
+}

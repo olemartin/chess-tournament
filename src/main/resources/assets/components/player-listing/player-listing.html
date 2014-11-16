@@ -1,6 +1,6 @@
 <link rel="import" href="../../bower_components/core-list/core-list.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
-<link rel="import" href="../../bower_components/web-loader/src/web-loader.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="../x-websocket/x-websocket.html">
 
 
@@ -54,17 +54,17 @@
                 </tr>
             </template>
         </table>
-        <web-loader id="loader" display="none"/>
+        <paper-spinner id="loader" active></paper-spinner>
     </template>
     <script>
         Polymer('player-listing', {
             updatePlayers: function () {
-                this.$.loader.display = 'block';
+                this.$.loader.active = true;
                 this.$.updatePlayers.go();
             },
             handleResponse: function (e) {
                 console.log(e);
-                this.$.loader.display = 'none';
+                this.$.loader.active = false;
                 this.data = e.detail.response;
                 this.$.table.style.display = 'block';
             },
@@ -74,7 +74,6 @@
             },
             connected: function () {
                 this.$.websocket.send("ping");
-                this.$.ping();
             },
             ping : function () {
                 setTimeout(function(){

@@ -84,10 +84,8 @@ public class ServiceIntegrationTest {
         Person janne1 = personService.createPerson(new Person("Janne1"));
         Person janne2 = personService.createPerson(new Person("Janne2"));
         Person janne3 = personService.createPerson(new Person("Janne3"));
-        Person janne4 = personService.createPerson(new Person("Janne4"));
-        Person janne5 = personService.createPerson(new Person("Janne5"));
 
 
-        return Arrays.asList(ole, jan, per, otto, janne, janne1, janne2, janne3, janne4, janne5);
+        return Arrays.asList(ole, jan, per, otto, janne, janne1, janne2, janne3);
     }
 }

@@ -28,7 +28,6 @@ public class MonradTest {
                 new Player("Jan"),
                 new Player("Ola")));
 
-        monrad.init();
     }
 
     @Test
@@ -97,14 +96,14 @@ public class MonradTest {
     }
 
     public void drawSeveralRounds(int numPlayers) {
-        Monrad monrad = new Monrad(new MyRandom(), Arrays.asList());
+        TournamentEngine tournamentEngine = new Monrad(new MyRandom(), Arrays.asList());
 
         double rounds = 1 + Math.log(numPlayers) / Math.log(2);
         for (int i = 0; i < numPlayers; i++) {
-            monrad.addPlayer("Player_" + i);
+            //tournamentEngine.addPlayer("Player_" + i);
         }
         for (int i = 1; i < rounds; i++) {
-            List<Match> matches = monrad.round(i);
+            List<Match> matches = tournamentEngine.round(i);
             for (Match match : matches) {
          //       monrad.reportResult(match, Math.random() > 0.6 ?Result.BLACK : Result.WHITE);
             }

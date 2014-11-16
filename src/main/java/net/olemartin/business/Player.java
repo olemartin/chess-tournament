@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import org.apache.commons.lang.StringUtils;
 import org.neo4j.graphdb.Direction;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.Fetch;
@@ -59,7 +60,7 @@ public class Player implements Comparable<Player> {
     }
 
     public Player(String name) {
-        this.name = name;
+        this.person = new Person(name);
     }
 
     public Player(Person person) {
@@ -186,11 +187,16 @@ public class Player implements Comparable<Player> {
     }
 
     private LinkedList<Color> asLinkedList() {
-        return new LinkedList<>(Arrays.asList(
-                colors.split(":"))
-                .stream()
-                .map(Color::valueOf)
-                .collect(toList()));
+        if (StringUtils.isNotEmpty(colors)) {
+            return new LinkedList<>(Arrays.asList(
+                    colors.split(":"))
+                    .stream()
+                    .map(Color::valueOf)
+                    .collect(toList()));
+        } else {
+            return new LinkedList<>();
+        }
+
     }
 
     public boolean hasMet(Player otherPlayer) {
