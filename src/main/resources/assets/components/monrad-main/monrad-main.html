@@ -6,7 +6,7 @@
 <link rel="import" href="../../bower_components/core-drawer-panel/core-drawer-panel.html"/>
 <link rel="import" href="../../bower_components/core-scroll-header-panel/core-scroll-header-panel.html"/>
 <link rel="import" href="../../components/new-tournament/new-tournament.html">
-<link rel="import" href="../../components/person-listing/person-listing.html">
+<link rel="import" href="../../components/person-listing/person-listing.html?123">
 <link rel="import" href="../../components/player-listing/player-listing.html">
 <link rel="import" href="../../components/current-matches/current-matches.html">
 <link rel="import" href="../../components/tournament-listing/tournament-listing.html">
@@ -21,11 +21,12 @@
                     <span flex>BEKK Chess</span>
                 </core-toolbar>
                 <section>
-                    <player-listing id="small_players"
-                                    tournamentId="{{tournamentId}}"
-                                    tournamentName="{{tournamentName}}"
-                                    cross-fade
-                                    selectedSection="{{selected}}"/>
+                        <player-listing
+                                id="small_players"
+                                tournamentId="{{tournamentId}}"
+                                tournamentName="{{tournamentName}}"
+                                cross-fade
+                                selectedSection="{{selected}}"/>
                 </section>
             </core-header-panel>
             <core-header-panel main>
@@ -51,7 +52,7 @@
                         <current-matches id="matches" tournamentId="{{tournamentId}}"
                                          tournamentName="{{tournamentName}}"
                                          cross-fade selectedSection="{{selected}}"
-                                on-tournament-finished="{{tournamentFinished}}"></current-matches>
+                                         on-tournament-finished="{{tournamentFinished}}"></current-matches>
                     </section>
                     <section name="tournaments">
                         <tournament-listing id="tournaments" on-tournament_changed="{{tournament_changed}}"
@@ -97,7 +98,7 @@
                 this.players_selected();
                 window.location.hash = this.tournamentId + "!" + encodeURI(this.tournamentName);
             },
-            tournamentFinished: function() {
+            tournamentFinished: function () {
                 this.$.persons.update();
             }
         });

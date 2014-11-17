@@ -5,7 +5,7 @@
 
 
 <polymer-element name="player-listing" vertical layout attributes="tournamentId tournamentName large">
-    <template>
+    <template if="{{tournamentId}}">
         <core-ajax
                 auto="false"
                 url="/rest/tournament/{{tournamentId}}/players"
@@ -21,7 +21,9 @@
                 on-message="{{handleMessage}}"
                 url="ws://localhost:8080/push"
                 json="true"></x-websocket>
-
+        <div style="align-self: center;">
+            <paper-spinner id="loader" active></paper-spinner>
+        </div>
         <table class="center" cellspacing="0" id="table" style="display: none; margin-bottom: 20px;">
             <tr class="core-header" style="height: 40px;">
                 <th style="text-align:left; padding-left:10px;">Rank</th>
@@ -54,7 +56,7 @@
                 </tr>
             </template>
         </table>
-        <paper-spinner id="loader" active></paper-spinner>
+
     </template>
     <script>
         Polymer('player-listing', {
@@ -75,8 +77,8 @@
             connected: function () {
                 this.$.websocket.send("ping");
             },
-            ping : function () {
-                setTimeout(function(){
+            ping: function () {
+                setTimeout(function () {
                     this.$.websocket.send("ping");
                     this.$.ping();
                 }, 60000);

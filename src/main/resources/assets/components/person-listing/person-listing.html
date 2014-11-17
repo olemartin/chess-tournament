@@ -4,7 +4,7 @@
 <link rel="import" href="../../bower_components/core-icons/core-icons.html">
 <link rel="import" href="../../bower_components/core-icon/core-icon.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../components/person-details/person-details.html">
+<link rel="import" href="../../components/person-details/person-details.html?test">
 
 <polymer-element name="person-listing" vertical layout>
     <template>
@@ -45,7 +45,7 @@
                 on-core-response="{{handleResponse}}">
         </core-ajax>
 
-        <person-details id="personDetails"></person-details>
+        <person-details id="personDetails" on-persons-updated="{{update}}"></person-details>
     </template>
     <script>
         Polymer('person-listing', {

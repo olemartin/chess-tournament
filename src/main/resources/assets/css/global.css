@@ -140,20 +140,20 @@ html /deep/ paper-button #ripple,
             html /deep/ paper-button::shadow #ripple {
                             color: #b4b4b4;
                         }
-html /deep/ paper-button[primary] {
+html /deep/ paper-button[colored] {
                 color: #373b50;
                 fill: #373b50;
             }
-html /deep/ paper-button[primary] #ripple,
-            html /deep/ paper-button[primary]::shadow #ripple {
+html /deep/ paper-button[colored] #ripple,
+            html /deep/ paper-button[colored]::shadow #ripple {
                             color: #a6abc2;
                         }
-html /deep/ paper-button[primary][raisedButton] {
+html /deep/ paper-button[colored][raisedButton] {
                 background-color: #373b50;
                 color: #fff;
             }
-html /deep/ paper-button[primary][raisedButton] #ripple,
-            html /deep/ paper-button[primary][raisedButton]::shadow #ripple {
+html /deep/ paper-button[colored][raisedButton] #ripple,
+            html /deep/ paper-button[colored][raisedButton]::shadow #ripple {
                             color: #2f3244;
                         }
 html /deep/ paper-button[secondary] {

@@ -47,10 +47,16 @@ public class PersonResource {
 
     @Path("/{id}")
     @GET
-    public PersonView getPerson(@PathParam("id")Long id) {
+    public PersonView getPerson(@PathParam("id") Long id) {
         return personService.getPerson(id);
     }
 
+    @Path("/{id}")
+    @DELETE
+    public String deletePerson(@PathParam("id") Long id) {
+        personService.deletePerson(id);
+        return "OK";
+    }
 
 
     @Path("/new")

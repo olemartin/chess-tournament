@@ -2,7 +2,6 @@ package net.olemartin.service;
 
 import com.google.common.collect.Lists;
 import net.olemartin.business.Person;
-import net.olemartin.business.Tournament;
 import net.olemartin.repository.PersonRepository;
 import net.olemartin.view.PersonView;
 import net.olemartin.view.TournamentView;
@@ -49,5 +48,9 @@ public class PersonService {
                         player.getTournamentRank()))
                 .collect(Collectors.toList());
         return new PersonView(person.getName(), person.getRating(), tournamentViews);
+    }
+
+    public void deletePerson(Long id) {
+        personRepository.delete(id);
     }
 }

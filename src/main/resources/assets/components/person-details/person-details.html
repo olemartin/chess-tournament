@@ -1,14 +1,18 @@
+
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+
 <polymer-element name="person-details" attr="personId" vertical layout>
     <template>
         <paper-dialog id="person_details">
-            <h3>{{person.name}}"</h3>
+            <h3>{{person.name}}</h3>
             <span>Rating: {{person.rating}}</span>
 
-            <h3 style="min-width: 300px;">Tournaments</h3>
+            <h4 style="min-width: 300px;">Tournaments</h4>
             <table class="center">
                 <tr>
-                    <td>Name</td>
-                    <td>Rank</td>
+                    <th>Name</th>
+                    <th>Rank</th>
                 </tr>
                 <template repeat="{{person.tournaments}}">
                     <tr>
@@ -17,14 +21,23 @@
                     </tr>
                 </template>
             </table>
+            <paper-button style="background-color: Red;" on-tap="{{deletePerson}}">Delete</paper-button>
         </paper-dialog>
         <core-ajax
-                auto="true"
+            auto="true"
+            url="/rest/person/{{personId}}"
+            handleAs="json"
+            id="getPerson"
+            contentType="application/json"
+            on-core-response="{{handleResponse}}"></core-ajax>
+        <core-ajax
+                auto="false"
+                method="DELETE"
                 url="/rest/person/{{personId}}"
                 handleAs="json"
-                id="getPerson"
+                id="deletePerson"
                 contentType="application/json"
-                on-core-response="{{handleResponse}}"></core-ajax>
+                on-core-response="{{deleted}}"></core-ajax>
     </template>
     <script>
         Polymer('person-details', {
@@ -38,6 +51,13 @@
                 this.personId = personId;
                 this.$.getPerson.go();
                 this.$.person_details.toggle();
+            },
+            deletePerson: function (e, detail, target) {
+                this.$.deletePerson.go();
+            },
+            deleted: function() {
+                this.$.person_details.toggle();
+                this.fire("persons-updated");
             }
         });
     </script>
