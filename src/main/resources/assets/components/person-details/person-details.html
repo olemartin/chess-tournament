@@ -5,10 +5,9 @@
 <polymer-element name="person-details" attr="personId" vertical layout>
     <template>
         <paper-dialog id="person_details">
-            <h3>{{person.name}}</h3>
-            <span>Rating: {{person.rating}}</span>
 
-            <h4 style="min-width: 300px;">Tournaments</h4>
+            <h3 style="text-align:center;">{{person.name}} ({{person.rating}})</h3>
+            <h4 style="text-align:center;min-width: 300px; margin-bottom:15px;">Tournaments</h4>
             <table class="center">
                 <tr>
                     <th>Name</th>
@@ -21,7 +20,7 @@
                     </tr>
                 </template>
             </table>
-            <paper-button style="background-color: Red;" on-tap="{{deletePerson}}">Delete</paper-button>
+            <paper-button raisedButton class="error center" on-tap="{{deletePerson}}">Delete</paper-button>
         </paper-dialog>
         <core-ajax
             auto="true"

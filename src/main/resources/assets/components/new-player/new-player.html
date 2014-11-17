@@ -42,7 +42,7 @@
             <div vertical layout>
                 <div>
                     <paper-button style="margin-bottom: 30px;"
-                                  primary
+                                  class="colored"
                                   raisedButton
                                   id="send"
                                   icon="add"
@@ -56,6 +56,7 @@
                     </div>
                     <div horizontal layout center>
                         <paper-button raisedButton
+                                      class="secondary"
                                       id="newPerson"
                                       on-tap="{{newPerson}}"
                                       icon="create">Create
@@ -68,7 +69,7 @@
             <paper-button
                     icon="create"
                     raisedButton
-                    primary
+                    class="colored"
                     on-tap="{{openDialog}}">New player
             </paper-button>
         </div>
@@ -134,6 +135,7 @@
             personCreated: function () {
                 this.personName = '';
                 this.$.getPersons.go();
+                this.fire("person-created");
             }
         });
     </script>

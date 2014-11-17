@@ -1,7 +1,9 @@
 package net.olemartin.resources;
 
+import io.dropwizard.auth.Auth;
 import net.olemartin.business.Match;
 import net.olemartin.business.Result;
+import net.olemartin.business.User;
 import net.olemartin.push.ChangeEndpoint;
 import net.olemartin.service.MatchService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +34,7 @@ public class MatchResource {
 
     @Path("{matchId}/report/{result}")
     @POST
-    public Match reportResult(@PathParam("matchId") long matchId, @PathParam("result") String result) {
+    public Match reportResult(@Auth User user, @PathParam("matchId") long matchId, @PathParam("result") String result) {
         Match match =  matchService.reportResult(matchId, Result.valueOf(result));
         sendNotification();
         return match;

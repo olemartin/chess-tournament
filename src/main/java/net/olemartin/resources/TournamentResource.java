@@ -1,5 +1,6 @@
 package net.olemartin.resources;
 
+import io.dropwizard.auth.Auth;
 import net.olemartin.business.*;
 import net.olemartin.push.ChangeEndpoint;
 import net.olemartin.service.MatchService;
@@ -36,13 +37,13 @@ public class TournamentResource {
 
     @POST
     @Path("new")
-    public Tournament registerNewTournament(Tournament tournament) {
+    public Tournament registerNewTournament(@Auth User user, Tournament tournament) {
         return tournamentService.save(tournament);
     }
 
     @POST
     @Path("{tournamentId}/add")
-    public List<Person> addPlayerToTournament(@PathParam("tournamentId") Long tournamentId, List<Person> persons) {
+    public List<Person> addPlayerToTournament(@Auth User user, @PathParam("tournamentId") Long tournamentId, List<Person> persons) {
         tournamentService.addPlayers(tournamentId, persons);
         sendNotification(PLAYER_ADDED);
         return persons;
@@ -56,7 +57,7 @@ public class TournamentResource {
 
     @DELETE
     @Path("{tournamentId}")
-    public void delete(@PathParam("tournamentId") Long tournamentId) {
+    public void delete(@Auth User user, @PathParam("tournamentId") Long tournamentId) {
         tournamentService.delete(tournamentId);
     }
 
@@ -80,14 +81,14 @@ public class TournamentResource {
 
     @POST
     @Path("{tournamentId}/finish")
-    public String finish(@PathParam("tournamentId") Long tournamentId) {
+    public String finish(@Auth User user, @PathParam("tournamentId") Long tournamentId) {
         tournamentService.finishTournament(tournamentId);
         return "OK";
     }
 
     @POST
     @Path("{tournamentId}/next-round")
-    public List<Match> nextRound(@PathParam("tournamentId")Long tournamentId) {
+    public List<Match> nextRound(@Auth User user, @PathParam("tournamentId")Long tournamentId) {
         List<Match> matches =  matchService.nextRound(tournamentId);
         sendNotification(NEW_MATCH);
         return matches;

@@ -3,9 +3,12 @@ package net.olemartin;
 import com.google.common.cache.CacheBuilderSpec;
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
+import io.dropwizard.auth.basic.BasicAuthProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import net.olemartin.business.User;
 import net.olemartin.dropwizard.MonradConfiguration;
+import net.olemartin.service.ChessAuthenticator;
 import net.olemartin.push.ChangeNotification;
 import net.olemartin.tools.GsonJSONProvider;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -35,10 +38,10 @@ public class Main extends Application<MonradConfiguration> {
         }
         environment.jersey().register(GsonJSONProvider.class);
         environment.jersey().setUrlPattern("/rest/*");
+        environment.jersey().register(new BasicAuthProvider<User>(context.getBean(ChessAuthenticator.class), "BEKK Chess"));
 
         ServletRegistration.Dynamic websocket = environment.servlets().addServlet("websocket", context.getBean(ChangeNotification.class));
         websocket.setAsyncSupported(true);
         websocket.addMapping("/push/*");
-
-    }
+        }
 }

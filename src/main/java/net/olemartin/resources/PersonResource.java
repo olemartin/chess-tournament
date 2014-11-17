@@ -1,7 +1,9 @@
 package net.olemartin.resources;
 
+import io.dropwizard.auth.Auth;
 import net.olemartin.business.Person;
 import net.olemartin.business.Tournament;
+import net.olemartin.business.User;
 import net.olemartin.service.PersonService;
 import net.olemartin.view.PersonView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +55,7 @@ public class PersonResource {
 
     @Path("/{id}")
     @DELETE
-    public String deletePerson(@PathParam("id") Long id) {
+    public String deletePerson(@Auth User user, @PathParam("id") Long id) {
         personService.deletePerson(id);
         return "OK";
     }
@@ -61,7 +63,7 @@ public class PersonResource {
 
     @Path("/new")
     @POST
-    public Person createPerson(Person person) {
+    public Person createPerson(@Auth User user, Person person) {
         return personService.createPerson(person);
     }
 }

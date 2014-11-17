@@ -32,6 +32,7 @@ public final class GsonJSONProvider implements MessageBodyWriter<Object>,
             gsonBuilder.registerTypeAdapter(Round.class, new Round.RoundSerializer());
             gsonBuilder.registerTypeAdapter(Player.class, new Player.PlayerSerializer());
             gsonBuilder.registerTypeAdapter(Person.class, new Person.PersonSerializer());
+            gsonBuilder.registerTypeAdapter(User.class, new User.UserSerializer());
             gsonBuilder.registerTypeAdapter(Match.class, new Match.MatchSerializer());
             gson = gsonBuilder.create();
         }

@@ -15,7 +15,7 @@
 
 <polymer-element name="monrad-main" vertical layout>
     <template>
-        <core-drawer-panel id="drawerPanel" drawerWidth="300px">
+        <core-drawer-panel id="drawerPanel" drawerWidth="300px" responsiveWidth="1000px">
             <core-header-panel drawer style="background-color: #f2f7fa">
                 <core-toolbar>
                     <span flex>BEKK Chess</span>
@@ -46,13 +46,13 @@
                         <player-listing id="players" tournamentId="{{tournamentId}}"
                                         tournamentName="{{tournamentName}}"
                                         large="true" cross-fade selectedSection="{{selected}}"></player-listing>
-                        <new-player tournamentId="{{tournamentId}}"/>
+                        <new-player tournamentId="{{tournamentId}}" on-person-created="{{persons_updated}}"/>
                     </section>
                     <section name="matches">
                         <current-matches id="matches" tournamentId="{{tournamentId}}"
                                          tournamentName="{{tournamentName}}"
                                          cross-fade selectedSection="{{selected}}"
-                                         on-tournament-finished="{{tournamentFinished}}"></current-matches>
+                                         on-tournament-finished="{{persons_updated}}"></current-matches>
                     </section>
                     <section name="tournaments">
                         <tournament-listing id="tournaments" on-tournament_changed="{{tournament_changed}}"
@@ -98,7 +98,7 @@
                 this.players_selected();
                 window.location.hash = this.tournamentId + "!" + encodeURI(this.tournamentName);
             },
-            tournamentFinished: function () {
+            persons_updated: function () {
                 this.$.persons.update();
             }
         });

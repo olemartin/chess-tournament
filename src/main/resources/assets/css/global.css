@@ -140,36 +140,36 @@ html /deep/ paper-button #ripple,
             html /deep/ paper-button::shadow #ripple {
                             color: #b4b4b4;
                         }
-html /deep/ paper-button[colored] {
+html /deep/ paper-button.colored {
                 color: #373b50;
                 fill: #373b50;
             }
-html /deep/ paper-button[colored] #ripple,
-            html /deep/ paper-button[colored]::shadow #ripple {
+html /deep/ paper-button.colored #ripple,
+            html /deep/ paper-button.colored::shadow #ripple {
                             color: #a6abc2;
                         }
-html /deep/ paper-button[colored][raisedButton] {
+html /deep/ paper-button.colored[raisedButton] {
                 background-color: #373b50;
                 color: #fff;
             }
-html /deep/ paper-button[colored][raisedButton] #ripple,
-            html /deep/ paper-button[colored][raisedButton]::shadow #ripple {
+html /deep/ paper-button.colored[raisedButton] #ripple,
+            html /deep/ paper-button.colored[raisedButton]::shadow #ripple {
                             color: #2f3244;
                         }
 html /deep/ paper-button[secondary] {
                 color: #90a4ae;
                 fill: #90a4ae;
             }
-html /deep/ paper-button[secondary] #ripple,
+html /deep/ paper-button.secondary #ripple,
             html /deep/ paper-button[secondary]::shadow #ripple {
                             color: #d3dbdf;
                         }
-html /deep/ paper-button[secondary][raisedButton] {
+html /deep/ paper-button.secondary[raisedButton] {
                 background-color: #90a4ae;
                 color: #fff;
             }
-html /deep/ paper-button[secondary][raisedButton] #ripple,
-            html /deep/ paper-button[secondary][raisedButton]::shadow #ripple {
+html /deep/ paper-button.secondary[raisedButton] #ripple,
+            html /deep/ paper-button.secondary[raisedButton]::shadow #ripple {
                             color: #748d9a;
                         }
 html /deep/ paper-button[success] {
@@ -220,20 +220,20 @@ html /deep/ paper-button[warning][raisedButton] #ripple,
             html /deep/ paper-button[warning][raisedButton]::shadow #ripple {
                             color: #f8d22e;
                         }
-html /deep/ paper-button[error] {
+html /deep/ paper-button.error {
                 color: #ff6e40;
                 fill: #ff6e40;
             }
-html /deep/ paper-button[error] #ripple,
-            html /deep/ paper-button[error]::shadow #ripple {
+html /deep/ paper-button.error #ripple,
+            html /deep/ paper-button.error::shadow #ripple {
                             color: #ffc5b3;
                         }
-html /deep/ paper-button[error][raisedButton] {
+html /deep/ paper-button.error[raisedButton] {
                 background-color: #ff6e40;
                 color: #fff;
             }
-html /deep/ paper-button[error][raisedButton] #ripple,
-            html /deep/ paper-button[error][raisedButton]::shadow #ripple {
+html /deep/ paper-button.error[raisedButton] #ripple,
+            html /deep/ paper-button.error[raisedButton]::shadow #ripple {
                             color: #ff4a10;
                         }
 html /deep/ paper-button[link] {
@@ -519,4 +519,8 @@ html /deep/ .item:hover {
 
 html /deep/ paper-shadow {
     padding: 10px;
+}
+.center {
+    margin-left:auto;
+    margin-right:auto;
 }
