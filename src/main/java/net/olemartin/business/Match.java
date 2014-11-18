@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import org.neo4j.graphdb.Direction;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
@@ -23,6 +24,9 @@ public class Match implements Comparable<Match> {
     private boolean walkover;
 
     private Result result;
+
+    @Transient
+    private String displayResult;
 
     @RelatedTo(type = "WHITE", direction = Direction.OUTGOING)
     @Fetch
@@ -129,6 +133,10 @@ public class Match implements Comparable<Match> {
         return walkover;
     }
 
+    public void setDisplayResult(String displayResult) {
+        this.displayResult = displayResult;
+    }
+
     public static class MatchSerializer implements JsonSerializer<Match> {
 
         @Override
@@ -145,6 +153,7 @@ public class Match implements Comparable<Match> {
             if (src.result != null) {
                 root.addProperty("result", src.result.name());
             }
+            root.addProperty("displayResult", src.displayResult);
             return root;
         }
     }

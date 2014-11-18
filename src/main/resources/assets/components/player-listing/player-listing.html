@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/core-list/core-list.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../../components/player-details/player-details.html">
 <link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="../x-websocket/x-websocket.html">
 
@@ -42,7 +43,9 @@
             <template repeat="{{player, i in data}}">
                 <tr>
                     <td style="padding-left:10px;text-align:left;">{{i+1}}.</td>
-                    <td style="padding-left:10px;text-align:left;">{{player.name}}</td>
+                    <td on-tap="{{player_tapped}}" style="padding-left:10px; text-align:left; cursor:pointer;"
+                        data-id="{{player.id}}">{{player.name}}
+                    </td>
                     <template if="{{large}}">
                         <td style="padding-left:10px;text-align:left;">{{player.roundResults}}</td>
                     </template>
@@ -56,6 +59,7 @@
                 </tr>
             </template>
         </table>
+        <player-details id="player_details"/>
 
     </template>
     <script>
@@ -82,6 +86,10 @@
                     this.$.websocket.send("ping");
                     this.$.ping();
                 }, 60000);
+            },
+            player_tapped: function (event, detail, target) {
+                playerId = target.getAttribute("data-id");
+                this.$.player_details.show(playerId);
             }
         });
 

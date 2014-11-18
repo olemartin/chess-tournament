@@ -30,4 +30,10 @@ public class PlayerResource {
     public List<Player> getPlayers() {
         return playerService.getPlayers();
     }
+
+    @Path("{playerId}")
+    @GET
+    public Player getPlayers(@PathParam("playerId") Long playerId) {
+        return playerService.getPlayer(playerId);
+    }
 }

@@ -1,0 +1,60 @@
+
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+
+<polymer-element name="player-details" vertical layout>
+    <template>
+        <paper-dialog id="player_dialog">
+
+            <h3 style="text-align:center;">{{player.name}}</h3>
+            <h4 style="text-align:center;min-width: 300px; margin-bottom:15px;">Matches</h4>
+            <table class="center">
+                <tr>
+                    <th>White</th>
+                    <th>Black</th>
+                    <th>Result</th>
+                </tr>
+                <template repeat="{{matches}}">
+                    <tr>
+                        <td>{{white.name}}</td>
+                        <td>{{black.name}}</td>
+                        <td>{{displayResult}}</td>
+                    </tr>
+                </template>
+            </table>
+        </paper-dialog>
+        <core-ajax
+                auto="false"
+                url="/rest/player/{{playerId}}"
+                handleAs="json"
+                id="getPlayer"
+                contentType="application/json"
+                on-core-response="{{handleResponse}}"></core-ajax>
+        <core-ajax
+                auto="false"
+                url="/rest/match/player/{{playerId}}"
+                handleAs="json"
+                id="getMatches"
+                contentType="application/json"
+                on-core-response="{{handleMatches}}"></core-ajax>
+    </template>
+    <script>
+        Polymer('player-details', {
+            created: function () {
+                this.data = {};
+            },
+            handleResponse:function(e) {
+                this.player = e.detail.response;
+            },
+            handleMatches:function(e) {
+                this.matches = e.detail.response;
+            },
+            show:function(player) {
+                this.playerId=player;
+                this.$.getMatches.go();
+                this.$.getPlayer.go();
+                this.$.player_dialog.toggle()
+            }
+        });
+    </script>
+</polymer-element>

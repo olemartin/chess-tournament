@@ -27,4 +27,8 @@ public class PlayerService {
     public void save(Player player) {
         playerRepository.save(player);
     }
+
+    public Player getPlayer(Long playerId) {
+        return playerRepository.findOne(playerId);
+    }
 }

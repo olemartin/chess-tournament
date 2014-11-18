@@ -65,6 +65,17 @@ public class MatchService {
         for (Match m : matchRepository.findMatchesPlayerPlayed(playerId)) {
             matches.add(m);
         }
+        for (Match match : matches) {
+            if (match.getResult() == Result.REMIS) {
+                match.setDisplayResult("Remis");
+            } else {
+                if (match.getWinner().getId() == playerId) {
+                    match.setDisplayResult("Won");
+                } else {
+                    match.setDisplayResult("Lost");
+                }
+            }
+        }
         return matches;
     }
 
