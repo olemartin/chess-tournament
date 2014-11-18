@@ -79,6 +79,9 @@
                           raisedButton
                           on-tap="{{finish}}">Finish tournament</paper-button>
         </div>
+        <paper-dialog id="finished">
+            <p>Tournament finished</p>
+        </paper-dialog>
         <core-ajax
                 auto="false"
                 url="/rest/tournament/{{tournamentId}}/matches"
@@ -161,6 +164,7 @@
             },
             tournamentFinished: function() {
                 this.fire("tournament-finished");
+                this.$.finished.toggle()
             }
         });
     </script>
