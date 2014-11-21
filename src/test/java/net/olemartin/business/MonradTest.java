@@ -34,8 +34,10 @@ public class MonradTest {
     public void drawRoundOne() {
         List<Match> matches = monrad.round(1);
         assertThat(matches.size(), equalTo(2));
-        assertThat(matches.get(0).getWhite().getName(), equalTo("Per"));
-        assertThat(matches.get(1).getBlack().getName(), equalTo("Jan"));
+        assertThat(matches.get(0).getWhite().getName(), equalTo("Ola"));
+        assertThat(matches.get(0).getBlack().getName(), equalTo("Jan"));
+        assertThat(matches.get(1).getWhite().getName(), equalTo("Per"));
+        assertThat(matches.get(1).getBlack().getName(), equalTo("Ole"));
     }
 
     @Test

@@ -111,6 +111,10 @@ public class Tournament {
         return engine;
     }
 
+    public void setEngine(String engine) {
+        this.engine = engine;
+    }
+
 
     public static class TournamentSerializer implements JsonSerializer<Tournament> {
 

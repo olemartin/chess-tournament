@@ -20,7 +20,8 @@ import java.util.Map;
 
 public class Main extends Application<MonradConfiguration> {
     public static void main(String[] args) throws Exception {
-        new Main().run(new String[]{"server", "monrad.yaml"});
+        new Main().run(args);
+        //new Main().run(new String[]{"server", "monrad.yaml"});
     }
 
     @Override
@@ -43,5 +44,5 @@ public class Main extends Application<MonradConfiguration> {
         ServletRegistration.Dynamic websocket = environment.servlets().addServlet("websocket", context.getBean(ChangeNotification.class));
         websocket.setAsyncSupported(true);
         websocket.addMapping("/push/*");
-        }
+    }
 }

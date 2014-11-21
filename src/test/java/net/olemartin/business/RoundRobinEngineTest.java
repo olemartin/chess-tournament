@@ -37,11 +37,4 @@ public class RoundRobinEngineTest {
     }
 
 
-    public class MyRandom extends Randomizer {
-        @Override
-        public void shuffle(List players) {
-        }
-    }
-
-
 }

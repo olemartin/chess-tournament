@@ -32,7 +32,9 @@ public class ServiceIntegrationTest {
 
     @Test
     public void testFullTournament() {
-        Tournament tournament = tournamentService.save(new Tournament("Testturnering"));
+        Tournament testturnering = new Tournament("Testturnering");
+        testturnering.setEngine("MONRAD");
+        Tournament tournament = tournamentService.save(testturnering);
 
         List<Person> persons = getPersons();
         Long tournamentId = tournament.getId();

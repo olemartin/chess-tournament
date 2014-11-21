@@ -11,12 +11,10 @@ import static net.olemartin.business.Color.WHITE;
 
 public class Monrad implements TournamentEngine {
 
-    private final Randomizer random;
     private final List<Player> players;
     private Set<String> triedCombinations = new HashSet<>();
 
     public Monrad(Randomizer random, Iterable<Player> players) {
-        this.random = random;
         this.players = Lists.newArrayList(players);
         random.shuffle(this.players);
     }

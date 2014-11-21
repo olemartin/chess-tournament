@@ -28,7 +28,6 @@ public class Player implements Comparable<Player> {
     @GraphId
     private Long id;
 
-    private String name;
     private double score;
     private String colors = "";
 
@@ -60,6 +59,7 @@ public class Player implements Comparable<Player> {
     }
 
     public Player(String name) {
+        this.id = (long)(Math.random() * 1000000000.0);
         this.person = new Person(name);
     }
 
@@ -260,7 +260,7 @@ public class Player implements Comparable<Player> {
                             monrad1 == 0 ?
                                     monrad == 0 ?
                                             berger == 0 ?
-                                                    id.compareTo(p2.id)
+                                                    getName().compareTo(p2.getName())
                                                     : berger
                                             : monrad
                                     : monrad1
@@ -277,15 +277,12 @@ public class Player implements Comparable<Player> {
 
         Player player = (Player) o;
 
-        return !(id != null ? !id.equals(player.id) : player.id != null) && !(name != null ? !name.equals(player.name) :
-                player.name != null);
+        return !(id != null ? !id.equals(player.id) : player.id != null);
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        return result;
+        return id != null ? id.hashCode() : 0;
     }
 
     public Long getId() {
