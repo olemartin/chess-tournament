@@ -1,6 +1,9 @@
 package net.olemartin.resources;
 
+import io.dropwizard.auth.Auth;
 import net.olemartin.business.Player;
+import net.olemartin.business.User;
+import net.olemartin.push.ChangeEndpoint;
 import net.olemartin.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,7 +11,11 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import static net.olemartin.push.ChangeEndpoint.MessageType.PLAYER_DELETED;
 
 @Path("/player")
 @Service
@@ -17,8 +24,9 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public class PlayerResource {
 
-
     private final PlayerService playerService;
+
+    private final Set<ChangeEndpoint> endpoints = new HashSet<>();
 
     @Autowired
     public PlayerResource(PlayerService playerService) {
@@ -33,7 +41,28 @@ public class PlayerResource {
 
     @Path("{playerId}")
     @GET
-    public Player getPlayers(@PathParam("playerId") Long playerId) {
+    public Player getPlayer(@PathParam("playerId") Long playerId) {
         return playerService.getPlayer(playerId);
     }
+
+
+    @Path("{playerId}")
+    @DELETE
+    public String deletePlayer(@Auth User user, @PathParam("playerId") Long playerId) {
+        playerService.deletePlayer(playerId);
+        sendNotification();
+        return "OK";
+    }
+
+    public void registerEndpoint(ChangeEndpoint changeEndpoint) {
+        endpoints.add(changeEndpoint);
+    }
+
+    private void sendNotification() {
+        for (ChangeEndpoint endpoint : endpoints) {
+            endpoint.sendPush(PLAYER_DELETED);
+        }
+    }
+
+
 }

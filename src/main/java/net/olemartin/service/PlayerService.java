@@ -31,4 +31,13 @@ public class PlayerService {
     public Player getPlayer(Long playerId) {
         return playerRepository.findOne(playerId);
     }
+
+    public void deletePlayer(Long playerId) {
+        Player player = playerRepository.findOne(playerId);
+        if(!player.hasPlayedMatches()) {
+            playerRepository.delete(playerId);
+        } else {
+            throw new IllegalStateException("Player has played matches");
+        }
+    }
 }

@@ -84,6 +84,10 @@ public class Player implements Comparable<Player> {
         }
     }
 
+    public boolean hasPlayedMatches() {
+        return !playersMet.isEmpty();
+    }
+
     private LinkedList<Player> getOpponents() {
         LinkedList<Player> opponents = new LinkedList<>();
         opponents.addAll(playersMet.stream().sorted().collect(toList()));

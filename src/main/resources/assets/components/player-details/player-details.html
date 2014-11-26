@@ -1,4 +1,3 @@
-
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 
@@ -22,6 +21,9 @@
                     </tr>
                 </template>
             </table>
+            <template if="{{matches.length == 0}}">
+                <paper-button raisedButton class="error center" on-tap="{{deleteFunction}}">Delete</paper-button>
+            </template>
         </paper-dialog>
         <core-ajax
                 auto="false"
@@ -37,20 +39,34 @@
                 id="getMatches"
                 contentType="application/json"
                 on-core-response="{{handleMatches}}"></core-ajax>
+        <core-ajax
+                auto="false"
+                method="DELETE"
+                url="/rest/player/{{playerId}}"
+                handleAs="json"
+                id="deletePlayer"
+                contentType="application/json"
+                on-core-response="{{deleted}}"></core-ajax>
     </template>
     <script>
         Polymer('player-details', {
             created: function () {
                 this.data = {};
             },
-            handleResponse:function(e) {
+            handleResponse: function (e) {
                 this.player = e.detail.response;
             },
-            handleMatches:function(e) {
+            handleMatches: function (e) {
                 this.matches = e.detail.response;
             },
-            show:function(player) {
-                this.playerId=player;
+            deleteFunction: function (e) {
+                this.$.deletePlayer.go();
+            },
+            deleted:function(e) {
+
+            },
+            show: function (player) {
+                this.playerId = player;
                 this.$.getMatches.go();
                 this.$.getPlayer.go();
                 this.$.player_dialog.toggle()

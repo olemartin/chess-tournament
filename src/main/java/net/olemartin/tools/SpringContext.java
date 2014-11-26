@@ -1,6 +1,7 @@
 package net.olemartin.tools;
 
 import net.olemartin.resources.MatchResource;
+import net.olemartin.resources.PlayerResource;
 import net.olemartin.resources.TournamentResource;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -22,5 +23,9 @@ public class SpringContext implements ApplicationContextAware {
 
     public static MatchResource getMatchResource() {
         return applicationContext.getBean(MatchResource.class);
+    }
+
+    public static PlayerResource getPlayerResource() {
+        return applicationContext.getBean(PlayerResource.class);
     }
 }
