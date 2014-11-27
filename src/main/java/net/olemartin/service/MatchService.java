@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -92,12 +93,15 @@ public class MatchService {
         return match;
     }
 
-
-    private void updateMonradAndBerger(Player... players) {
+    public void updateMonradAndBerger(Iterable<Player> players) {
         for (Player player : players) {
             player.setMonradAndBerger(
                     playerRepository.findOpponentsPlayerBeat(player.getId()),
                     playerRepository.findOpponentsRemis(player.getId()));
         }
+    }
+
+    public void updateMonradAndBerger(Player... players) {
+        updateMonradAndBerger(Arrays.asList(players));
     }
 }

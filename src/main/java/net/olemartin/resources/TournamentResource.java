@@ -94,6 +94,12 @@ public class TournamentResource {
         return matches;
     }
 
+    @Path("{tournamentId}/monrad")
+    @POST
+    public List<Player> updateMonradAndBerger(@Auth User user, @PathParam("tournamentId") Long id) {
+        return tournamentService.updateMonradAndBerger(id);
+    }
+
     @GET
     @Path("/list")
     public List<Tournament> allTournaments() {

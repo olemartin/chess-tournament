@@ -317,6 +317,18 @@ public class Player implements Comparable<Player> {
         return asLinkedList();
     }
 
+    public double getMonrad() {
+        return monrad;
+    }
+
+    public double getMonrad1() {
+        return monrad1;
+    }
+
+    public double getMonrad2() {
+        return monrad2;
+    }
+
     public static class PlayerSerializer implements JsonSerializer<Player> {
         @Override
         public JsonElement serialize(Player player, Type typeOfSrc, JsonSerializationContext context) {

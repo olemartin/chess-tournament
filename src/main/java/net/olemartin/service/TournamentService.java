@@ -26,15 +26,17 @@ public class TournamentService {
     private PersonRepository personRepository;
     private RoundRepository roundRepository;
     private Neo4jTemplate neo4jTemplate;
+    private MatchService matchService;
 
     @Autowired
-    public TournamentService(TournamentRepository tournamentRepository, MatchRepository matchRepository, PlayerRepository playerRepository, PersonRepository personRepository, RoundRepository roundRepository, Neo4jTemplate neo4jTemplate) {
+    public TournamentService(TournamentRepository tournamentRepository, MatchRepository matchRepository, PlayerRepository playerRepository, PersonRepository personRepository, RoundRepository roundRepository, Neo4jTemplate neo4jTemplate, MatchService matchService) {
         this.tournamentRepository = tournamentRepository;
         this.matchRepository = matchRepository;
         this.playerRepository = playerRepository;
         this.personRepository = personRepository;
         this.roundRepository = roundRepository;
         this.neo4jTemplate = neo4jTemplate;
+        this.matchService = matchService;
     }
 
     public Tournament save(Tournament tournament) {
@@ -100,6 +102,13 @@ public class TournamentService {
         playerRepository.deleteLoosePlayers();
         roundRepository.deleteLooseRounds();
         matchRepository.deleteLooseMatches();
+    }
+
+    public List<Player> updateMonradAndBerger(Long id) {
+        List<Player> players = retrievePlayers(id);
+        matchService.updateMonradAndBerger(players);
+        playerRepository.save(players);
+        return players;
     }
 
     public List<Player> retrievePlayers(Long tournamentId) {

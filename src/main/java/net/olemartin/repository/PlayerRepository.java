@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PlayerRepository extends GraphRepository<Player> {
 
-    @Query("MATCH (player) <-[:PLAYER]- (match:Match), " +
+    @Query("MATCH (player) <-[:WINNER]- (match:Match), " +
             "(match) -[:LOOSER]-> (otherPlayer:Player) " +
             "WHERE id(player)={who} " +
             "RETURN otherPlayer")

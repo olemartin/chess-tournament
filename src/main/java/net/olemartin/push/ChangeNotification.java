@@ -10,6 +10,7 @@ public class ChangeNotification extends WebSocketServlet {
 
     @Override
     public void configure(WebSocketServletFactory factory) {
+        factory.getPolicy().setIdleTimeout(1000 * 3600);
         factory.register(ChangeEndpoint.class);
     }
 }
