@@ -10,7 +10,7 @@ import java.io.IOException;
 @WebSocket
 public class ChangeEndpoint {
 
-    public static enum MessageType {NEW_RESULT, PLAYER_ADDED, NEW_MATCH}
+    public static enum MessageType {NEW_RESULT, PLAYER_ADDED, PLAYER_DELETED, NEW_MATCH}
     private Session session;
 
     @OnWebSocketMessage
@@ -18,6 +18,7 @@ public class ChangeEndpoint {
         this.session = session;
         SpringContext.getTournamentResource().registerEndpoint(this);
         SpringContext.getMatchResource().registerEndpoint(this);
+        SpringContext.getPlayerResource().registerEndpoint(this);
     }
 
     public void sendPush(MessageType message) {

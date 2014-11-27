@@ -20,7 +20,7 @@
                 id="websocket"
                 on-open="{{connected}}"
                 on-message="{{handleMessage}}"
-                url="ws://localhost:8080/push"
+                url="{{url}}"
                 json="true"></x-websocket>
         <div style="align-self: center;">
             <paper-spinner id="loader" active="false"></paper-spinner>
@@ -64,6 +64,13 @@
     </template>
     <script>
         Polymer('player-listing', {
+            created: function() {
+                function url(s) {
+                    var l = window.location;
+                    return ((l.protocol === "https:") ? "wss://" : "ws://") + l.hostname + (((l.port != 80) && (l.port != 443)) ? ":" + l.port : "") + s;
+                }
+               this.url =  url("/push");
+            },
             updatePlayers: function () {
                 this.$.loader.active = true;
                 this.$.updatePlayers.go();
