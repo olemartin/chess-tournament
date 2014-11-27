@@ -1,0 +1,51 @@
+
+plugins {
+    id 'java' // or 'groovy' Must be explicitly applied
+    id 'com.github.johnrengelman.shadow' version '1.1.2'
+}
+group = 'net.ole-martin'
+version = '1.0-SNAPSHOT'
+
+description = "monrad"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven {
+        url "http://m2.neo4j.org/content/repositories/releases/"
+    }
+}
+dependencies {
+    compile 'org.codehaus.groovy:groovy:2.3.6'
+    compile group: 'io.dropwizard', name: 'dropwizard-core', version: '0.7.0'
+    compile group: 'io.dropwizard', name: 'dropwizard-auth', version: '0.7.0'
+    compile group: 'org.springframework', name: 'spring-core', version: '4.0.7.RELEASE'
+    compile group: 'org.springframework', name: 'spring-tx', version: '4.0.7.RELEASE'
+    compile group: 'org.springframework', name: 'spring-beans', version: '4.0.7.RELEASE'
+    compile group: 'org.springframework', name: 'spring-context', version: '4.0.7.RELEASE'
+    compile group: 'org.springframework', name: 'spring-web', version: '4.0.7.RELEASE'
+    compile group: 'org.springframework.data', name: 'spring-data-neo4j', version: '3.2.0.RELEASE'
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.3'
+    compile group: 'io.dropwizard', name: 'dropwizard-assets', version: '0.7.1'
+    compile group: 'org.eclipse.jetty.websocket', name: 'websocket-server', version: '9.0.7.v20131107'
+    testCompile group: 'org.springframework', name: 'spring-test', version: '4.0.7.RELEASE'
+    testCompile group: 'junit', name: 'junit', version: '4.9'
+}
+
+
+
+jar {
+    manifest {
+        attributes("Main-Class": "net.olemartin.Main")
+    }
+}
+shadow {
+    shadowJar {
+        append('META-INF/spring.handlers')
+        append('META-INF/spring.schemas')
+        append('src/main/resources/assets')
+        mergeServiceFiles()
+    }
+}
