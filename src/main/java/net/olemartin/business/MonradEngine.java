@@ -102,8 +102,7 @@ public class MonradEngine implements TournamentEngine {
             rollback(matches, pickedPlayers, player1, overrideThreeRule);
             return;
         } else {
-            Optional<Player> opponent = opponents.stream().filter(p -> p.nextOptimalColor() != color1).findFirst();
-            player2 = opponent.orElse(opponents.get(0));
+            player2 = opponents.get(0);
         }
 
         Color color2 = player2.nextOptimalColor();

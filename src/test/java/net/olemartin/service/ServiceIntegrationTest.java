@@ -31,6 +31,13 @@ public class ServiceIntegrationTest {
     private TournamentService tournamentService;
 
     @Test
+    public void test100Tournaments() {
+        for (int i = 0; i < 100; i++) {
+            testFullTournament();
+        }
+    }
+
+    @Test
     public void testFullTournament() {
         Tournament testturnering = new Tournament("Testturnering");
         testturnering.setEngine("MONRAD");
@@ -40,10 +47,12 @@ public class ServiceIntegrationTest {
         Long tournamentId = tournament.getId();
         tournamentService.addPlayers(tournamentId, persons);
 
-        for (int i = 0; i < persons.size() - 1; i++) {
+        for (int i = 0; i < 7; i++) {
             List<Match> matches = matchService.nextRound(tournamentId);
             matches.stream().filter(match -> !match.isWalkover()).forEach(
-                    match -> matchService.reportResult(match.getId(), Math.random() > 0.6 ? Result.BLACK : Result.WHITE)
+                    match -> matchService.reportResult(
+                            match.getId(),
+                            Math.random() > 0.6 ? Result.BLACK : Result.WHITE)
             );
         }
 
@@ -56,7 +65,7 @@ public class ServiceIntegrationTest {
             for (int i = 1; i < player.getColors().size(); i++) {
                 if (player.getColors().get(i) == lastColor) {
                     if (++count == 3) {
-                       // fail(player.toString());
+                        // fail(player.toString());
                     }
                 } else {
                     lastColor = player.getColors().get(i);
@@ -78,16 +87,21 @@ public class ServiceIntegrationTest {
     }
 
     private List<Person> getPersons() {
-        Person ole = personService.createPerson(new Person("Ole"));
-        Person jan = personService.createPerson(new Person("Jan"));
-        Person per = personService.createPerson(new Person("Per"));
-        Person otto = personService.createPerson(new Person("Otto"));
-        Person janne = personService.createPerson(new Person("Janne"));
-        Person janne1 = personService.createPerson(new Person("Janne1"));
-        Person janne2 = personService.createPerson(new Person("Janne2"));
-        Person janne3 = personService.createPerson(new Person("Janne3"));
 
 
-        return Arrays.asList(ole, jan, per, otto, janne, janne1, janne2, janne3);
+        return Arrays.asList(
+                personService.createPerson(new Person("Ole1")),
+                personService.createPerson(new Person("Ole2")),
+                personService.createPerson(new Person("Ole3")),
+                personService.createPerson(new Person("Jan1")),
+                personService.createPerson(new Person("Jan2")),
+                personService.createPerson(new Person("Jan3")),
+                personService.createPerson(new Person("Per1")),
+                personService.createPerson(new Person("Per2")),
+                personService.createPerson(new Person("Per3")),
+                personService.createPerson(new Person("Otto1")),
+                personService.createPerson(new Person("Otto2")),
+                personService.createPerson(new Person("Otto3")),
+                personService.createPerson(new Person("Janne1")));
     }
 }

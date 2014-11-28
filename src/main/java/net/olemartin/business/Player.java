@@ -232,8 +232,8 @@ public class Player implements Comparable<Player> {
                 " id=" + id +
                 ", score=" + score +
                 ", name='" + getName() + '\'' +
+                ", met='" + playersMet.stream().map(p -> String.valueOf(p.getName())).collect(Collectors.joining(",")) + '\'' +
                 ", colors='" + asLinkedList() + '\'' +
-                ", met='" + playersMet.stream().map(p -> String.valueOf(p.getId())).collect(Collectors.joining(",")) + '\'' +
                 ", must='" + mustHaveColor() + '\'' +
                 '}';
     }
