@@ -10,7 +10,7 @@ public class TournamentEngineFactory {
             case ROUND_ROBIN:
                 return new RoundRobinEngine(players);
             case MONRAD:
-                return new Monrad(randomizer, players);
+                return new MonradEngine(randomizer, players);
             default:
                 throw new IllegalArgumentException();
         }

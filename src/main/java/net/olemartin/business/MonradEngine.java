@@ -9,12 +9,12 @@ import static java.util.stream.Collectors.joining;
 import static net.olemartin.business.Color.BLACK;
 import static net.olemartin.business.Color.WHITE;
 
-public class Monrad implements TournamentEngine {
+public class MonradEngine implements TournamentEngine {
 
     private final List<Player> players;
     private Set<String> triedCombinations = new HashSet<>();
 
-    public Monrad(Randomizer random, Iterable<Player> players) {
+    public MonradEngine(Randomizer random, Iterable<Player> players) {
         this.players = Lists.newArrayList(players);
         random.shuffle(this.players);
     }
