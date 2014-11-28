@@ -82,6 +82,9 @@ public class MatchService {
 
     public Match reportResult(long matchId, Result result) {
         Match match = matchRepository.findOne(matchId);
+        if (match.hasResult()) {
+            throw new IllegalStateException("Match already has result");
+        }
         match.reportResult(result);
         matchRepository.save(match);
         playerRepository.save(match.getBlack());
