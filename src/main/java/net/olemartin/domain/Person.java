@@ -8,6 +8,8 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import java.lang.reflect.Type;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.Set;
 
 @NodeEntity
@@ -20,11 +22,13 @@ public class Person {
     @Fetch
     private Set<Player> players;
 
+    @RelatedTo(type = "RATING", direction = Direction.OUTGOING)
+    @Fetch
+    private Rating rating;
+
     private String name;
 
-    private int rating = 1200;
-
-
+    @SuppressWarnings("UnusedDeclaration")
     private Person() {
     }
 
@@ -33,11 +37,15 @@ public class Person {
     }
 
     public int getRating() {
-        return rating;
+        return rating == null ? 1200 : rating.getRating();
     }
 
     public void setRating(int rating) {
-        this.rating = rating;
+        this.rating = new Rating(new Date(), rating, this.rating);
+    }
+
+    public Iterator<Rating> getRatings() {
+        return rating.iterator();
     }
 
     public String getName() {
@@ -59,8 +67,7 @@ public class Person {
             JsonObject root = new JsonObject();
             root.addProperty("id", person.id);
             root.addProperty("name", person.name);
-            root.addProperty("rating", person.rating);
-
+            root.addProperty("rating", person.getRating());
             JsonArray playerArray = new JsonArray();
             person.players.stream().forEach(player -> playerArray.add(playerSerializer.serialize(player, Player.class, context)));
             root.add("players", playerArray);

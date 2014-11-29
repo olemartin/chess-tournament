@@ -32,6 +32,7 @@ public class Tournament {
     private boolean finished;
     private String engine;
 
+    @SuppressWarnings("UnusedDeclaration")
     private Tournament() {
 
     }
@@ -42,7 +43,7 @@ public class Tournament {
 
     public void calculateRatings(EloRatingSystem system) {
         for (Round round : rounds.stream().sorted().collect(toList())) {
-            for (Match match : round.getMatches().stream().filter(match1 -> !match1.isWalkover()).collect(toList())) {
+            for (Match match : round.getMatches().stream().filter(m -> !m.isWalkover()).collect(toList())) {
 
                 if (match.getResult() == Result.REMIS) {
                     Person white = match.getWhite().getPerson();
