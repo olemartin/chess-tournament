@@ -1,6 +1,10 @@
 package net.olemartin.service;
 
-import net.olemartin.business.*;
+import jdk.nashorn.internal.ir.annotations.Ignore;
+import net.olemartin.domain.*;
+import net.olemartin.service.match.MatchService;
+import net.olemartin.service.person.PersonService;
+import net.olemartin.service.tournament.TournamentService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +34,7 @@ public class ServiceIntegrationTest {
     @Autowired
     private TournamentService tournamentService;
 
-    @Test
+    @Ignore
     public void test100Tournaments() {
         for (int i = 0; i < 100; i++) {
             testFullTournament();

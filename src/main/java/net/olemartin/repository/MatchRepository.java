@@ -1,6 +1,6 @@
 package net.olemartin.repository;
 
-import net.olemartin.business.Match;
+import net.olemartin.domain.Match;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.conversion.Result;
 import org.springframework.data.neo4j.repository.GraphRepository;

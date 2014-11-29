@@ -1,6 +1,6 @@
 package net.olemartin.repository;
 
-import net.olemartin.business.Person;
+import net.olemartin.domain.Person;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.data.repository.query.Param;

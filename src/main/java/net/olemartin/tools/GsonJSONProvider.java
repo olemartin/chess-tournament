@@ -2,7 +2,7 @@ package net.olemartin.tools;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.olemartin.business.*;
+import net.olemartin.domain.*;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;

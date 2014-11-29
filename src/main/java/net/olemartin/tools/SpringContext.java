@@ -1,8 +1,8 @@
 package net.olemartin.tools;
 
-import net.olemartin.resources.MatchResource;
-import net.olemartin.resources.PlayerResource;
-import net.olemartin.resources.TournamentResource;
+import net.olemartin.service.match.MatchResource;
+import net.olemartin.service.player.PlayerResource;
+import net.olemartin.service.tournament.TournamentResource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
