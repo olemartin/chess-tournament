@@ -6,10 +6,9 @@ import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.auth.basic.BasicAuthProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import net.olemartin.domain.User;
 import net.olemartin.dropwizard.MonradConfiguration;
-import net.olemartin.dropwizard.ChessAuthenticator;
 import net.olemartin.push.ChangeNotification;
+import net.olemartin.service.user.ChessAuthenticator;
 import net.olemartin.tools.GsonJSONProvider;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -39,7 +38,7 @@ public class Main extends Application<MonradConfiguration> {
         }
         environment.jersey().register(GsonJSONProvider.class);
         environment.jersey().setUrlPattern("/rest/*");
-        environment.jersey().register(new BasicAuthProvider<User>(context.getBean(ChessAuthenticator.class), "BEKK Chess"));
+        environment.jersey().register(new BasicAuthProvider<>(context.getBean(ChessAuthenticator.class), "BEKK Chess"));
 
         ServletRegistration.Dynamic websocket = environment.servlets().addServlet("websocket", context.getBean(ChangeNotification.class));
         websocket.setAsyncSupported(true);

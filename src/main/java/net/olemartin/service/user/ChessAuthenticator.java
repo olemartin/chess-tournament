@@ -1,11 +1,10 @@
-package net.olemartin.dropwizard;
+package net.olemartin.service.user;
 
 import com.google.common.base.Optional;
 import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.auth.Authenticator;
 import io.dropwizard.auth.basic.BasicCredentials;
 import net.olemartin.domain.User;
-import net.olemartin.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
