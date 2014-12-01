@@ -64,6 +64,7 @@ public class Person {
         @Override
         public JsonElement serialize(Person person, Type typeOfSrc, JsonSerializationContext context) {
             JsonSerializer<Player> playerSerializer = new Player.PlayerSerializer();
+            JsonSerializer<Rating> ratingSerializer = new Rating.RatingSerializer();
             JsonObject root = new JsonObject();
             root.addProperty("id", person.id);
             root.addProperty("name", person.name);
@@ -72,6 +73,9 @@ public class Person {
             person.players.stream().forEach(player -> playerArray.add(playerSerializer.serialize(player, Player.class, context)));
             root.add("players", playerArray);
 
+            JsonArray ratingsArray = new JsonArray();
+            person.rating.forEach(rating -> ratingsArray.add(ratingSerializer.serialize(rating, Rating.class, context)));
+            root.add("ratings", ratingsArray);
 
             return root;
         }
