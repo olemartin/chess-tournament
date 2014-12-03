@@ -1,10 +1,16 @@
 
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../../bower_components/google-chart/google-chart.html">
 
 <polymer-element name="person-details" attr="personId" vertical layout>
     <template>
-        <paper-dialog id="person_details">
+        <style>
+            google-chart {
+                height: 300px;
+            }
+        </style>
+        <paper-dialog id="person_details" on-core-overlay-close-completed="{{dialogClosed}}">
 
             <h3 style="text-align:center;">{{person.name}} ({{person.rating}})</h3>
             <h4 style="text-align:center;min-width: 300px; margin-bottom:15px;">Tournaments</h4>
@@ -20,6 +26,14 @@
                     </tr>
                 </template>
             </table>
+            <google-chart
+                    id="chart"
+                    type='line'
+                    cols='[{"label":"Date", "type":"string"}, {"label":"Rating", "type":"number"}]'
+                    rows="{{ratings}}">
+            </google-chart>
+
+
             <paper-button raisedButton class="error center" on-tap="{{deletePerson}}">Delete</paper-button>
         </paper-dialog>
         <core-ajax
@@ -29,6 +43,13 @@
             id="getPerson"
             contentType="application/json"
             on-core-response="{{handleResponse}}"></core-ajax>
+        <core-ajax
+                auto="true"
+                url="/rest/person/{{personId}}/ratings"
+                handleAs="json"
+                id="getRatings"
+                contentType="application/json"
+                on-core-response="{{handleRatings}}"></core-ajax>
         <core-ajax
                 auto="false"
                 method="DELETE"
@@ -40,9 +61,7 @@
     </template>
     <script>
         Polymer('person-details', {
-            created: function () {
-                this.data = {};
-            },
+
             handleResponse: function (response, detail, target) {
                 this.person = detail.response;
             },
@@ -50,6 +69,7 @@
                 this.personId = personId;
                 this.$.getPerson.go();
                 this.$.person_details.toggle();
+                this.$.chart.drawChart();
             },
             deletePerson: function (e, detail, target) {
                 this.$.deletePerson.go();
@@ -57,6 +77,13 @@
             deleted: function() {
                 this.$.person_details.toggle();
                 this.fire("persons-updated");
+            },
+            handleRatings:function(response, detail, target) {
+                this.ratings = detail.response;
+            },
+            dialogClosed:function() {
+                this.person = {};
+                this.ratings = {};
             }
         });
     </script>

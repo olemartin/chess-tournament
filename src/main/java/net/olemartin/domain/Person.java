@@ -9,7 +9,6 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import java.lang.reflect.Type;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Set;
 
 @NodeEntity
@@ -36,16 +35,16 @@ public class Person {
         this.name = name;
     }
 
-    public int getRating() {
+    public Rating getRating() {
+        return rating;
+    }
+
+    public int getCurrentRating() {
         return rating == null ? 1200 : rating.getRating();
     }
 
-    public void setRating(int rating) {
+    public void setCurrentRating(int rating) {
         this.rating = new Rating(new Date(), rating, this.rating);
-    }
-
-    public Iterator<Rating> getRatings() {
-        return rating.iterator();
     }
 
     public String getName() {
@@ -60,22 +59,20 @@ public class Person {
         players.add(player);
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public static class PersonSerializer implements JsonSerializer<Person> {
         @Override
         public JsonElement serialize(Person person, Type typeOfSrc, JsonSerializationContext context) {
             JsonSerializer<Player> playerSerializer = new Player.PlayerSerializer();
-            JsonSerializer<Rating> ratingSerializer = new Rating.RatingSerializer();
             JsonObject root = new JsonObject();
             root.addProperty("id", person.id);
             root.addProperty("name", person.name);
-            root.addProperty("rating", person.getRating());
             JsonArray playerArray = new JsonArray();
             person.players.stream().forEach(player -> playerArray.add(playerSerializer.serialize(player, Player.class, context)));
             root.add("players", playerArray);
-
-            JsonArray ratingsArray = new JsonArray();
-            person.rating.forEach(rating -> ratingsArray.add(ratingSerializer.serialize(rating, Rating.class, context)));
-            root.add("ratings", ratingsArray);
 
             return root;
         }

@@ -34,15 +34,9 @@ public class PersonResource {
         return personService.getPersonsNotInTournament(tournament.getId());
     }
 
-    @Path("/list")
-    @GET
-    public List<Person> getPersons() {
-        return personService.getPersons();
-    }
-
     @Path("/")
     @GET
-    public List<Person> getAllPersons() {
+    public List<PersonView> getAllPersons() {
         return personService.getPersons();
     }
 
@@ -50,6 +44,12 @@ public class PersonResource {
     @GET
     public PersonView getPerson(@PathParam("id") Long id) {
         return personService.getPerson(id);
+    }
+
+    @Path("/{id}/ratings")
+    @GET
+    public List getRatings(@PathParam("id") Long id) {
+        return personService.getRatings(id);
     }
 
     @Path("/{id}")

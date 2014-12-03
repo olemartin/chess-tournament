@@ -21,6 +21,7 @@ public class Tournament {
     private int currentRound;
 
     @RelatedTo(type = "PLAYS_IN", direction = Direction.INCOMING)
+    @Fetch
     private Set<Player> players;
 
     @RelatedTo(type = "ROUND_OF", direction = Direction.OUTGOING)
@@ -48,20 +49,28 @@ public class Tournament {
                 if (match.getResult() == Result.REMIS) {
                     Person white = match.getWhite().getPerson();
                     Person black = match.getBlack().getPerson();
-                    white.setRating(system.getNewRating(white.getRating(), black.getRating(), PlayerResult.DRAW));
-                    black.setRating(system.getNewRating(black.getRating(), white.getRating(), PlayerResult.DRAW));
+                    white.setCurrentRating(
+                            system.getNewRating(
+                                    white.getCurrentRating(),
+                                    black.getCurrentRating(),
+                                    PlayerResult.DRAW));
+                    black.setCurrentRating(
+                            system.getNewRating(
+                                    black.getCurrentRating(),
+                                    white.getCurrentRating(),
+                                    PlayerResult.DRAW));
                 } else {
                     Person winner = match.getWinner().getPerson();
                     Person looser = match.getLooser().getPerson();
-                    winner.setRating(
+                    winner.setCurrentRating(
                             system.getNewRating(
-                                    winner.getRating(),
-                                    looser.getRating(),
+                                    winner.getCurrentRating(),
+                                    looser.getCurrentRating(),
                                     PlayerResult.WIN));
-                    looser.setRating(
+                    looser.setCurrentRating(
                             system.getNewRating(
-                                    looser.getRating(),
-                                    winner.getRating(),
+                                    looser.getCurrentRating(),
+                                    winner.getCurrentRating(),
                                     PlayerResult.LOSS));
                 }
             }

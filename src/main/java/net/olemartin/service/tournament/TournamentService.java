@@ -73,7 +73,6 @@ public class TournamentService {
             tournament.addPlayer(player);
         }
         save(tournament);
-        personRepository.save(persons);
     }
 
     public List<Tournament> retrieveAll() {

@@ -2,6 +2,7 @@ package net.olemartin.service;
 
 import jdk.nashorn.internal.ir.annotations.Ignore;
 import net.olemartin.domain.*;
+import net.olemartin.domain.view.PersonView;
 import net.olemartin.service.match.MatchService;
 import net.olemartin.service.person.PersonService;
 import net.olemartin.service.tournament.TournamentService;
@@ -81,10 +82,10 @@ public class ServiceIntegrationTest {
 
         tournamentService.finishTournament(tournamentId);
 
-        List<Person> allPersons = personService.getPersons();
+        List<PersonView> allPersons = personService.getPersons();
 
         assertFalse(allPersons.size() == 0);
-        for (Person person : allPersons) {
+        for (PersonView person : allPersons) {
             assertTrue(person.getRating() != 1200);
         }
 
