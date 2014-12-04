@@ -49,9 +49,9 @@ public class TournamentService {
         return tournamentRepository.findOne(tournamentId);
     }
 
-    public void finishTournament(Long tournamentId) {
+    public void finishTournament(Long tournamentId, boolean override) {
         Tournament tournament = retrieve(tournamentId);
-        if (tournament.isFinished()) {
+        if (tournament.isFinished() && !override) {
             throw new IllegalStateException("Tournament already finished");
         }
         tournament.setFinished(true);

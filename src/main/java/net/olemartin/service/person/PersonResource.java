@@ -34,7 +34,6 @@ public class PersonResource {
         return personService.getPersonsNotInTournament(tournament.getId());
     }
 
-    @Path("/")
     @GET
     public List<PersonView> getAllPersons() {
         return personService.getPersons();

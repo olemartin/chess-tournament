@@ -81,8 +81,8 @@ public class TournamentResource {
 
     @POST
     @Path("{tournamentId}/finish")
-    public String finish(@Auth User user, @PathParam("tournamentId") Long tournamentId) {
-        tournamentService.finishTournament(tournamentId);
+    public String finish(@Auth User user, @PathParam("tournamentId") Long tournamentId, @QueryParam("override") boolean override) {
+        tournamentService.finishTournament(tournamentId, override);
         return "OK";
     }
 
@@ -101,7 +101,6 @@ public class TournamentResource {
     }
 
     @GET
-    @Path("/")
     public List<TournamentView> allTournaments() {
         return tournamentService.retrieveAll();
     }

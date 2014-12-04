@@ -80,7 +80,7 @@ public class ServiceIntegrationTest {
         }
 
 
-        tournamentService.finishTournament(tournamentId);
+        tournamentService.finishTournament(tournamentId, false);
 
         List<PersonView> allPersons = personService.getPersons();
 
