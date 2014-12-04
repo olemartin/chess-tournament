@@ -16,7 +16,7 @@ public interface PersonRepository  extends GraphRepository<Person> {
     @Query("MATCH (p:Person) -[:RATING]-> (rating)\n" +
             "WITH id(p) as id, p.name as name, rating.rating as rating\n" +
             "ORDER BY rating DESC\n" +
-            "RETURN id, name, rating")
+            "RETURN DISTINCT id, name, rating")
     Iterable<PersonView> getPersons();
 
     @Query("MATCH (p:Person), (t:Tournament) " +
