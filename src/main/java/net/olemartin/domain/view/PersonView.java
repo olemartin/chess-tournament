@@ -14,12 +14,12 @@ public class PersonView {
     private String name;
     @ResultColumn("rating")
     private long rating;
-    private List<TournamentView> tournaments;
+    private List<PersonInTournamentView> tournaments;
 
     public PersonView() {
     }
 
-    public PersonView(Long id, String name, int rating, List<TournamentView> tournaments) {
+    public PersonView(Long id, String name, int rating, List<PersonInTournamentView> tournaments) {
         this.id = id;
         this.name = name;
         this.rating = rating;

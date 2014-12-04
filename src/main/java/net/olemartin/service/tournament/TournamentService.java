@@ -1,6 +1,7 @@
 package net.olemartin.service.tournament;
 
 import net.olemartin.domain.*;
+import net.olemartin.domain.view.TournamentView;
 import net.olemartin.tools.rating.EloRatingSystem;
 import net.olemartin.repository.*;
 import net.olemartin.service.match.MatchService;
@@ -75,13 +76,8 @@ public class TournamentService {
         save(tournament);
     }
 
-    public List<Tournament> retrieveAll() {
-        Result<Tournament> tournaments = tournamentRepository.query("MATCH (tournament:Tournament) RETURN tournament", new HashMap<>());
-        List<Tournament> list = new ArrayList<>();
-        for (Tournament tournament : tournaments) {
-            list.add(tournament);
-        }
-        return list;
+    public List<TournamentView> retrieveAll() {
+        return tournamentRepository.retrieveAllTournaments();
     }
 
     public List<Match> retrieveCurrentRoundsMatches(Long tournamentId) {

@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import net.olemartin.domain.Person;
 import net.olemartin.domain.Rating;
 import net.olemartin.domain.view.PersonView;
-import net.olemartin.domain.view.TournamentView;
+import net.olemartin.domain.view.PersonInTournamentView;
 import net.olemartin.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
@@ -49,8 +49,8 @@ public class PersonService {
     public PersonView getPerson(Long id) {
         Person person = personRepository.findOne(id);
 
-        List<TournamentView> tournamentViews = person.getPlayers().stream()
-                .map(player -> new TournamentView(
+        List<PersonInTournamentView> tournamentViews = person.getPlayers().stream()
+                .map(player -> new PersonInTournamentView(
                         template.fetch(player.getTournament()).getName(),
                         player.getTournamentRank()))
                 .collect(Collectors.toList());

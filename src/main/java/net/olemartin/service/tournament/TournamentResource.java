@@ -2,6 +2,7 @@ package net.olemartin.service.tournament;
 
 import io.dropwizard.auth.Auth;
 import net.olemartin.domain.*;
+import net.olemartin.domain.view.TournamentView;
 import net.olemartin.push.ChangeEndpoint;
 import net.olemartin.service.match.MatchService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,8 +101,8 @@ public class TournamentResource {
     }
 
     @GET
-    @Path("/list")
-    public List<Tournament> allTournaments() {
+    @Path("/")
+    public List<TournamentView> allTournaments() {
         return tournamentService.retrieveAll();
     }
 

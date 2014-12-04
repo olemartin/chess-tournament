@@ -1,13 +1,42 @@
 package net.olemartin.domain.view;
 
+import org.springframework.data.neo4j.annotation.QueryResult;
+import org.springframework.data.neo4j.annotation.ResultColumn;
+
+@QueryResult
 public class TournamentView {
 
-    private int rank;
+    @ResultColumn("id")
+    private Long id;
+    @ResultColumn("name")
     private String name;
+    @ResultColumn("finished")
+    private boolean finished;
 
-    public TournamentView(String name, int rank) {
+    public TournamentView() {
+    }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
         this.name = name;
-        this.rank = rank;
+    }
+
+    public boolean isFinished() {
+        return finished;
+    }
+
+    public void setFinished(boolean finished) {
+        this.finished = finished;
     }
 }
