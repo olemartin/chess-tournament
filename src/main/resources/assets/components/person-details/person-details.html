@@ -1,4 +1,3 @@
-
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="../../bower_components/google-chart/google-chart.html">
@@ -6,12 +5,19 @@
 <polymer-element name="person-details" attr="personId" vertical layout>
     <template>
         <style>
-            google-chart {
-                height: 300px;
+            #loader {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                margin: auto;
             }
         </style>
+        <div>
+            <paper-spinner id="loader" active="false"></paper-spinner>
+        </div>
         <paper-dialog id="person_details" on-core-overlay-close-completed="{{dialogClosed}}">
-
             <h3 style="text-align:center;">{{person.name}} ({{person.rating}})</h3>
             <h4 style="text-align:center;min-width: 300px; margin-bottom:15px;">Tournaments</h4>
             <table class="center">
@@ -29,22 +35,23 @@
             <google-chart
                     id="chart"
                     type='line'
+                    options="{'width':450,'height':300, 'legend':{'position':'none'}, 'animation':{'duration':500, 'easing':'in'}}"
                     cols='[{"label":"Date", "type":"string"}, {"label":"Rating", "type":"number"}]'
                     rows="{{ratings}}">
             </google-chart>
 
-
             <paper-button raisedButton class="error center" on-tap="{{deletePerson}}">Delete</paper-button>
+
         </paper-dialog>
         <core-ajax
-            auto="true"
-            url="/rest/person/{{personId}}"
-            handleAs="json"
-            id="getPerson"
-            contentType="application/json"
-            on-core-response="{{handleResponse}}"></core-ajax>
+                auto="false"
+                url="/rest/person/{{personId}}"
+                handleAs="json"
+                id="getPerson"
+                contentType="application/json"
+                on-core-response="{{handleResponse}}"></core-ajax>
         <core-ajax
-                auto="true"
+                auto="false"
                 url="/rest/person/{{personId}}/ratings"
                 handleAs="json"
                 id="getRatings"
@@ -61,27 +68,29 @@
     </template>
     <script>
         Polymer('person-details', {
-
             handleResponse: function (response, detail, target) {
                 this.person = detail.response;
+                this.$.loader.active = false;
+                this.$.person_details.toggle();
             },
             show: function (personId) {
                 this.personId = personId;
+                this.$.loader.active = true;
                 this.$.getPerson.go();
-                this.$.person_details.toggle();
-                this.$.chart.drawChart();
+                this.$.getRatings.go();
             },
             deletePerson: function (e, detail, target) {
                 this.$.deletePerson.go();
             },
-            deleted: function() {
+            deleted: function () {
                 this.$.person_details.toggle();
                 this.fire("persons-updated");
             },
-            handleRatings:function(response, detail, target) {
+            handleRatings: function (response, detail, target) {
                 this.ratings = detail.response;
+                //this.$.chart.drawChart();
             },
-            dialogClosed:function() {
+            dialogClosed: function () {
                 this.person = {};
                 this.ratings = {};
             }
