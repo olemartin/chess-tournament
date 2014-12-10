@@ -29,8 +29,7 @@
         <h2>Registered tournaments</h2>
 
         <div horizontal layout>
-            <div flex></div>
-            <div flex two vertical layout class="list">
+            <div flex vertical layout class="list">
                 <paper-shadow id="myShadow" z="1">
                     <template repeat="{{data}}">
                         <div horizontal layout class="tournaments">
@@ -51,7 +50,6 @@
                     </template>
                 </paper-shadow>
             </div>
-            <div flex></div>
         </div>
         <new-tournament id="new_tournament" cross-fade
                         on-tournament_created="{{tournamentCreated}}"/>

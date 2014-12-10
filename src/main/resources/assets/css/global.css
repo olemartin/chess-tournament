@@ -502,7 +502,10 @@ html /deep/ table.center {
                 border: solid #606565 thin;
             }
 html /deep/ table.rounds {
-                             min-width: 30em;
+    width: 90%;
+    margin-left:auto;
+    margin-right:auto;
+
                          }
             section {
                 vertical-align: middle;

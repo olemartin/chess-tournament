@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../../bower_components/core-media-query/core-media-query.html"/>
 <link rel="import" href="../../bower_components/google-chart/google-chart.html">
 
 <polymer-element name="person-details" attr="personId" vertical layout>
@@ -14,12 +15,16 @@
                 margin: auto;
             }
         </style>
+        <core-media-query
+                query="max-width:700px"
+                queryMatches="{{smallScreen}}">
+        </core-media-query>
         <div>
             <paper-spinner id="loader" active="false"></paper-spinner>
         </div>
         <paper-dialog id="person_details" on-core-overlay-close-completed="{{dialogClosed}}">
             <h3 style="text-align:center;">{{person.name}} ({{person.rating}})</h3>
-            <h4 style="text-align:center;min-width: 300px; margin-bottom:15px;">Tournaments</h4>
+            <h4 style="text-align:center;margin-bottom:15px;">Tournaments</h4>
             <table class="center">
                 <tr>
                     <th>Name</th>
@@ -32,13 +37,15 @@
                     </tr>
                 </template>
             </table>
-            <google-chart
-                    id="chart"
-                    type='line'
-                    options="{'width':450,'height':300, 'legend':{'position':'none'}, 'animation':{'duration':500, 'easing':'in'}}"
-                    cols='[{"label":"Date", "type":"string"}, {"label":"Rating", "type":"number"}]'
-                    rows="{{ratings}}">
-            </google-chart>
+            <template if="{{!smallScreen}}">
+                <google-chart
+                        id="chart"
+                        type='line'
+                        options="{'width':450,'height':300, 'legend':{'position':'none'}, 'animation':{'duration':500, 'easing':'in'}}"
+                        cols='[{"label":"Date", "type":"string"}, {"label":"Rating", "type":"number"}]'
+                        rows="{{ratings}}">
+                </google-chart>
+            </template>
 
             <paper-button raisedButton class="error center" on-tap="{{deletePerson}}">Delete</paper-button>
 

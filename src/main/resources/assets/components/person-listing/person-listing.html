@@ -23,8 +23,7 @@
         <h2>Ratings</h2>
 
         <div horizontal layout>
-            <div flex></div>
-            <div flex three vertical layout style="align-self: center; margin-bottom: 30px; padding:20px;">
+            <div flex vertical layout style="align-self: center; margin-bottom: 30px; padding:20px;">
                 <paper-shadow id="myShadow" z="1">
                 <template repeat="{{data}}">
                     <div horizontal layout class="person" on-tap="{{personTapped}}" data-id="{{id}}">
@@ -34,7 +33,6 @@
                 </template>
                 </paper-shadow>
             </div>
-            <div flex></div>
         </div>
         <core-ajax
                 auto="true"

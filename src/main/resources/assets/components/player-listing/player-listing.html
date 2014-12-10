@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/core-list/core-list.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../../bower_components/core-media-query/core-media-query.html">
 <link rel="import" href="../../components/player-details/player-details.html">
 <link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="../x-websocket/x-websocket.html">
@@ -7,6 +8,10 @@
 
 <polymer-element name="player-listing" vertical layout attributes="tournamentId tournamentName large">
     <template if="{{tournamentId}}">
+        <core-media-query
+                query="max-width:700px"
+                queryMatches="{{smallScreen}}">
+        </core-media-query>
         <core-ajax
                 auto="false"
                 url="/rest/tournament/{{tournamentId}}/players"
@@ -34,7 +39,7 @@
                     <th style="text-align:left; padding-left:10px;">Results</th>
                 </template>
                 <th style="text-align:left; padding-left:10px;">Score</th>
-                <template if="{{large}}">
+                <template if="{{large && !smallScreen}}">
                     <th style="text-align:left; padding-left:10px;">Monrad-2</th>
                     <th style="text-align:left; padding-left:10px;">Monrad-1</th>
                     <th style="text-align:left; padding-left:10px;">Monrad</th>
@@ -51,7 +56,7 @@
                         <td style="padding-left:10px;text-align:left;">{{player.roundResults}}</td>
                     </template>
                     <td style="padding-left:10px;text-align:left;">{{player.score}}</td>
-                    <template if="{{large}}">
+                    <template if="{{large && !smallScreen}}">
                         <td style="padding-left:10px;text-align:left;">{{player.monrad2}}</td>
                         <td style="padding-left:10px;text-align:left;">{{player.monrad1}}</td>
                         <td style="padding-left:10px;text-align:left;">{{player.monrad}}</td>

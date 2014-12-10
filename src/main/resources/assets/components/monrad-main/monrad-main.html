@@ -1,7 +1,12 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html"/>
+<link rel="import" href="../../bower_components/core-item/core-item.html"/>
 <link rel="import" href="../../bower_components/core-animated-pages/core-animated-pages.html"/>
 <link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html"/>
 <link rel="import" href="../../bower_components/core-header-panel/core-header-panel.html"/>
+<link rel="import" href="../../bower_components/core-menu-button/core-menu-button.html"/>
+<link rel="import" href="../../bower_components/core-menu/core-menu.html"/>
+<link rel="import" href="../../bower_components/core-dropdown/core-dropdown.html"/>
+<link rel="import" href="../../bower_components/core-icon-button/core-icon-button.html"/>
 <link rel="import" href="../../bower_components/paper-button/paper-button.html"/>
 <link rel="import" href="../../bower_components/core-drawer-panel/core-drawer-panel.html"/>
 <link rel="import" href="../../bower_components/core-scroll-header-panel/core-scroll-header-panel.html"/>
@@ -15,10 +20,14 @@
 
 <polymer-element name="monrad-main" vertical layout>
     <template>
+        <core-media-query
+                query="max-width:600px"
+                queryMatches="{{smallScreen}}">
+        </core-media-query>
         <core-drawer-panel id="drawerPanel" drawerWidth="300px" responsiveWidth="1000px">
             <core-header-panel drawer style="background-color: #f2f7fa">
                 <core-toolbar>
-                    <span flex>BEKK Chess</span>
+                    <span flex>Tournament<br/>Manager</span>
                 </core-toolbar>
                 <section>
                     <player-listing
@@ -31,13 +40,30 @@
             </core-header-panel>
             <core-header-panel main>
                 <core-toolbar>
-                    <span flex></span>
-                    <template if="{{tournamentId}}">
-                        <paper-button id="b2" on-tap="{{players_selected}}">Players</paper-button>
-                        <paper-button id="b3" on-tap="{{matches_selected}}">Matches</paper-button>
+                    <template if="{{smallScreen}}">
+                        <core-menu-button>
+                            <core-icon-button icon="menu"></core-icon-button>
+                            <core-dropdown class="dropdown" layered>
+                                <core-menu>
+                                    <template if="{{tournamentId}}">
+                                        <core-item on-tap="{{players_selected}}" label="Players"></core-item>
+                                        <core-item on-tap="{{matches_selected}}" label="Matches"></core-item>
+                                    </template>
+                                    <core-item on-tap="{{tournaments_selected}}" label="Tournaments"></core-item>
+                                    <core-item on-tap="{{persons_selected}}" label="Persons"></core-item>
+                                </core-menu>
+                            </core-dropdown>
+                        </core-menu-button>
                     </template>
-                    <paper-button id="b4" on-tap="{{tournaments_selected}}">Tournaments</paper-button>
-                    <paper-button id="b1" on-tap="{{persons_selected}}">Persons</paper-button>
+                    <template if="{{!smallScreen}}">
+                        <span flex></span>
+                        <template if="{{tournamentId}}">
+                            <paper-button on-tap="{{players_selected}}">Players</paper-button>
+                            <paper-button on-tap="{{matches_selected}}">Matches</paper-button>
+                        </template>
+                        <paper-button on-tap="{{tournaments_selected}}">Tournaments</paper-button>
+                        <paper-button on-tap="{{persons_selected}}">Persons</paper-button>
+                    </template>
                 </core-toolbar>
                 <core-animated-pages selected="{{selected}}" flex auto
                                      transitions="slide-up slide-down cross-fade">
