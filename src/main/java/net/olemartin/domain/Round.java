@@ -1,11 +1,9 @@
 package net.olemartin.domain;
 
 import com.google.gson.*;
-import org.neo4j.graphdb.Direction;
-import org.springframework.data.neo4j.annotation.Fetch;
-import org.springframework.data.neo4j.annotation.GraphId;
-import org.springframework.data.neo4j.annotation.NodeEntity;
-import org.springframework.data.neo4j.annotation.RelatedTo;
+import org.neo4j.ogm.annotation.GraphId;
+import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.Relationship;
 
 import java.lang.reflect.Type;
 import java.util.HashSet;
@@ -19,11 +17,10 @@ public class Round implements Comparable<Round> {
 
     private int number;
 
-    @RelatedTo(type = "CONSIST_OF", direction = Direction.OUTGOING)
-    @Fetch
+    @Relationship(type = "CONSIST_OF", direction = Relationship.OUTGOING)
     private Set<Match> matches = new HashSet<>();
 
-    @RelatedTo(type = "ROUND_OF", direction = Direction.INCOMING)
+    @Relationship(type = "ROUND_OF", direction = Relationship.INCOMING)
     private Tournament tournament;
 
     private Round() {

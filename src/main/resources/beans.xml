@@ -15,12 +15,14 @@
 
     <context:annotation-config/>
     <context:spring-configured/>
-    <context:component-scan base-package="net.olemartin.service"/>
-    <context:component-scan base-package="net.olemartin.push"/>
-    <context:component-scan base-package="net.olemartin.tools"/>
     <tx:annotation-driven mode="proxy"/>
-    <neo4j:config storeDirectory="data" base-package="net.olemartin.domain"/>
-    <neo4j:repositories base-package="net.olemartin.repository" neo4j-template-ref="neo4jTemplate"/>
+    <neo4j:config base-package="net.olemartin.domain" graphDatabaseService="graphDatabaseService"/>
+    <neo4j:repositories base-package="net.olemartin.repository"/>
 
-
+    <bean id="graphDatabaseService" class="ImpermanentGraphDatabase" destroy-method="shutdown"/>
+    <!-- -->
+    <!--<bean id="graphDatabaseService" class="org.neo4j.rest.graphdb.RestGraphDatabase">
+        <constructor-arg value="http://localhost:7474/db/data"/>
+    </bean>
+    -->
 </beans>

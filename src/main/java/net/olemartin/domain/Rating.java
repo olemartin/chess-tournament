@@ -1,9 +1,9 @@
 package net.olemartin.domain;
 
-import org.neo4j.graphdb.Direction;
+
+import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.Relationship;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.neo4j.annotation.NodeEntity;
-import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import java.util.Date;
 
@@ -16,7 +16,7 @@ public class Rating {
     private Date date;
     private int rating;
 
-    @RelatedTo(type = "PREVIOUS_RATING", direction = Direction.OUTGOING)
+    @Relationship(type = "PREVIOUS_RATING", direction = Relationship.OUTGOING)
     private Rating next;
 
     @SuppressWarnings("UnusedDeclaration")

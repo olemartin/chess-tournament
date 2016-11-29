@@ -16,22 +16,26 @@ repositories {
     maven {
         url "http://m2.neo4j.org/content/repositories/releases/"
     }
+    maven {
+        url "https://repo.spring.io/libs-milestone"
+    }
 }
 dependencies {
     compile 'org.codehaus.groovy:groovy:2.3.6'
-    compile group: 'io.dropwizard', name: 'dropwizard-core', version: '0.7.0'
-    compile group: 'io.dropwizard', name: 'dropwizard-auth', version: '0.7.0'
-    compile group: 'org.springframework', name: 'spring-core', version: '4.0.7.RELEASE'
-    compile group: 'org.springframework', name: 'spring-tx', version: '4.0.7.RELEASE'
-    compile group: 'org.springframework', name: 'spring-beans', version: '4.0.7.RELEASE'
-    compile group: 'org.springframework', name: 'spring-context', version: '4.0.7.RELEASE'
-    compile group: 'org.springframework', name: 'spring-web', version: '4.0.7.RELEASE'
-    compile group: 'org.springframework.data', name: 'spring-data-neo4j', version: '3.2.0.RELEASE'
+    compile group: 'io.dropwizard', name: 'dropwizard-core', version: '1.0.5'
+    compile group: 'io.dropwizard', name: 'dropwizard-auth', version: '1.0.5'
+    compile group: 'org.springframework', name: 'spring-core', version: '4.3.4.RELEASE'
+    compile group: 'org.springframework', name: 'spring-tx', version: '4.3.4.RELEASE'
+    compile group: 'org.springframework', name: 'spring-beans', version: '4.3.4.RELEASE'
+    compile group: 'org.springframework', name: 'spring-context', version: '4.3.4.RELEASE'
+    compile group: 'org.springframework', name: 'spring-web', version: '4.3.4.RELEASE'
+    compile 'org.springframework.data:spring-data-neo4j:5.0.0.M1'
+    compile 'org.neo4j:neo4j-ogm-embedded-driver:2.0.5'
     compile group: 'com.google.code.gson', name: 'gson', version: '2.3'
     compile group: 'io.dropwizard', name: 'dropwizard-assets', version: '0.7.1'
     compile group: 'org.eclipse.jetty.websocket', name: 'websocket-server', version: '9.0.7.v20131107'
-    testCompile group: 'org.springframework', name: 'spring-test', version: '4.0.7.RELEASE'
-    testCompile group: 'junit', name: 'junit', version: '4.9'
+    testCompile group: 'org.springframework', name: 'spring-test', version: '4.3.4.RELEASE'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
 

@@ -1,8 +1,9 @@
 package net.olemartin.service.user;
 
-import com.google.common.base.Optional;
 import net.olemartin.domain.User;
 import net.olemartin.repository.UserRepository;
+import org.neo4j.ogm.cypher.Filters;
+import org.neo4j.ogm.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,27 +11,33 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Collection;
+import java.util.Optional;
 
 @Transactional
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final Session session;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, Session session) {
         this.userRepository = userRepository;
+        this.session = session;
     }
 
     public Optional<User> getUser(String username, String password) {
-        User user = userRepository.findBySchemaPropertyValue("username", username);
-        String hashedPassword = hashPassword(password, user.getSalt());
 
-        if (user.getPassword().equals(hashedPassword)) {
-            return Optional.of(user);
-        } else {
-            return Optional.absent();
-        }
+        Collection<User> users = session.loadAll(User.class, new Filters().add("username", username));
+
+        return users.stream()
+                .filter(user ->
+                        user.getPassword().equals(hashPassword(password, user.getSalt()))
+                )
+                .findFirst();
+
+
     }
 
     public User createUser(String username, String password, String name) {

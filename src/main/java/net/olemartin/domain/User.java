@@ -1,19 +1,23 @@
 package net.olemartin.domain;
 
-import com.google.gson.*;
-import org.springframework.data.neo4j.annotation.GraphId;
-import org.springframework.data.neo4j.annotation.Indexed;
-import org.springframework.data.neo4j.annotation.NodeEntity;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import org.neo4j.ogm.annotation.GraphId;
+import org.neo4j.ogm.annotation.Index;
+import org.neo4j.ogm.annotation.NodeEntity;
 
 import java.lang.reflect.Type;
+import java.security.Principal;
 
 @NodeEntity
-public class User {
+public class User implements Principal {
 
     @GraphId
     private Long id;
 
-    @Indexed(unique = true)
+    @Index(unique=true)
     private String username;
 
     private String password;

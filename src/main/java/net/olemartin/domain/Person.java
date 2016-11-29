@@ -1,14 +1,13 @@
 package net.olemartin.domain;
 
 import com.google.gson.*;
-import org.neo4j.graphdb.Direction;
-import org.springframework.data.neo4j.annotation.Fetch;
-import org.springframework.data.neo4j.annotation.GraphId;
-import org.springframework.data.neo4j.annotation.NodeEntity;
-import org.springframework.data.neo4j.annotation.RelatedTo;
+import org.neo4j.ogm.annotation.GraphId;
+import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.Relationship;
 
 import java.lang.reflect.Type;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @NodeEntity
@@ -17,12 +16,10 @@ public class Person {
     @GraphId
     private Long id;
 
-    @RelatedTo(type = "IS_PLAYER", direction = Direction.OUTGOING)
-    @Fetch
-    private Set<Player> players;
+    @Relationship(type = "IS_PLAYER", direction = Relationship.OUTGOING)
+    private Set<Player> players = new HashSet<>();
 
-    @RelatedTo(type = "RATING", direction = Direction.OUTGOING)
-    @Fetch
+    @Relationship(type = "RATING", direction = Relationship.OUTGOING)
     private Rating rating;
 
     private String name;
@@ -71,7 +68,7 @@ public class Person {
             root.addProperty("id", person.id);
             root.addProperty("name", person.name);
             JsonArray playerArray = new JsonArray();
-            person.players.stream().forEach(player -> playerArray.add(playerSerializer.serialize(player, Player.class, context)));
+            person.players.forEach(player -> playerArray.add(playerSerializer.serialize(player, Player.class, context)));
             root.add("players", playerArray);
 
             return root;

@@ -3,11 +3,10 @@ package net.olemartin.service.person;
 import com.google.common.collect.Lists;
 import net.olemartin.domain.Person;
 import net.olemartin.domain.Rating;
-import net.olemartin.domain.view.PersonView;
 import net.olemartin.domain.view.PersonInTournamentView;
+import net.olemartin.domain.view.PersonView;
 import net.olemartin.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,12 +22,10 @@ import static net.olemartin.tools.Tools.inReverse;
 public class PersonService {
 
     private final PersonRepository personRepository;
-    private final Neo4jTemplate template;
 
     @Autowired
-    public PersonService(PersonRepository personRepository, Neo4jTemplate template) {
+    public PersonService(PersonRepository personRepository) {
         this.personRepository = personRepository;
-        this.template = template;
     }
 
     public List<PersonView> getPersons() {
@@ -51,7 +48,7 @@ public class PersonService {
 
         List<PersonInTournamentView> tournamentViews = person.getPlayers().stream()
                 .map(player -> new PersonInTournamentView(
-                        template.fetch(player.getTournament()).getName(),
+                        player.getTournament().getName(),
                         player.getTournamentRank()))
                 .collect(Collectors.toList());
 

@@ -8,7 +8,6 @@ import net.olemartin.repository.PlayerRepository;
 import net.olemartin.repository.RoundRepository;
 import net.olemartin.repository.TournamentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,16 +24,12 @@ public class MatchService {
     private final RoundRepository roundRepository;
     private final PlayerRepository playerRepository;
 
-    private final Neo4jTemplate template;
-
-
     @Autowired
-    public MatchService(MatchRepository matchRepository, TournamentRepository tournamentRepository, RoundRepository roundRepository, PlayerRepository playerRepository, Neo4jTemplate template) {
+    public MatchService(MatchRepository matchRepository, TournamentRepository tournamentRepository, RoundRepository roundRepository, PlayerRepository playerRepository) {
         this.matchRepository = matchRepository;
         this.tournamentRepository = tournamentRepository;
         this.roundRepository = roundRepository;
         this.playerRepository = playerRepository;
-        this.template = template;
     }
 
     public List<Match> nextRound(long tournamentId) {
@@ -45,21 +40,22 @@ public class MatchService {
         if (!tournament.isCurrentRoundFinished()) {
             throw new IllegalArgumentException("Current round is not finished.");
         }
-        int roundNumber = tournament.increaseRound();
         TournamentEngine tournamentEngine = TournamentEngineFactory.getEngine(
                 new Randomizer(),
                 playerRepository.playersInTournament(tournamentId),
                 tournament.getEngine());
+
+        int roundNumber = tournament.increaseRound();
         List<Match> matches = tournamentEngine.round(roundNumber);
 
         Round round = new Round(tournament, roundNumber);
-        matches.stream().forEach(round::addMatch);
+        matches.forEach(round::addMatch);
 
-        round = roundRepository.save(round);
+        round = roundRepository.save(round, 3);
         tournament.addRound(round);
-        matchRepository.save(matches);
-        tournamentRepository.save(tournament);
-        playerRepository.save(tournamentEngine.getPlayers());
+        matchRepository.save(matches, 2);
+        tournamentRepository.save(tournament, 2);
+        playerRepository.save(tournamentEngine.getPlayers(), 2);
         return matches;
     }
 

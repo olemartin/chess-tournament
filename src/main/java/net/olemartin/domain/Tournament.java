@@ -2,10 +2,12 @@ package net.olemartin.domain;
 
 import com.google.gson.*;
 import net.olemartin.tools.rating.EloRatingSystem;
-import org.neo4j.graphdb.Direction;
-import org.springframework.data.neo4j.annotation.*;
+import org.neo4j.ogm.annotation.GraphId;
+import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.Relationship;
 
 import java.lang.reflect.Type;
+import java.util.HashSet;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
@@ -20,15 +22,13 @@ public class Tournament {
 
     private int currentRound;
 
-    @RelatedTo(type = "PLAYS_IN", direction = Direction.INCOMING)
-    @Fetch
-    private Set<Player> players;
+    @Relationship(type = "PLAYS_IN", direction = Relationship.INCOMING)
+    private Set<Player> players = new HashSet<>();;
 
-    @RelatedTo(type = "ROUND_OF", direction = Direction.OUTGOING)
-    @Fetch
-    private Set<Round> rounds;
+    @Relationship(type = "ROUND_OF", direction = Relationship.OUTGOING)
+    private Set<Round> rounds = new HashSet<>();;
 
-    @Query(value = "start n=node({self}) match n-[:ROUND_OF]->round where round.number = n.currentRound return round", elementClass = Round.class)
+    @Relationship(type = "CURRENT_ROUND", direction = Relationship.OUTGOING)
     private Round round;
     private boolean finished;
     private String engine;
