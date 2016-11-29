@@ -28,8 +28,8 @@ public class PersonService {
         this.personRepository = personRepository;
     }
 
-    public List<PersonView> getPersons() {
-        return Lists.newArrayList(personRepository.getPersons());
+    public List<Person> getPersons() {
+        return Lists.newArrayList(personRepository.findAll(1));
     }
 
     public Person createPerson(Person person) {

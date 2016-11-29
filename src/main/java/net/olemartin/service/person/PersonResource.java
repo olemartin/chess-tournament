@@ -35,7 +35,7 @@ public class PersonResource {
     }
 
     @GET
-    public List<PersonView> getAllPersons() {
+    public List<Person> getAllPersons() {
         return personService.getPersons();
     }
 

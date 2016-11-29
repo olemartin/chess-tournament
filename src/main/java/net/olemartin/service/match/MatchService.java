@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -32,8 +33,8 @@ public class MatchService {
         this.playerRepository = playerRepository;
     }
 
-    public List<Match> nextRound(long tournamentId) {
-        Tournament tournament = tournamentRepository.findOne(tournamentId);
+    public Set<Match> nextRound(long tournamentId) {
+        Tournament tournament = tournamentRepository.findOne(tournamentId, 2);
         if (tournament.isFinished()) {
             throw new IllegalArgumentException("Tournament is finished.");
         }
@@ -42,21 +43,15 @@ public class MatchService {
         }
         TournamentEngine tournamentEngine = TournamentEngineFactory.getEngine(
                 new Randomizer(),
-                playerRepository.playersInTournament(tournamentId),
+                tournament.getPlayers(),
                 tournament.getEngine());
 
-        int roundNumber = tournament.increaseRound();
-        List<Match> matches = tournamentEngine.round(roundNumber);
-
-        Round round = new Round(tournament, roundNumber);
-        matches.forEach(round::addMatch);
-
-        round = roundRepository.save(round, 3);
-        tournament.addRound(round);
-        matchRepository.save(matches, 2);
-        tournamentRepository.save(tournament, 2);
-        playerRepository.save(tournamentEngine.getPlayers(), 2);
-        return matches;
+        Round round = tournament.startNewRound();
+        List<Match> matches = tournamentEngine.round(round.getNumber());
+        matchRepository.save(matches, 2).forEach(round::addMatch);
+        roundRepository.save(round);
+        tournamentRepository.save(tournament);
+        return round.getMatches();
     }
 
     public List<Match> findMatchesPlayerPlayed(long playerId) {
@@ -79,14 +74,12 @@ public class MatchService {
     }
 
     public Match reportResult(long matchId, Result result) {
-        Match match = matchRepository.findOne(matchId);
+        Match match = matchRepository.findOne(matchId, 1);
         if (match.hasResult()) {
             throw new IllegalStateException("Match already has result");
         }
         match.reportResult(result);
-        matchRepository.save(match);
-        playerRepository.save(match.getBlack());
-        playerRepository.save(match.getWhite());
+        matchRepository.save(match, 2);
         updateMonradAndBerger(match.getWhite(), match.getBlack());
 
         playerRepository.save(match.getBlack());

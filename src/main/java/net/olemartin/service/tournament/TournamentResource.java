@@ -88,8 +88,8 @@ public class TournamentResource {
 
     @POST
     @Path("{tournamentId}/next-round")
-    public List<Match> nextRound(@Auth User user, @PathParam("tournamentId")Long tournamentId) {
-        List<Match> matches =  matchService.nextRound(tournamentId);
+    public Set<Match> nextRound(@Auth User user, @PathParam("tournamentId")Long tournamentId) {
+        Set<Match> matches =  matchService.nextRound(tournamentId);
         sendNotification(NEW_MATCH);
         return matches;
     }

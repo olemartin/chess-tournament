@@ -15,9 +15,8 @@ public class MonradEngine implements TournamentEngine {
     private final List<Player> players;
     private Set<String> triedCombinations = new HashSet<>();
 
-    public MonradEngine(Randomizer random, Iterable<Player> players) {
+    public MonradEngine(Iterable<Player> players) {
         this.players = Lists.newArrayList(players);
-        random.shuffle(this.players);
     }
 
     @Override
@@ -30,6 +29,7 @@ public class MonradEngine implements TournamentEngine {
         Collections.sort(players);
         LinkedList<Match> matches = new LinkedList<>();
         if (round == 1) {
+
             for (int i = 0; i < players.size() - 1; i += 2) {
                 matches.add(new Match(players.get(i + 1), players.get(i)));
             }

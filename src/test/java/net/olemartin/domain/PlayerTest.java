@@ -13,13 +13,13 @@ public class PlayerTest {
     @Test
     public void should_calculate_correct_monrad() {
 
-        Player p1 = new Player("ole");
+        Player p1 = new Player(1,"ole");
         p1.increaseScore(10);
 
-        Player p2 = new Player("per");
+        Player p2 = new Player(2, "per");
         p2.increaseScore(10);
 
-        Player p3 = new Player("jan");
+        Player p3 = new Player(3, "jan");
         p3.increaseScore(10);
 
         p1.countRound(Color.BLACK, p2);

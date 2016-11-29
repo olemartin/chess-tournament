@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         "net.olemartin.push",
         "net.olemartin.domain",
         "net.olemartin.tools",
+        "net.olemartin.repository",
         "net.olemartin.spring"
 })
 @EnableNeo4jRepositories(basePackages = "net.olemartin.repository")

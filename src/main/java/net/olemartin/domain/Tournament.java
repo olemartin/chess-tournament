@@ -10,6 +10,7 @@ import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 
 @NodeEntity
@@ -20,16 +21,14 @@ public class Tournament {
 
     private String name;
 
-    private int currentRound;
-
     @Relationship(type = "PLAYS_IN", direction = Relationship.INCOMING)
     private Set<Player> players = new HashSet<>();;
 
     @Relationship(type = "ROUND_OF", direction = Relationship.OUTGOING)
     private Set<Round> rounds = new HashSet<>();;
 
-    @Relationship(type = "CURRENT_ROUND", direction = Relationship.OUTGOING)
-    private Round round;
+    @Relationship(type = "CURRENT_ROUND", direction = Relationship.UNDIRECTED)
+    private Round currentRound;
     private boolean finished;
     private String engine;
 
@@ -89,16 +88,12 @@ public class Tournament {
         return players;
     }
 
-    public int increaseRound() {
-        return ++this.currentRound;
-    }
-
     public void addRound(Round round) {
         rounds.add(round);
     }
 
     public boolean isCurrentRoundFinished() {
-        return round == null || round.isFinished();
+        return currentRound == null || currentRound.isFinished();
     }
 
     public Set<Round> getRounds() {
@@ -121,8 +116,18 @@ public class Tournament {
         return engine;
     }
 
-    public void setEngine(String engine) {
+    public Tournament setEngine(String engine) {
         this.engine = engine;
+        return this;
+    }
+
+    public Round startNewRound() {
+
+        int currentRoundNumber = ofNullable(currentRound).map(Round::getNumber).orElse(0);
+        this.currentRound = new Round(currentRoundNumber + 1);
+        addRound(this.currentRound);
+        return this.currentRound;
+
     }
 
 
@@ -143,8 +148,8 @@ public class Tournament {
             tournament.rounds.stream().sorted().forEach(
                     round -> roundsArray.add(roundSerializer.serialize(round, Round.class, context)));
             root.add("rounds", roundsArray);
-            if (tournament.round != null) {
-                root.add("currentRound", roundSerializer.serialize(tournament.round, Round.class, context));
+            if (tournament.currentRound != null) {
+                root.add("currentRound", roundSerializer.serialize(tournament.currentRound, Round.class, context));
             }
             root.addProperty("finished", tournament.finished);
             return root;

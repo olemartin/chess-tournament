@@ -20,14 +20,10 @@ public class Round implements Comparable<Round> {
     @Relationship(type = "CONSIST_OF", direction = Relationship.OUTGOING)
     private Set<Match> matches = new HashSet<>();
 
-    @Relationship(type = "ROUND_OF", direction = Relationship.INCOMING)
-    private Tournament tournament;
-
     private Round() {
     }
 
-    public Round(Tournament tournament, int number) {
-        this.tournament = tournament;
+    public Round(int number) {
         this.number = number;
     }
 

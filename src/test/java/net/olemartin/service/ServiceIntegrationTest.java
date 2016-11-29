@@ -2,7 +2,6 @@ package net.olemartin.service;
 
 import jdk.nashorn.internal.ir.annotations.Ignore;
 import net.olemartin.domain.*;
-import net.olemartin.domain.view.PersonView;
 import net.olemartin.service.match.MatchService;
 import net.olemartin.service.person.PersonService;
 import net.olemartin.service.tournament.TournamentService;
@@ -16,14 +15,14 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -58,18 +57,16 @@ public class ServiceIntegrationTest {
     }
 
     @Test
-    @Transactional
     public void testFullTournament() {
         Tournament testturnering = new Tournament("Testturnering");
         testturnering.setEngine("MONRAD");
         Tournament tournament = tournamentService.save(testturnering);
 
-        List<Person> persons = getPersons();
         Long tournamentId = tournament.getId();
-        tournamentService.addPlayers(tournamentId, persons);
+        tournamentService.addPlayers(tournamentId, getPersons());
 
         for (int i = 0; i < 7; i++) {
-            List<Match> matches = matchService.nextRound(tournamentId);
+            Set<Match> matches = matchService.nextRound(tournamentId);
             matches.stream().filter(match -> !match.isWalkover()).forEach(
                     match -> matchService.reportResult(
                             match.getId(),
@@ -98,13 +95,38 @@ public class ServiceIntegrationTest {
 
         tournamentService.finishTournament(tournamentId, false);
 
-        List<PersonView> allPersons = personService.getPersons();
+        List<Person> allPersons = personService.getPersons();
 
         assertFalse(allPersons.size() == 0);
-        for (PersonView person : allPersons) {
-            assertTrue(person.getRating() != 1200);
+        for (Person person : allPersons) {
+            assertTrue(person.getRating().getRating() != 1200);
         }
+    }
 
+    @Test
+    public void shouldCreateMatches() {
+        Tournament testturnering = new Tournament("Testturnering");
+        testturnering.setEngine("MONRAD");
+        Tournament tournament = tournamentService.save(testturnering);
+        tournamentService.addPlayers(tournament.getId(), getPersons());
+        matchService.nextRound(tournament.getId());
+        List<Match> matches = tournamentService.retrieveCurrentRoundsMatches(tournament.getId());
+        assertThat(matches.size(), equalTo(6));
+    }
+
+    @Test
+    public void shouldStoreMatchResult() {
+        Tournament testturnering = new Tournament("Testturnering");
+        testturnering.setEngine("MONRAD");
+        Tournament tournament = tournamentService.save(testturnering);
+        tournamentService.addPlayers(tournament.getId(), getPersons());
+        matchService.nextRound(tournament.getId());
+        List<Match> matches = tournamentService.retrieveCurrentRoundsMatches(tournament.getId());
+        matches.forEach(match ->  matchService.reportResult(match.getId(), Result.BLACK));
+
+        tournament = tournamentService.retrieve(tournament.getId());
+        long count = tournament.getPlayers().stream().filter(Player::hasPlayedMatches).count();
+        assertThat(count, equalTo(12L));
     }
 
     private List<Person> getPersons() {

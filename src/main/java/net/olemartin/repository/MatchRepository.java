@@ -18,9 +18,8 @@ public interface MatchRepository extends GraphRepository<Match> {
     Iterable<Match> findMatchesPlayerPlayed(@Param("who") long player);
 
 
-    @Query("MATCH (tournament) -[:ROUND_OF]-> (round) -[:CONSIST_OF]-> (match) " +
+    @Query("MATCH (tournament) -[:CURRENT_ROUND]- (round) -[:CONSIST_OF]-> (match) " +
             "WHERE id(tournament)={tournamentId} AND " +
-            "round.number = tournament.currentRound AND " +
             "match.result IS NULL " +
             "RETURN match")
     @Depth(2)

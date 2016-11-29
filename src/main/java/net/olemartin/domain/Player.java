@@ -55,8 +55,12 @@ public class Player implements Comparable<Player> {
     }
 
     public Player(String name) {
-        this.id = (long)(Math.random() * 1000000000.0);
-        this.person = new Person(name);
+        this(new Person(name));
+    }
+
+    public Player(long id, String name) {
+        this(new Person(name));
+        this.id = id;
     }
 
     public Player(Person person) {
@@ -270,20 +274,6 @@ public class Player implements Comparable<Player> {
         }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Player player = (Player) o;
-
-        return !(id != null ? !id.equals(player.id) : player.id != null);
-    }
-
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
-    }
 
     public Long getId() {
         return id;
