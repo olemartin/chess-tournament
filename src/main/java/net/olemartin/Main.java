@@ -15,6 +15,7 @@ import net.olemartin.service.user.ChessAuthenticator;
 import net.olemartin.service.user.UserService;
 import net.olemartin.tools.GsonJSONProvider;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.core.env.AbstractEnvironment;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletRegistration;
@@ -24,6 +25,7 @@ import java.util.Map;
 public class Main extends Application<MonradConfiguration> {
     public static void main(String[] args) throws Exception {
         //new Main().run(args);
+        System.setProperty(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, "production");
         new Main().run(new String[]{"server", "monrad.yaml"});
     }
 
