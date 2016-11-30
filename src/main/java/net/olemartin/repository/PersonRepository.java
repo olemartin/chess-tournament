@@ -22,7 +22,7 @@ public interface PersonRepository  extends GraphRepository<Person> {
     @Query("MATCH (p:Person), (t:Tournament) " +
             "WHERE " +
             "id(t) = {id} AND " +
-            "NOT p -[:IS_PLAYER]-> (:Player) -[:PLAYS_IN]-> (t) " +
+            "NOT (p) -[:IS_PLAYER]-> (:Player) -[:PLAYS_IN]-> (t) " +
             "RETURN p")
     Iterable<Person> getPersonsNotInTournament(@Param("id") Long tournamentId);
 

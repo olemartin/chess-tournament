@@ -1,16 +1,16 @@
 package net.olemartin.domain.view;
 
+import org.neo4j.ogm.annotation.Property;
 import org.springframework.data.neo4j.annotation.QueryResult;
-import org.springframework.data.neo4j.annotation.ResultColumn;
 
 @QueryResult
 public class TournamentView {
 
-    @ResultColumn("id")
+    @Property(name = "id")
     private Long id;
-    @ResultColumn("name")
+    @Property(name = "name")
     private String name;
-    @ResultColumn("finished")
+    @Property(name = "finished")
     private boolean finished;
 
     public TournamentView() {

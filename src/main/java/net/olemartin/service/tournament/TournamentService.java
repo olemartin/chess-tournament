@@ -2,17 +2,14 @@ package net.olemartin.service.tournament;
 
 import net.olemartin.domain.*;
 import net.olemartin.domain.view.TournamentView;
-import net.olemartin.tools.rating.EloRatingSystem;
 import net.olemartin.repository.*;
 import net.olemartin.service.match.MatchService;
+import net.olemartin.tools.rating.EloRatingSystem;
+import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.conversion.Result;
-import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -27,26 +24,27 @@ public class TournamentService {
     private PlayerRepository playerRepository;
     private PersonRepository personRepository;
     private RoundRepository roundRepository;
-    private Neo4jTemplate neo4jTemplate;
     private MatchService matchService;
+    private SessionFactory sessionFactory;
 
     @Autowired
-    public TournamentService(TournamentRepository tournamentRepository, MatchRepository matchRepository, PlayerRepository playerRepository, PersonRepository personRepository, RoundRepository roundRepository, Neo4jTemplate neo4jTemplate, MatchService matchService) {
+    public TournamentService(TournamentRepository tournamentRepository, MatchRepository matchRepository, PlayerRepository playerRepository, PersonRepository personRepository, RoundRepository roundRepository, MatchService matchService, SessionFactory sessionFactory) {
         this.tournamentRepository = tournamentRepository;
         this.matchRepository = matchRepository;
         this.playerRepository = playerRepository;
         this.personRepository = personRepository;
         this.roundRepository = roundRepository;
-        this.neo4jTemplate = neo4jTemplate;
         this.matchService = matchService;
+        this.sessionFactory = sessionFactory;
     }
 
     public Tournament save(Tournament tournament) {
-        return tournamentRepository.save(tournament);
+        return tournamentRepository.save(tournament, 3);
     }
 
+
     public Tournament retrieve(Long tournamentId) {
-        return tournamentRepository.findOne(tournamentId);
+        return tournamentRepository.findOne(tournamentId, 2);
     }
 
     public void finishTournament(Long tournamentId, boolean override) {
@@ -80,17 +78,14 @@ public class TournamentService {
         return tournamentRepository.retrieveAllTournaments();
     }
 
-    public List<Match> retrieveCurrentRoundsMatches(Long tournamentId) {
-        Result<Match> matches = matchRepository.retrieveCurrentRoundsMatches(tournamentId);
-        List<Match> list = new ArrayList<>();
-        for (Match match : matches) {
-            list.add(match);
-        }
-        return list;
+    public Set<Match> retrieveCurrentRoundsMatches(Long tournamentId) {
+        Round currentRound = tournamentRepository.findOne(tournamentId, 1).getCurrentRound();
+        currentRound = roundRepository.findOne(currentRound.getId(), 3);
+        return currentRound.getMatches();
     }
 
     public List<Round> retrieveRounds(Long tournamentId) {
-        return tournamentRepository.findOne(tournamentId).getRounds().stream().sorted().collect(toList());
+        return tournamentRepository.findOne(tournamentId, 2).getRounds().stream().sorted().collect(toList());
     }
 
     public void delete(Long tournamentId) {
@@ -108,15 +103,19 @@ public class TournamentService {
     }
 
     public List<Player> retrievePlayers(Long tournamentId) {
-        Set<Player> players = retrieve(tournamentId).getPlayers();
+        Set<Player> players = retrieveTournamentPlayers(tournamentId);
 
         for (Player player : players) {
-            player = neo4jTemplate.fetch(player);
             player.setRoundScore(
                     matchRepository.findMatchesPlayerPlayed(player.getId()),
                     tournamentRepository.findPlayersTournament(player.getId()).getPlayers());
         }
         return players.stream().sorted().collect(toList());
+    }
+
+    private Set<Player> retrieveTournamentPlayers(Long tournamentId) {
+
+        return tournamentRepository.findOne(tournamentId, 3).getPlayers();
     }
 
 }

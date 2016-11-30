@@ -23,7 +23,7 @@ public class MonradTest {
     @Before
     public void setup() {
         Randomizer random = new MyRandom();
-        monrad = new MonradEngine(random, Arrays.asList(
+        monrad = new MonradEngine(Arrays.asList(
                 new Player("Ole"),
                 new Player("Per"),
                 new Player("Jan"),

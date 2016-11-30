@@ -2,12 +2,15 @@ package net.olemartin.domain;
 
 import com.google.gson.*;
 import net.olemartin.tools.rating.EloRatingSystem;
-import org.neo4j.graphdb.Direction;
-import org.springframework.data.neo4j.annotation.*;
+import org.neo4j.ogm.annotation.GraphId;
+import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.Relationship;
 
 import java.lang.reflect.Type;
+import java.util.HashSet;
 import java.util.Set;
 
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 
 @NodeEntity
@@ -18,18 +21,14 @@ public class Tournament {
 
     private String name;
 
-    private int currentRound;
+    @Relationship(type = "PLAYS_IN", direction = Relationship.INCOMING)
+    private Set<Player> players = new HashSet<>();;
 
-    @RelatedTo(type = "PLAYS_IN", direction = Direction.INCOMING)
-    @Fetch
-    private Set<Player> players;
+    @Relationship(type = "ROUND_OF", direction = Relationship.OUTGOING)
+    private Set<Round> rounds = new HashSet<>();;
 
-    @RelatedTo(type = "ROUND_OF", direction = Direction.OUTGOING)
-    @Fetch
-    private Set<Round> rounds;
-
-    @Query(value = "start n=node({self}) match n-[:ROUND_OF]->round where round.number = n.currentRound return round", elementClass = Round.class)
-    private Round round;
+    @Relationship(type = "CURRENT_ROUND", direction = Relationship.UNDIRECTED)
+    private Round currentRound;
     private boolean finished;
     private String engine;
 
@@ -89,16 +88,12 @@ public class Tournament {
         return players;
     }
 
-    public int increaseRound() {
-        return ++this.currentRound;
-    }
-
     public void addRound(Round round) {
         rounds.add(round);
     }
 
     public boolean isCurrentRoundFinished() {
-        return round == null || round.isFinished();
+        return currentRound == null || currentRound.isFinished();
     }
 
     public Set<Round> getRounds() {
@@ -121,8 +116,22 @@ public class Tournament {
         return engine;
     }
 
-    public void setEngine(String engine) {
+    public Tournament setEngine(String engine) {
         this.engine = engine;
+        return this;
+    }
+
+    public Round startNewRound() {
+
+        int currentRoundNumber = ofNullable(currentRound).map(Round::getNumber).orElse(0);
+        this.currentRound = new Round(currentRoundNumber + 1);
+        addRound(this.currentRound);
+        return this.currentRound;
+
+    }
+
+    public Round getCurrentRound() {
+        return currentRound;
     }
 
 
@@ -143,8 +152,8 @@ public class Tournament {
             tournament.rounds.stream().sorted().forEach(
                     round -> roundsArray.add(roundSerializer.serialize(round, Round.class, context)));
             root.add("rounds", roundsArray);
-            if (tournament.round != null) {
-                root.add("currentRound", roundSerializer.serialize(tournament.round, Round.class, context));
+            if (tournament.currentRound != null) {
+                root.add("currentRound", roundSerializer.serialize(tournament.currentRound, Round.class, context));
             }
             root.addProperty("finished", tournament.finished);
             return root;

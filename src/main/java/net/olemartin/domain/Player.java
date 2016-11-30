@@ -5,13 +5,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import org.apache.commons.lang.StringUtils;
-import org.neo4j.graphdb.Direction;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.neo4j.annotation.Fetch;
-import org.springframework.data.neo4j.annotation.GraphId;
-import org.springframework.data.neo4j.annotation.NodeEntity;
-import org.springframework.data.neo4j.annotation.RelatedTo;
+import org.apache.commons.lang3.StringUtils;
+import org.neo4j.ogm.annotation.GraphId;
+import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.Relationship;
+import org.neo4j.ogm.annotation.Transient;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -31,8 +29,7 @@ public class Player implements Comparable<Player> {
     private double score;
     private String colors = "";
 
-    @RelatedTo(type = "MET", direction = Direction.BOTH)
-    @Fetch
+    @Relationship(type = "MET", direction = Relationship.UNDIRECTED)
     private Set<Player> playersMet = new HashSet<>();
 
     @Transient
@@ -47,11 +44,10 @@ public class Player implements Comparable<Player> {
 
     private int tournamentRank;
 
-    @RelatedTo(type = "IS_PLAYER", direction = Direction.INCOMING)
-    @Fetch
+    @Relationship(type = "IS_PLAYER", direction = Relationship.INCOMING)
     private Person person;
 
-    @RelatedTo(type = "PLAYS_IN", direction = Direction.OUTGOING)
+    @Relationship(type = "PLAYS_IN", direction = Relationship.OUTGOING)
     private Tournament tournament;
     private boolean walkover;
 
@@ -59,8 +55,12 @@ public class Player implements Comparable<Player> {
     }
 
     public Player(String name) {
-        this.id = (long)(Math.random() * 1000000000.0);
-        this.person = new Person(name);
+        this(new Person(name));
+    }
+
+    public Player(long id, String name) {
+        this(new Person(name));
+        this.id = id;
     }
 
     public Player(Person person) {
@@ -146,8 +146,9 @@ public class Player implements Comparable<Player> {
                 .map(player -> player.score).reduce((d, d2) -> d + d2).orElse(0.0);
     }
 
-    public void increaseScore(double score) {
+    public Player increaseScore(double score) {
         this.score += score;
+        return this;
     }
 
     public String getName() {
@@ -192,9 +193,8 @@ public class Player implements Comparable<Player> {
 
     private LinkedList<Color> asLinkedList() {
         if (StringUtils.isNotEmpty(colors)) {
-            return new LinkedList<>(Arrays.asList(
+            return new LinkedList<>(Arrays.stream(
                     colors.split(":"))
-                    .stream()
                     .map(Color::valueOf)
                     .collect(toList()));
         } else {
@@ -274,20 +274,6 @@ public class Player implements Comparable<Player> {
         }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Player player = (Player) o;
-
-        return !(id != null ? !id.equals(player.id) : player.id != null);
-    }
-
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
-    }
 
     public Long getId() {
         return id;
@@ -313,7 +299,7 @@ public class Player implements Comparable<Player> {
         return walkover;
     }
 
-    public LinkedList<Color> getColors() {
+    public LinkedList<Color> getColorsAsList() {
         return asLinkedList();
     }
 

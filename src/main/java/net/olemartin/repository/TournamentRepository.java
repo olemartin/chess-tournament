@@ -15,9 +15,9 @@ public interface TournamentRepository extends GraphRepository<Tournament> {
     @Query("MATCH (p1:Player) -[:PLAYS_IN]- (t:Tournament)\n" +
             "where id(p1) = {who}\n" +
             "return t")
-    public Tournament findPlayersTournament(@Param("who") long playerId);
+    Tournament findPlayersTournament(@Param("who") long playerId);
 
     @Query("MATCH (t:Tournament) " +
             "RETURN id(t) as id, t.name as name, t.finished as finished")
-    public List<TournamentView> retrieveAllTournaments();
+    List<TournamentView> retrieveAllTournaments();
 }

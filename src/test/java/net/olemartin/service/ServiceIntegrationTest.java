@@ -6,24 +6,30 @@ import net.olemartin.domain.view.PersonView;
 import net.olemartin.service.match.MatchService;
 import net.olemartin.service.person.PersonService;
 import net.olemartin.service.tournament.TournamentService;
+import net.olemartin.spring.Bootstrap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.neo4j.ogm.config.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("/beans.xml")
-@Transactional
+@ContextConfiguration(classes = Bootstrap.class)
+@ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class ServiceIntegrationTest {
 
     @Autowired
@@ -34,6 +40,15 @@ public class ServiceIntegrationTest {
 
     @Autowired
     private TournamentService tournamentService;
+
+    @Bean
+    public Configuration configuration() {
+        Configuration config = new Configuration();
+        config
+                .driverConfiguration()
+                .setDriverClassName("org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver");
+        return config;
+    }
 
     @Ignore
     public void test100Tournaments() {
@@ -48,12 +63,11 @@ public class ServiceIntegrationTest {
         testturnering.setEngine("MONRAD");
         Tournament tournament = tournamentService.save(testturnering);
 
-        List<Person> persons = getPersons();
         Long tournamentId = tournament.getId();
-        tournamentService.addPlayers(tournamentId, persons);
+        tournamentService.addPlayers(tournamentId, getPersons());
 
         for (int i = 0; i < 7; i++) {
-            List<Match> matches = matchService.nextRound(tournamentId);
+            Set<Match> matches = matchService.nextRound(tournamentId);
             matches.stream().filter(match -> !match.isWalkover()).forEach(
                     match -> matchService.reportResult(
                             match.getId(),
@@ -65,15 +79,15 @@ public class ServiceIntegrationTest {
         Collections.sort(players);
         for (Player player : players) {
             System.out.println(player);
-            Color lastColor = player.getColors().getFirst();
+            Color lastColor = player.getColorsAsList().getFirst();
             int count = 1;
-            for (int i = 1; i < player.getColors().size(); i++) {
-                if (player.getColors().get(i) == lastColor) {
+            for (int i = 1; i < player.getColorsAsList().size(); i++) {
+                if (player.getColorsAsList().get(i) == lastColor) {
                     if (++count == 3) {
                         // fail(player.toString());
                     }
                 } else {
-                    lastColor = player.getColors().get(i);
+                    lastColor = player.getColorsAsList().get(i);
                     count = 1;
                 }
             }
@@ -88,7 +102,32 @@ public class ServiceIntegrationTest {
         for (PersonView person : allPersons) {
             assertTrue(person.getRating() != 1200);
         }
+    }
 
+    @Test
+    public void shouldCreateMatches() {
+        Tournament testturnering = new Tournament("Testturnering");
+        testturnering.setEngine("MONRAD");
+        Tournament tournament = tournamentService.save(testturnering);
+        tournamentService.addPlayers(tournament.getId(), getPersons());
+        matchService.nextRound(tournament.getId());
+        Set<Match> matches = tournamentService.retrieveCurrentRoundsMatches(tournament.getId());
+        assertThat(matches.size(), equalTo(7));
+    }
+
+    @Test
+    public void shouldStoreMatchResult() {
+        Tournament testturnering = new Tournament("Testturnering");
+        testturnering.setEngine("MONRAD");
+        Tournament tournament = tournamentService.save(testturnering);
+        tournamentService.addPlayers(tournament.getId(), getPersons());
+        matchService.nextRound(tournament.getId());
+        Set<Match> matches = tournamentService.retrieveCurrentRoundsMatches(tournament.getId());
+        matches.stream().filter(match -> !match.isWalkover()).forEach(match ->  matchService.reportResult(match.getId(), Result.BLACK));
+
+        tournament = tournamentService.retrieve(tournament.getId());
+        long count = tournament.getPlayers().stream().filter(Player::hasPlayedMatches).count();
+        assertThat(count, equalTo(12L));
     }
 
     private List<Person> getPersons() {

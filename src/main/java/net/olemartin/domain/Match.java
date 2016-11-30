@@ -4,12 +4,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import org.neo4j.graphdb.Direction;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.neo4j.annotation.Fetch;
-import org.springframework.data.neo4j.annotation.GraphId;
-import org.springframework.data.neo4j.annotation.NodeEntity;
-import org.springframework.data.neo4j.annotation.RelatedTo;
+import org.neo4j.ogm.annotation.GraphId;
+import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.Relationship;
+import org.neo4j.ogm.annotation.Transient;
 
 import java.lang.reflect.Type;
 import java.util.HashSet;
@@ -28,24 +26,19 @@ public class Match implements Comparable<Match> {
     @Transient
     private String displayResult;
 
-    @RelatedTo(type = "WHITE", direction = Direction.OUTGOING)
-    @Fetch
+    @Relationship(type = "WHITE", direction = Relationship.OUTGOING)
     private Player white;
 
-    @RelatedTo(type = "BLACK", direction = Direction.OUTGOING)
-    @Fetch
+    @Relationship(type = "BLACK", direction = Relationship.OUTGOING)
     private Player black;
 
-    @RelatedTo(type = "WINNER", direction = Direction.OUTGOING)
-    @Fetch
+    @Relationship(type = "WINNER", direction = Relationship.OUTGOING)
     private Player winner;
 
-    @RelatedTo(type = "LOOSER", direction = Direction.OUTGOING)
-    @Fetch
+    @Relationship(type = "LOOSER", direction = Relationship.OUTGOING)
     private Player looser;
 
-    @RelatedTo(type = "PLAYER", direction = Direction.OUTGOING)
-    @Fetch
+    @Relationship(type = "PLAYER", direction = Relationship.OUTGOING)
     private Set<Player> players = new HashSet<>();
 
     private Match() {

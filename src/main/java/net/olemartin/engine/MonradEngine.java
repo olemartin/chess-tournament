@@ -15,9 +15,8 @@ public class MonradEngine implements TournamentEngine {
     private final List<Player> players;
     private Set<String> triedCombinations = new HashSet<>();
 
-    public MonradEngine(Randomizer random, Iterable<Player> players) {
+    public MonradEngine(Iterable<Player> players) {
         this.players = Lists.newArrayList(players);
-        random.shuffle(this.players);
     }
 
     @Override
@@ -30,6 +29,7 @@ public class MonradEngine implements TournamentEngine {
         Collections.sort(players);
         LinkedList<Match> matches = new LinkedList<>();
         if (round == 1) {
+
             for (int i = 0; i < players.size() - 1; i += 2) {
                 matches.add(new Match(players.get(i + 1), players.get(i)));
             }
@@ -87,14 +87,13 @@ public class MonradEngine implements TournamentEngine {
     private void pickPlayer(LinkedList<Match> matches, LinkedList<Player> pickedPlayers, Player player1, boolean overrideThreeRule) {
 
 
-        Color mustHave = player1.mustHaveColor();
         Color color1 = player1.nextOptimalColor();
 
         List<Player> opponents = players.stream()
                 .filter(p -> p != player1)
                 .filter(p -> !pickedPlayers.contains(p))
                 .filter(p -> !p.hasMet(player1))
-                .filter(p -> matchColor(overrideThreeRule, mustHave, p))
+                .filter(p -> matchColor(overrideThreeRule, player1.mustHaveColor(), p))
                 .filter(p -> !triedCombination(pickedPlayers, player1, p))
                 .collect(Collectors.toList());
 
@@ -108,9 +107,9 @@ public class MonradEngine implements TournamentEngine {
 
         Color color2 = player2.nextOptimalColor();
 
-        if (mustHave == WHITE || player2.mustHaveColor() == BLACK) {
+        if (player1.mustHaveColor() == WHITE || player2.mustHaveColor() == BLACK) {
             matches.add(new Match(player1, player2));
-        } else if (mustHave == BLACK || player2.mustHaveColor() == WHITE) {
+        } else if (player1.mustHaveColor() == BLACK || player2.mustHaveColor() == WHITE) {
             matches.add(new Match(player2, player1));
         } else if (color1 == color2) {
             matches.add(new Match(player2, player1));

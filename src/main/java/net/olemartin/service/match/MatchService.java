@@ -8,13 +8,13 @@ import net.olemartin.repository.PlayerRepository;
 import net.olemartin.repository.RoundRepository;
 import net.olemartin.repository.TournamentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -25,42 +25,33 @@ public class MatchService {
     private final RoundRepository roundRepository;
     private final PlayerRepository playerRepository;
 
-    private final Neo4jTemplate template;
-
-
     @Autowired
-    public MatchService(MatchRepository matchRepository, TournamentRepository tournamentRepository, RoundRepository roundRepository, PlayerRepository playerRepository, Neo4jTemplate template) {
+    public MatchService(MatchRepository matchRepository, TournamentRepository tournamentRepository, RoundRepository roundRepository, PlayerRepository playerRepository) {
         this.matchRepository = matchRepository;
         this.tournamentRepository = tournamentRepository;
         this.roundRepository = roundRepository;
         this.playerRepository = playerRepository;
-        this.template = template;
     }
 
-    public List<Match> nextRound(long tournamentId) {
-        Tournament tournament = tournamentRepository.findOne(tournamentId);
+    public Set<Match> nextRound(long tournamentId) {
+        Tournament tournament = tournamentRepository.findOne(tournamentId, 2);
         if (tournament.isFinished()) {
             throw new IllegalArgumentException("Tournament is finished.");
         }
         if (!tournament.isCurrentRoundFinished()) {
             throw new IllegalArgumentException("Current round is not finished.");
         }
-        int roundNumber = tournament.increaseRound();
         TournamentEngine tournamentEngine = TournamentEngineFactory.getEngine(
                 new Randomizer(),
-                playerRepository.playersInTournament(tournamentId),
+                tournament.getPlayers(),
                 tournament.getEngine());
-        List<Match> matches = tournamentEngine.round(roundNumber);
 
-        Round round = new Round(tournament, roundNumber);
-        matches.stream().forEach(round::addMatch);
-
-        round = roundRepository.save(round);
-        tournament.addRound(round);
-        matchRepository.save(matches);
+        Round round = tournament.startNewRound();
+        List<Match> matches = tournamentEngine.round(round.getNumber());
+        matchRepository.save(matches, 2).forEach(round::addMatch);
+        roundRepository.save(round);
         tournamentRepository.save(tournament);
-        playerRepository.save(tournamentEngine.getPlayers());
-        return matches;
+        return round.getMatches();
     }
 
     public List<Match> findMatchesPlayerPlayed(long playerId) {
@@ -83,14 +74,12 @@ public class MatchService {
     }
 
     public Match reportResult(long matchId, Result result) {
-        Match match = matchRepository.findOne(matchId);
+        Match match = matchRepository.findOne(matchId, 1);
         if (match.hasResult()) {
             throw new IllegalStateException("Match already has result");
         }
         match.reportResult(result);
-        matchRepository.save(match);
-        playerRepository.save(match.getBlack());
-        playerRepository.save(match.getWhite());
+        matchRepository.save(match, 2);
         updateMonradAndBerger(match.getWhite(), match.getBlack());
 
         playerRepository.save(match.getBlack());

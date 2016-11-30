@@ -1,18 +1,19 @@
 package net.olemartin.domain.view;
 
+
+import org.neo4j.ogm.annotation.Property;
 import org.springframework.data.neo4j.annotation.QueryResult;
-import org.springframework.data.neo4j.annotation.ResultColumn;
 
 import java.util.List;
 
 @QueryResult
-public class PersonView {
+public class PersonView implements Comparable<PersonView>{
 
-    @ResultColumn("id")
+    @Property(name = "id")
     private Long id;
-    @ResultColumn("name")
+    @Property(name = "name")
     private String name;
-    @ResultColumn("rating")
+    @Property(name = "rating")
     private long rating;
     private List<PersonInTournamentView> tournaments;
 
@@ -48,5 +49,10 @@ public class PersonView {
 
     public void setRating(long rating) {
         this.rating = rating;
+    }
+
+    @Override
+    public int compareTo(PersonView personView) {
+        return (int)(personView.rating - rating);
     }
 }
