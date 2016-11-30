@@ -51,20 +51,27 @@ public class ServiceIntegrationTest {
     }
 
     @Ignore
+    @Test
     public void test100Tournaments() {
+        List<Person> persons = getPersons();
         for (int i = 0; i < 100; i++) {
-            testFullTournament();
+            testFullTournament(persons);
+            System.out.println("round: "  + i);
         }
     }
 
     @Test
     public void testFullTournament() {
+        testFullTournament(getPersons());
+    }
+
+    public void testFullTournament(List<Person> persons) {
         Tournament testturnering = new Tournament("Testturnering");
         testturnering.setEngine("MONRAD");
         Tournament tournament = tournamentService.save(testturnering);
 
         Long tournamentId = tournament.getId();
-        tournamentService.addPlayers(tournamentId, getPersons());
+        tournamentService.addPlayers(tournamentId, persons);
 
         for (int i = 0; i < 7; i++) {
             Set<Match> matches = matchService.nextRound(tournamentId);
@@ -100,7 +107,8 @@ public class ServiceIntegrationTest {
 
         assertFalse(allPersons.size() == 0);
         for (PersonView person : allPersons) {
-            assertTrue(person.getRating() != 1200);
+            assertTrue( person.getName() + " has rating " + person.getRating(), person.getRating() != 1200);
+            System.out.println(person.getName() + " has rating " + person.getRating());
         }
     }
 
