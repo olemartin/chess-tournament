@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static net.olemartin.tools.Tools.inReverse;
 
@@ -28,8 +29,12 @@ public class PersonService {
         this.personRepository = personRepository;
     }
 
-    public List<Person> getPersons() {
-        return Lists.newArrayList(personRepository.findAll(1));
+    public List<PersonView> getPersons() {
+        return StreamSupport
+                .stream(personRepository.findAll(1).spliterator(), false)
+                .map(person -> new PersonView(person.getId(), person.getName(), person.getCurrentRating(), null))
+                .sorted()
+                .collect(Collectors.toList());
     }
 
     public Person createPerson(Person person) {
@@ -44,7 +49,7 @@ public class PersonService {
     }
 
     public PersonView getPerson(Long id) {
-        Person person = personRepository.findOne(id);
+        Person person = personRepository.findOne(id, 2);
 
         List<PersonInTournamentView> tournamentViews = person.getPlayers().stream()
                 .map(player -> new PersonInTournamentView(

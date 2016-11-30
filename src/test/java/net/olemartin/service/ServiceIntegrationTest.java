@@ -2,6 +2,7 @@ package net.olemartin.service;
 
 import jdk.nashorn.internal.ir.annotations.Ignore;
 import net.olemartin.domain.*;
+import net.olemartin.domain.view.PersonView;
 import net.olemartin.service.match.MatchService;
 import net.olemartin.service.person.PersonService;
 import net.olemartin.service.tournament.TournamentService;
@@ -95,11 +96,11 @@ public class ServiceIntegrationTest {
 
         tournamentService.finishTournament(tournamentId, false);
 
-        List<Person> allPersons = personService.getPersons();
+        List<PersonView> allPersons = personService.getPersons();
 
         assertFalse(allPersons.size() == 0);
-        for (Person person : allPersons) {
-            assertTrue(person.getRating().getRating() != 1200);
+        for (PersonView person : allPersons) {
+            assertTrue(person.getRating() != 1200);
         }
     }
 
@@ -110,7 +111,7 @@ public class ServiceIntegrationTest {
         Tournament tournament = tournamentService.save(testturnering);
         tournamentService.addPlayers(tournament.getId(), getPersons());
         matchService.nextRound(tournament.getId());
-        List<Match> matches = tournamentService.retrieveCurrentRoundsMatches(tournament.getId());
+        Set<Match> matches = tournamentService.retrieveCurrentRoundsMatches(tournament.getId());
         assertThat(matches.size(), equalTo(6));
     }
 
@@ -121,7 +122,7 @@ public class ServiceIntegrationTest {
         Tournament tournament = tournamentService.save(testturnering);
         tournamentService.addPlayers(tournament.getId(), getPersons());
         matchService.nextRound(tournament.getId());
-        List<Match> matches = tournamentService.retrieveCurrentRoundsMatches(tournament.getId());
+        Set<Match> matches = tournamentService.retrieveCurrentRoundsMatches(tournament.getId());
         matches.forEach(match ->  matchService.reportResult(match.getId(), Result.BLACK));
 
         tournament = tournamentService.retrieve(tournament.getId());

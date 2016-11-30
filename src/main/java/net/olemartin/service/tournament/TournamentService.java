@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -79,13 +78,10 @@ public class TournamentService {
         return tournamentRepository.retrieveAllTournaments();
     }
 
-    public List<Match> retrieveCurrentRoundsMatches(Long tournamentId) {
-        Iterable<Match> matches = matchRepository.retrieveCurrentRoundsMatches(tournamentId);
-        List<Match> list = new ArrayList<>();
-        for (Match match : matches) {
-            list.add(match);
-        }
-        return list;
+    public Set<Match> retrieveCurrentRoundsMatches(Long tournamentId) {
+        Round currentRound = tournamentRepository.findOne(tournamentId, 1).getCurrentRound();
+        currentRound = roundRepository.findOne(currentRound.getId(), 3);
+        return currentRound.getMatches();
     }
 
     public List<Round> retrieveRounds(Long tournamentId) {

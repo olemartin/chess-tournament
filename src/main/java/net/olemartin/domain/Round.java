@@ -54,6 +54,10 @@ public class Round implements Comparable<Round> {
         return matches;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public static class RoundSerializer implements JsonSerializer<Round> {
 
         @Override

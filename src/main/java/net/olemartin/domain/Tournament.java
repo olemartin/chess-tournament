@@ -130,6 +130,10 @@ public class Tournament {
 
     }
 
+    public Round getCurrentRound() {
+        return currentRound;
+    }
+
 
     public static class TournamentSerializer implements JsonSerializer<Tournament> {
 

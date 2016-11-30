@@ -69,7 +69,7 @@ public class TournamentResource {
 
     @GET
     @Path("{tournamentId}/matches")
-    public List<Match> retrieveCurrentRoundsMatches(@PathParam("tournamentId") Long tournamentId) {
+    public Set<Match> retrieveCurrentRoundsMatches(@PathParam("tournamentId") Long tournamentId) {
         return tournamentService.retrieveCurrentRoundsMatches(tournamentId);
     }
 

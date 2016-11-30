@@ -7,7 +7,7 @@ import org.springframework.data.neo4j.annotation.QueryResult;
 import java.util.List;
 
 @QueryResult
-public class PersonView {
+public class PersonView implements Comparable<PersonView>{
 
     @Property(name = "id")
     private Long id;
@@ -49,5 +49,10 @@ public class PersonView {
 
     public void setRating(long rating) {
         this.rating = rating;
+    }
+
+    @Override
+    public int compareTo(PersonView personView) {
+        return (int)(personView.rating - rating);
     }
 }
