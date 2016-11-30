@@ -112,7 +112,7 @@ public class ServiceIntegrationTest {
         tournamentService.addPlayers(tournament.getId(), getPersons());
         matchService.nextRound(tournament.getId());
         Set<Match> matches = tournamentService.retrieveCurrentRoundsMatches(tournament.getId());
-        assertThat(matches.size(), equalTo(6));
+        assertThat(matches.size(), equalTo(7));
     }
 
     @Test
@@ -123,7 +123,7 @@ public class ServiceIntegrationTest {
         tournamentService.addPlayers(tournament.getId(), getPersons());
         matchService.nextRound(tournament.getId());
         Set<Match> matches = tournamentService.retrieveCurrentRoundsMatches(tournament.getId());
-        matches.forEach(match ->  matchService.reportResult(match.getId(), Result.BLACK));
+        matches.stream().filter(match -> !match.isWalkover()).forEach(match ->  matchService.reportResult(match.getId(), Result.BLACK));
 
         tournament = tournamentService.retrieve(tournament.getId());
         long count = tournament.getPlayers().stream().filter(Player::hasPlayedMatches).count();
