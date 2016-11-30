@@ -13,5 +13,4 @@ data.old
 data*
 data.new
 .gradle
-gradle
 *.iml
