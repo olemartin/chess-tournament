@@ -51,7 +51,6 @@ public class ServiceIntegrationTest {
     }
 
     @Ignore
-    @Test
     public void test100Tournaments() {
         List<Person> persons = getPersons();
         for (int i = 0; i < 100; i++) {
