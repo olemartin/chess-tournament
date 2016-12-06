@@ -1,7 +1,7 @@
 
 plugins {
     id 'java' // or 'groovy' Must be explicitly applied
-    id 'com.github.johnrengelman.shadow' version '1.1.2'
+    id 'com.github.johnrengelman.shadow' version '1.2.4'
 }
 group = 'net.ole-martin'
 version = '1.0-SNAPSHOT'
@@ -39,8 +39,6 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
-
-
 jar {
     manifest {
         attributes("Main-Class": "net.olemartin.Main")
@@ -48,9 +46,6 @@ jar {
 }
 shadow {
     shadowJar {
-        append('META-INF/spring.handlers')
-        append('META-INF/spring.schemas')
-        append('src/main/resources/assets')
         mergeServiceFiles()
     }
 }

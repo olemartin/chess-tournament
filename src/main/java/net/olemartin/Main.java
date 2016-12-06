@@ -2,7 +2,6 @@ package net.olemartin;
 
 import com.google.common.cache.CacheBuilderSpec;
 import io.dropwizard.Application;
-import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
@@ -13,6 +12,8 @@ import net.olemartin.dropwizard.MonradConfiguration;
 import net.olemartin.push.ChangeNotification;
 import net.olemartin.service.user.ChessAuthenticator;
 import net.olemartin.service.user.UserService;
+import net.olemartin.spring.MonradProfile;
+import net.olemartin.spring.Production;
 import net.olemartin.tools.GsonJSONProvider;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.AbstractEnvironment;
@@ -32,15 +33,18 @@ public class Main extends Application<MonradConfiguration> {
     @Override
     public void initialize(Bootstrap<MonradConfiguration> bootstrap) {
         CacheBuilderSpec.disableCaching();
-        bootstrap.addBundle(new AssetsBundle("/assets/", "/", "index.html"));
     }
 
     @Override
     public void run(MonradConfiguration config, Environment environment) throws Exception {
+        System.setProperty("spring.profiles.active", config.getProfile());
+        if (config.getProfile().equals(MonradProfile.PRODUCTION)) {
+            Production.setNeo4jPath(config.getNeo4jPath());
+        }
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(net.olemartin.spring.Bootstrap.class);
-        context.getEnvironment().setActiveProfiles("production");
         Map<String, Object> beans = context.getBeansWithAnnotation(Resource.class);
         context.getBean(UserService.class).createUser("olemartin", "okki1234", "Ole-Martin");
+        context.getBean(UserService.class).createUser("selbekk", "scratcharoo", "Kristoffer");
         for (Object o : beans.values()) {
             environment.jersey().register(o);
         }

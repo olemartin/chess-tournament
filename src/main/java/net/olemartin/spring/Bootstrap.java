@@ -8,8 +8,6 @@ import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-;
-
 @org.springframework.context.annotation.Configuration
 @ComponentScan(basePackages = {
         "net.olemartin.service",

@@ -1,3 +1,7 @@
+#neo4jPath: /Users/olemartin/test
+#Production means a file database, test means an in-memory database
+profile: test
+#profile: production
 server:
   type: simple
   applicationContextPath: /
