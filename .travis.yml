@@ -2,7 +2,7 @@ language: java
 jdk:
 - oraclejdk8
 script:
-- bundle exec ./gradlew shadowJar
+- ./gradlew shadowJar
 deploy:
   skip_cleanup: true
   provider: releases
