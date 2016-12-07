@@ -1,11 +1,10 @@
 language: java
 jdk:
-  - oraclejdk8
-
+- oraclejdk8
 deploy:
   provider: releases
-  api_key: 7ba5fffa41c84d365aa97d991beef7ad05935541
+  api_key:
+    secure: S3il9IW5AKHTHKkEv3An4jstYQTe2jP4srYWouhWKb0VIL4TRYZbRs0Jc1Ex5nhQUbUPGb0Q/DOAPM6mo9jRyUc8p3ARh43TIPeH5mpeR/MC1Nau/DVIZGj/DClkVvhXCaLLJutA2zR7FPw5u2HQ+V3EvfM40/lr83in/b6HG3rGiA85cB6sHKJeCDnI83y0Ykqi+Fqgx6xJgvKCRTocG2V4GSSkVZpd0JGU8evFZzqv020qGmzS66ezeSvH265kZtBhTIczrs2x7WhCfSa/1t2xN9ngTexKwyZJNb+ZWjg0zMndjaipPlA85kHoF6ryRRFWtXzV7WqLfvCi0v6yif08PJB3+8bDngcopdxM2homaM9Tsd9szN+lk34p/bm8vBDofCKYWS5yhPZJlZqV6XH6BEzpeh14ZnQUQCwZ+LtpNr/XyuouQneV1iwqcXNsiPYwt8QVnwAFgi4DIHuxct5jUv1OvYFZ8EW+bX4q8vzS2UkI2dq7VrbUoGggm1mimlD3wZpkY2BWlsoC0lDSMXYNvr8skwuYQSgRUuEMeac/EL2iQGyvP12vqJKTxfVcSvgf5V9EtzoQhGTk+w5iP4Pfq+PXZbPUrj6XkYZXpHPnJdN8wq7TbWyoNcKj8G3HP5e8bN2tdY/36xQrHvIC55Ii3rel8t02vfz85fkP4i0=
   file: build/libs/monrad-1.0-SNAPSHOT-all.jar
-  skip_cleanup: true
   on:
-    tags: true
+    repo: olemartin/chess-tournament
