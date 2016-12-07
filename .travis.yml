@@ -2,3 +2,10 @@ language: java
 jdk:
   - oraclejdk8
 
+deploy:
+  provider: releases
+  api_key: "7ba5fffa41c84d365aa97d991beef7ad05935541"
+  file: "build/libs/monrad-1.0-SNAPSHOT-all.jar"
+  skip_cleanup: true
+  on:
+    tags: true
