@@ -8,3 +8,4 @@ deploy:
   file: build/libs/monrad-1.0-SNAPSHOT-all.jar
   on:
     repo: olemartin/chess-tournament
+    tags: true
