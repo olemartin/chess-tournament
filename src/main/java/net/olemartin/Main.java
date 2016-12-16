@@ -62,5 +62,17 @@ public class Main extends Application<MonradConfiguration> {
         ServletRegistration.Dynamic websocket = environment.servlets().addServlet("websocket", context.getBean(ChangeNotification.class));
         websocket.setAsyncSupported(true);
         websocket.addMapping("/push/*");
+
+        // CORS support
+       final FilterRegistration.Dynamic cors =
+           environment.servlets().addFilter("CORS", CrossOriginFilter.class);
+
+       // Configure CORS parameters
+       cors.setInitParameter("allowedOrigins", "*"); // TODO: This probably needs fixing at some point
+       cors.setInitParameter("allowedHeaders", "X-Requested-With,Content-Type,Accept,Origin");
+       cors.setInitParameter("allowedMethods", "OPTIONS,GET,PUT,POST,DELETE,HEAD");
+
+       // Add URL mapping
+       cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
     }
 }
