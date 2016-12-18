@@ -73,7 +73,7 @@ public class Main extends Application<MonradConfiguration> {
 
         // Configure CORS parameters
         cors.setInitParameter("allowedOrigins", "*"); // TODO: This probably needs a more strict setting at some point
-        cors.setInitParameter("allowedHeaders", "X-Requested-With,Content-Type,Accept,Origin");
+        cors.setInitParameter("allowedHeaders", "Authorization,X-Requested-With,Content-Type,Accept,Origin");
         cors.setInitParameter("allowedMethods", "OPTIONS,GET,PUT,POST,DELETE,HEAD");
 
         // Add URL mapping
