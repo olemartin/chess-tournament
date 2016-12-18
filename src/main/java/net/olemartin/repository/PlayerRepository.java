@@ -29,7 +29,7 @@ public interface PlayerRepository extends GraphRepository<Player> {
     Iterable<Player> playersInTournament(@Param("who") Long tournamentId);
 
     @Query("MATCH (p:Player) <-[rel]- ()\n" +
-            "WHERE NOT p --> (:Tournament)\n" +
+            "WHERE NOT (p) --> (:Tournament)\n" +
             "DELETE rel, p")
     void deleteLoosePlayers();
 
