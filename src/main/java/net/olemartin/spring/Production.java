@@ -17,8 +17,9 @@ public class Production {
     @Bean
     public org.neo4j.ogm.config.Configuration configuration() {
         org.neo4j.ogm.config.Configuration config = new org.neo4j.ogm.config.Configuration();
-        config
-                .driverConfiguration()
+        config.set("dbms.allow_upgrade", true);
+        config.set("dbms.allow_format_migration", true);
+        config.driverConfiguration()
                 .setURI("file://" + neo4jPath)
                 .setDriverClassName("org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver");
         return config;
